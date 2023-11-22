@@ -1,0 +1,135 @@
+{
+  "project_info": {
+    "project_number": "538330805104",
+    "firebase_url": "https://fill-d-db8f7-default-rtdb.firebaseio.com",
+    "project_id": "fill-d-db8f7",
+    "storage_bucket": "fill-d-db8f7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:538330805104:android:e93c1a1d1d53937ee2d5b5",
+        "android_client_info": {
+          "package_name": "com.example.filld_client"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "538330805104-1sq6iqj5dgfg90cca0dhqt3bmdr4cs8v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.filld_client",
+            "certificate_hash": "b242a08acb4973e3c90be00ebee112439cd8838c"
+          }
+        },
+        {
+          "client_id": "538330805104-5ir0qsjvp72iqbnds70on8pu4p7i401k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5cFO7zVS8Vx4xxpMZg7YlZ0vzh5uawcE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "538330805104-5ir0qsjvp72iqbnds70on8pu4p7i401k.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "538330805104-7hnu7dcag64ikh3lvj5ekcdehiihiaq1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.filldRider"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:538330805104:android:3811ebe4f03aadb5e2d5b5",
+        "android_client_info": {
+          "package_name": "com.example.filld_rider"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "538330805104-dnlqqms92d4kb33oo37p34beoq1u902f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.filld_rider",
+            "certificate_hash": "b242a08acb4973e3c90be00ebee112439cd8838c"
+          }
+        },
+        {
+          "client_id": "538330805104-5ir0qsjvp72iqbnds70on8pu4p7i401k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5cFO7zVS8Vx4xxpMZg7YlZ0vzh5uawcE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "538330805104-5ir0qsjvp72iqbnds70on8pu4p7i401k.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "538330805104-7hnu7dcag64ikh3lvj5ekcdehiihiaq1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.filldRider"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:538330805104:android:e4dc1abedd9b9515e2d5b5",
+        "android_client_info": {
+          "package_name": "com.example.filldadmin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "538330805104-5ir0qsjvp72iqbnds70on8pu4p7i401k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5cFO7zVS8Vx4xxpMZg7YlZ0vzh5uawcE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "538330805104-5ir0qsjvp72iqbnds70on8pu4p7i401k.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "538330805104-7hnu7dcag64ikh3lvj5ekcdehiihiaq1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.filldRider"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
