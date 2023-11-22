@@ -23,33 +23,32 @@ class _homepageState extends State<homepage> {
   }
 
   void _loadRiders() {
-    // Assuming _ridersRef is an instance of DatabaseReference
     _ridersRef.onValue.listen((event) {
       _riders.clear(); // Clear the existing list of riders
 
       if (event.snapshot.value != null) {
-        // Check if the snapshot has a value
         Map<dynamic, dynamic>? map = event.snapshot.value as Map<dynamic, dynamic>?;
 
         if (map != null) {
-          // Check if the map is not null
           map.forEach((key, value) {
-            // Iterate through the map
-            // Assuming Rider class has a constructor that takes email and FirstName
-            _riders.add(Rider(
-              key,
-              value['email'],// Access the email property from the map
-              value['numberPlate'].toString(), // Access the FirstName property from the map
-              value['status'],
-              // value['imageUrl'],
-              // 'isActive': isActive,
-              // value['licensePlateNumber'],
-            ));
+            String status = value['status'];
+
+            // Check if the user is deactivated based on the 'status' field
+            if (status == 'deactivated') {
+              _riders.add(Rider(
+                key,
+                value['email'],
+                value['numberPlate'].toString(),
+                status,
+                //value['imageUrl'], // Uncomment this line if imageUrl is present in your data
+                // 'isActive': isActive, // Uncomment this line if isActive is present in your data
+               // value['licensePlateNumber'], // Uncomment this line if licensePlateNumber is present in your data
+              ));
+            }
           });
         }
       }
 
-      // After updating the _riders list, trigger a rebuild of the UI
       setState(() {});
     });
   }
@@ -60,7 +59,7 @@ class _homepageState extends State<homepage> {
   void _editRiderStatus(Rider rider) {
     // Implement logic to edit rider status, for example, set isActive to true/false
     // rider.name = !rider.name;
-    _ridersRef.child(rider.key).update({'status': 'activate'});
+    _ridersRef.child(rider.key).update({'status': 'activated'});
   }
   @override
   Widget build(BuildContext context) {
