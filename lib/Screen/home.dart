@@ -38,6 +38,7 @@ class _homepageState extends State<homepage> {
               _riders.add(Rider(
                 key,
                 value['email'],
+                value['riderImageUrl'],
                 value['numberPlate'].toString(),
                 status,
                 //value['imageUrl'], // Uncomment this line if imageUrl is present in your data
@@ -64,16 +65,41 @@ class _homepageState extends State<homepage> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
+      appBar: AppBar(
+          elevation: 0,
+
+      title: Text("Deactivated  Users")
+      ),
       
-      body:ListView.builder(
+      body: ListView.builder(
         itemCount: _riders.length,
         itemBuilder: (context, index) {
+      if (_riders.isEmpty) {
+
+
+        // If the list is empty, show a loading sign or a message.
+        return Center(
+          child: CircularProgressIndicator(), // or any loading indicator/widget
+        );
+      }
+
           Rider rider = _riders[index];
           return ListTile(
-            // leading: CircleAvatar(
-            //   backgroundImage: NetworkImage(rider.name),
-            // ),
-            title: Text(rider.email),
+            leading: CircleAvatar(
+              backgroundImage: rider.imageUrl != null
+                  ? NetworkImage(rider.imageUrl! as String) as ImageProvider<Object>?
+                  : AssetImage('path/to/placeholder_image.jpg') as ImageProvider<Object>?,
+            ),
+            title: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  Text(rider.email),
+
+
+                ],
+              ),
+            ),
              subtitle: Text(rider.numberPlate),
             trailing: IconButton(
               icon: Icon( Icons.switch_access_shortcut_add_rounded),

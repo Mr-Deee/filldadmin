@@ -2,13 +2,13 @@ class Rider {
   final String key;
   final String email;
   final String numberPlate;
-  // final String imageUrl;
+final String imageUrl;
   final String status;
   // bool isActive;
 
   Rider(this.key, this.email,
       this.numberPlate,
-   // this.imageUrl,
+  this.imageUrl,
       this.status,
   // this.isActive
       );
@@ -18,7 +18,7 @@ class Rider {
     return {
       'email': email,
       'numberPlate': numberPlate,
-       // 'imageUrl': imageUrl,
+       'riderImageUrl': imageUrl,
       'status': status,
       // 'isActive': isActive,
     };
