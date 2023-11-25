@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'Screen/HOME.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
-
+import 'Screen/home.dart';
 import 'firebase_options.dart';
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,7 +48,7 @@ class MyApp extends StatelessWidget {
       // "/MainScreen": (context) => MainScreen(),
       // "/search": (context) => SearchScreen(),
       // "/authpage": (context) => AuthPage(),
-      "/Homepage": (context) => homepage(),
+      "/Homepage": (context) =>Homepage(),
     });
 
 
