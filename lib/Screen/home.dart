@@ -69,9 +69,10 @@ class _HomepageState extends State<Homepage> {
           Rider rider = _riders[index];
           return ListTile(
             leading: CircleAvatar(
-              backgroundImage: rider.imageUrl != null
-                  ? NetworkImage(rider.imageUrl!) as ImageProvider<Object>?
-                  : AssetImage('assets/images/useri.png'),
+              radius: 70,
+              backgroundImage:rider.imageUrl != null
+                  ? NetworkImage(rider.imageUrl)
+                  : AssetImage("assets/images/user_icon.png")as ImageProvider<Object>,
             ),
             title: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
