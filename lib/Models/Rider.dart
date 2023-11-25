@@ -4,6 +4,9 @@ class Rider {
   final String email;
   final String numberPlate;
 final String imageUrl;
+// final int ghcard;
+// final int licenseplate;
+
   // final String status;
   // bool isActive;
 
@@ -12,6 +15,8 @@ final String imageUrl;
       this.email,
       this.numberPlate,
       this.imageUrl,
+      // this.ghcard,
+      // this.licenseplate,
       // this.status,
 
   // this.isActive
@@ -25,6 +30,11 @@ final String imageUrl;
       'email': email,
       'numberPlate': numberPlate,
        'riderImageUrl': imageUrl,
+    //   'car_details': {
+    //   'GhanaCardNumber': ghcard,
+    //   'licensePlateNumber': licenseplate,
+    //   // Add other properties within 'car_details' if needed
+    // },
       // 'status': status,
       // 'isActive': isActive,
     };

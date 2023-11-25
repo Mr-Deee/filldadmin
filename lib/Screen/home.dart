@@ -39,6 +39,8 @@ class _HomepageState extends State<Homepage> {
                 value['email'],
                 value['numberPlate'].toString(),
                 value['riderImageUrl'],
+                // value['car_details']['GhanaCardNumber'],
+                // value['car_details']['licensePlateNumber'],
                 // status,
               ));
             }
@@ -69,10 +71,10 @@ class _HomepageState extends State<Homepage> {
           Rider rider = _riders[index];
           return ListTile(
             leading: CircleAvatar(
-              radius: 70,
+              radius: 30,
               backgroundImage:rider.imageUrl != null
-                  ? NetworkImage(rider.imageUrl)
-                  : AssetImage("assets/images/user_icon.png")as ImageProvider<Object>,
+                  ? NetworkImage(rider.imageUrl,scale: 1.0)
+                  : AssetImage("assets/images/useri.png") as ImageProvider<Object>,
             ),
             title: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -87,9 +89,82 @@ class _HomepageState extends State<Homepage> {
               icon: Icon(Icons.switch_account),
               onPressed: () => _editRiderStatus(rider),
             ),
+
+            onTap:  () => _showRiderDetails(rider),
           );
         },
       ),
     );
   }
+
+  void _showRiderDetails(Rider rider) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Rider Details'),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+
+              Container(
+                width: double.infinity,
+                height: 150.0,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12.0),
+                  color: Colors.grey, // You can set the desired background color
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: rider.imageUrl != null
+                        ? NetworkImage(rider.imageUrl)
+                        : AssetImage("assets/images/useri.png") as ImageProvider<Object>,
+                  ),
+                ),
+              ),
+              SizedBox(height: 10.0),
+              Container(
+                width: double.infinity,
+                height: 150.0,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12.0),
+                  color: Colors.grey, // You can set the desired background color
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: rider.imageUrl != null
+                        ? NetworkImage(rider.imageUrl)
+                        : AssetImage("assets/images/useri.png") as ImageProvider<Object>,
+                  ),
+                ),
+              ),
+
+
+              SizedBox(height: 10.0),
+              Text('Name: ${rider.Name}'),
+              Text('Email: ${rider.email}'),
+              Text('Plate Number: ${rider.numberPlate}'),
+              // Text('GhanaCard: ${rider.ghcard??""}'),
+              // Add more details as needed
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Close'),
+            ),
+            TextButton(
+              onPressed: () {
+               _editRiderStatus(rider);
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Activate'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 }
