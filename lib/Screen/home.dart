@@ -39,8 +39,10 @@ class _HomepageState extends State<Homepage> {
                 value['email'],
                 value['numberPlate'].toString(),
                 value['riderImageUrl'],
-                // value['car_details']['GhanaCardNumber'],
-                // value['car_details']['licensePlateNumber'],
+                value['car_details']['GhanaCardNumber'],
+                 value['car_details']['licensePlateNumber'],
+                    value['car_details']['GhanaCardUrl'],
+
                 // status,
               ));
             }
@@ -131,8 +133,8 @@ class _HomepageState extends State<Homepage> {
                   color: Colors.grey, // You can set the desired background color
                   image: DecorationImage(
                     fit: BoxFit.cover,
-                    image: rider.imageUrl != null
-                        ? NetworkImage(rider.imageUrl)
+                    image: rider.ghcardimageUrl != null
+                        ? NetworkImage(rider.ghcardimageUrl)
                         : AssetImage("assets/images/useri.png") as ImageProvider<Object>,
                   ),
                 ),
@@ -143,7 +145,7 @@ class _HomepageState extends State<Homepage> {
               Text('Name: ${rider.Name}'),
               Text('Email: ${rider.email}'),
               Text('Plate Number: ${rider.numberPlate}'),
-              // Text('GhanaCard: ${rider.ghcard??""}'),
+              Text('GhanaCard: ${rider.ghcard??""}'),
               // Add more details as needed
             ],
           ),
