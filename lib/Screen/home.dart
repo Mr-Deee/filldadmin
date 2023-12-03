@@ -39,9 +39,9 @@ class _HomepageState extends State<Homepage> {
                 value['email'],
                 value['numberPlate'].toString(),
                 value['riderImageUrl'],
+                    value['car_details']['GhanaCardUrl'],
                 value['car_details']['GhanaCardNumber'],
                  value['car_details']['licensePlateNumber'],
-                    value['car_details']['GhanaCardUrl'],
 
                 // status,
               ));
@@ -87,10 +87,10 @@ class _HomepageState extends State<Homepage> {
               ),
             ),
             subtitle: Text(rider.email),
-            trailing: IconButton(
-              icon: Icon(Icons.switch_account),
-              onPressed: () => _editRiderStatus(rider),
-            ),
+            // trailing: IconButton(
+            //   icon: Icon(Icons.switch_account),
+            //   onPressed: () => _editRiderStatus(rider),
+            // ),
 
             onTap:  () => _showRiderDetails(rider),
           );

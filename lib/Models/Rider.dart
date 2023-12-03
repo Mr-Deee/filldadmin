@@ -23,7 +23,9 @@ final String licenseplate;
 
   // this.isActive
       );
-
+  // static Rider fromMap(Map<String, dynamic> data)
+  //
+  // {
   // Create a method to convert a Rider object to a Map for Firebase
   Map<String, dynamic> toJson() {
     return {
@@ -33,9 +35,10 @@ final String licenseplate;
       'numberPlate': numberPlate,
        'riderImageUrl': imageUrl,
       'car_details': {
+        'GhanaCardUrl': ghcardimageUrl,
       'GhanaCardNumber': ghcard,
       'licensePlateNumber': licenseplate,
-        'GhanaCardUrl': ghcardimageUrl,
+
       // Add other properties within 'car_details' if needed
     },
       // 'status': status,
