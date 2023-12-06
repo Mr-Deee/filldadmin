@@ -27,6 +27,9 @@ void main() async{
 
 MyApp());
   }
+
+DatabaseReference admin = FirebaseDatabase.instance.ref().child("Admin");
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
