@@ -35,48 +35,16 @@ class _AuthPageState extends State<AuthPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // locatePosition(context);
-    // requestSmsPermission();
      _requestLocationPermission();
     AssistantMethod.getCurrentOnlineUserInfo(context);
-     // _getCurrentLocation();
+
 
   }
   GoogleMapController? newGoogleMapController;
 
 
   TextEditingController _locationController = TextEditingController();
-  // void _getCurrentLocation() async {
-  //   try {
-  //     Position position = await Geolocator.getCurrentPosition(
-  //       desiredAccuracy: LocationAccuracy.bestForNavigation,
-  //     );
-  //     // List<Placemark> placemarks = await placemarkFromCoordinates(
-  //     //   position.latitude,
-  //     //   position.longitude,
-  //     // );
-  //     List<Placemark> placemarks = await GeocodingPlatform.instance
-  //         .placemarkFromCoordinates(position.latitude, position.longitude,
-  //         localeIdentifier: "en");
-  //     if (placemarks.isNotEmpty) {
-  //       Placemark placemark = placemarks[0];
-  //       String placeName = placemark.name ?? ''; // Name of the place
-  //       String locality = placemark.locality ?? ''; // City or locality
-  //       String administrativeArea =
-  //           placemark.administrativeArea ?? ''; // State or region
-  //
-  //       String fullAddress = '$placeName, $locality, $administrativeArea';
-  //
-  //       setState(() {
-  //         currentPosition = position;
-  //         _locationController.text = fullAddress;
-  //       });
-  //     }
-  //   } catch (e) {
-  //     print('Error fetching location: $e');
-  //     _getCurrentLocation();
-  //   }
-  // }
+
   void _requestLocationPermission() async {
     var status = await Permission.location.request();
     if (status.isGranted) {
@@ -91,23 +59,7 @@ class _AuthPageState extends State<AuthPage> {
       // with a link to the app settings.
     }
   }
-  // void locatePosition(BuildContext context) async {
-  //   Position position = await Geolocator.getCurrentPosition(
-  //       desiredAccuracy: LocationAccuracy.high);
-  //   currentPosition = position;
-  //   LatLng latLatPosition = LatLng(position.latitude, position.longitude);
-  //
-  //   CameraPosition cameraPosition =
-  //   new CameraPosition(target: latLatPosition, zoom: 20);
-  //   newGoogleMapController
-  //       ?.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-  //
-  //   // String address =
-  //   // await AssistantMethod.searchCoordinateAddress(position, context);
-  //   // print("This is your Address::" + address);
-  //   // initGeoFireListener();
-  //
-  // }
+
 
 
   void _toggleForm(bool isSignIn) {
