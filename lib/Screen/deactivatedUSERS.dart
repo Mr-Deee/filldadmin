@@ -64,7 +64,7 @@ class _deactivatedusersState extends State<deactivatedusers> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: Text("Dashboard"),
+        title: Text("Deactived Users"),
       ),
       body: _riders.isEmpty
           ? Center(child: CircularProgressIndicator())
