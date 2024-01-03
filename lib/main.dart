@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'Authpage.dart';
 import 'Models/adminusers.dart';
+import 'Screen/deactivatedUSERS.dart';
 import 'Screen/home.dart';
 import 'Models/DatabaseService.dart';
 import 'firebase_options.dart';
@@ -70,14 +72,16 @@ class MyApp extends StatelessWidget {
       ),
 
     initialRoute: FirebaseAuth.instance.currentUser == null
-    ? '/Homepage'
+    ? '/authpage'
         : '/Homepage',
     routes: {
+
       // "/splash": (context) => SplashScreen(),
       // "/MainScreen": (context) => MainScreen(),
       // "/search": (context) => SearchScreen(),
-      // "/authpage": (context) => AuthPage(),
+      "/authpage": (context) => AuthPage(),
       "/Homepage": (context) =>Homepage(),
+      "/deactivatedusers": (context) =>deactivatedusers(),
     });
 
 

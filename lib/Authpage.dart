@@ -141,7 +141,7 @@ class _AuthPageState extends State<AuthPage> {
                           ),
           Container(
               // autogroup5cgo8Cw (LrGFcrPtMqbkTfkxCG5cgo)
-              padding: EdgeInsets.fromLTRB(15, 150, 23, 8),
+              padding: EdgeInsets.fromLTRB(15, 120, 23, 8),
               width: double.infinity,
               decoration: BoxDecoration (
                 image: DecorationImage (
@@ -152,7 +152,7 @@ class _AuthPageState extends State<AuthPage> {
                 ),
               ),),
                           //
-                          // Text(_isSignIn ? 'Sign In' : 'Sign Up'),
+                        Text('GAS STATIONS'),
                           Center(
                             child: Padding(
                               padding: EdgeInsets.only(top:1.0),
@@ -400,56 +400,7 @@ class _SignUpFormState extends State<SignUpForm> {
   // Position? currentPosition;
   //
   final Random random = Random();
-  // void locatePosition() async {
-  //   Position position = await Geolocator.getCurrentPosition(
-  //       desiredAccuracy: LocationAccuracy.bestForNavigation);
-  //   currentPosition = position;
-  //
-  //   LatLng latLatPosition = LatLng(position.latitude, position.longitude);
-  //
-  //   CameraPosition cameraPosition =
-  //   new CameraPosition(target: latLatPosition, zoom: 14);
-  //   newGoogleMapController?.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-  // }
 
-  // void _getCurrentLocation() async {
-  //   try {
-  //     Position position = await Geolocator.getCurrentPosition(
-  //       desiredAccuracy: LocationAccuracy.bestForNavigation,
-  //     );
-  //     // List<Placemark> placemarks = await placemarkFromCoordinates(
-  //     //   position.latitude,
-  //     //   position.longitude,
-  //     // );
-  //     List<Placemark> placemarks = await GeocodingPlatform.instance
-  //         .placemarkFromCoordinates(position.latitude, position.longitude,
-  //         localeIdentifier: "en");
-  //     if (placemarks.isNotEmpty) {
-  //       Placemark placemark = placemarks[0];
-  //       String placeName = placemark.name ?? ''; // Name of the place
-  //       String locality = placemark.locality ?? ''; // City or locality
-  //       String administrativeArea =
-  //           placemark.administrativeArea ?? ''; // State or region
-  //
-  //       String fullAddress = '$placeName, $locality, $administrativeArea';
-  //
-  //       setState(() {
-  //         // _currentPosition = position;
-  //         // _locationController.text = fullAddress;
-  //       });
-  //     }
-  //   } catch (e) {
-  //     print('Error fetching location: $e');
-  //     _getCurrentLocation();
-  //   }
-  // }
-
-
-  // Future _checkGps() async {
-  //   if (!await location.serviceEnabled()) {
-  //     location.requestService();
-  //   }
-  // }
   void _requestLocationPermission() async {
     var status = await Permission.location.request();
     if (status.isGranted) {
@@ -533,16 +484,16 @@ class _SignUpFormState extends State<SignUpForm> {
           padding: const EdgeInsets.all(10.0),
           child: TextFormField(
           controller: firstnameController,
-            decoration: InputDecoration(labelText: 'First name'),
+            decoration: InputDecoration(labelText: 'Gas Station Name'),
           ),
         )    ,
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: TextFormField(
-          controller: lastnameController,
-            decoration: InputDecoration(labelText: 'Last name'),
-          ),
-        ),
+        // Padding(
+        //   padding: const EdgeInsets.all(10.0),
+        //   child: TextFormField(
+        //   controller: lastnameController,
+        //     decoration: InputDecoration(labelText: 'Last name'),
+        //   ),
+        // ),
         Padding(
           padding: const EdgeInsets.all(10.0),
           child: TextFormField(
@@ -572,7 +523,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 padding: const EdgeInsets.only(left: 15.0),
                 child: TextFormField(
                   controller: phonecontroller,
-                  decoration: InputDecoration(labelText: 'Phone number'),
+                  decoration: InputDecoration(labelText: 'Momo Phone number'),
                 ),
               ),
             ),
@@ -589,10 +540,6 @@ class _SignUpFormState extends State<SignUpForm> {
         ElevatedButton(
           onPressed: () {
             registerNewUser(context);
-
-
-
-            // _verifyPhoneNumber();
 
           },
           child: Text('Sign Up'),
@@ -659,10 +606,10 @@ class _SignUpFormState extends State<SignUpForm> {
 
         Map userDataMap = {
 
-          "email": emailController.text.trim().toString(),
-          "FirstName": firstnameController.text.trim().toString(),
-          "LastName": lastnameController.text.trim().toString(),
-          "phoneNumber": fullPhoneNumber,
+          "Email": emailController.text.trim().toString(),
+          "GasStationName": firstnameController.text.trim().toString(),
+          "Location": lastnameController.text.trim().toString(),
+          "GasStationNumber": fullPhoneNumber,
           "Password": passwordController.text.trim().toString(),
 
         };
@@ -672,14 +619,6 @@ class _SignUpFormState extends State<SignUpForm> {
         currentfirebaseUser = firebaseUser;
         // registerInfirestore(context);
 
-        // sendVerificationCode();
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) =>
-        //         OtpVerificationScreen(verificationId: verificationId),
-        //   ),
-        //
           Navigator.push(
           context,
           MaterialPageRoute(
@@ -702,10 +641,9 @@ class _SignUpFormState extends State<SignUpForm> {
     Future<void> registerInfirestore(BuildContext context) async {
       User? user = FirebaseAuth.instance.currentUser;
       if (firebaseUser != null) {
-        FirebaseFirestore.instance.collection('Clients').doc(user?.uid).set({
-          'FirstName': firstnameController.text.toString().trim(),
+        FirebaseFirestore.instance.collection('GasStation').doc(user?.uid).set({
+          'GasStation': firstnameController.text.toString().trim(),
           'MobileNumber': phonecontroller.toString().trim(),
-          // 'fullName':_firstName! +  _lastname!,
           'Email': emailController.text.toString().trim(),
           'Password': passwordController.text.toString().trim(),
           'Phone': phonecontroller.text.toString().trim(),
