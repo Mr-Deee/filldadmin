@@ -21,6 +21,7 @@ import 'package:firebase_phone_auth_handler/firebase_phone_auth_handler.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'Models/assistantmethod.dart';
+import 'Screen/GasStationDashboard.dart';
 import 'Screen/home.dart';
 class AuthPage extends StatefulWidget {
 
@@ -116,7 +117,7 @@ class _AuthPageState extends State<AuthPage> {
               child: Column(
                 children: [
                   Container(
-                    height: 280,
+                    height: 300,
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -141,11 +142,11 @@ class _AuthPageState extends State<AuthPage> {
                           ),
           Container(
               // autogroup5cgo8Cw (LrGFcrPtMqbkTfkxCG5cgo)
-              padding: EdgeInsets.fromLTRB(15, 120, 23, 8),
+              padding: EdgeInsets.fromLTRB(15, 150, 23, 8),
               width: double.infinity,
               decoration: BoxDecoration (
                 image: DecorationImage (
-                  fit: BoxFit.cover,
+                  fit: BoxFit.fitWidth,
                   image: AssetImage (
                       'assets/images/delivery-with-white-background-1.png',
                   ),
@@ -351,7 +352,7 @@ class _SignInFormState extends State<SignInForm> {
       if (firebaseUser != null) {
         AssistantMethod.getCurrentOnlineUserInfo(context);
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => Homepage()),
+            MaterialPageRoute(builder: (context) => GasStationDashboard()),
                 (Route<dynamic> route) => false);
         displayToast("Logged-in ", context);
       } else {
@@ -613,7 +614,7 @@ class _SignUpFormState extends State<SignUpForm> {
           "Password": passwordController.text.trim().toString(),
 
         };
-        admin.child(firebaseUser!.uid).set(userDataMap);
+        gasStation.child(firebaseUser!.uid).set(userDataMap);
         // Admin.child(firebaseUser!.uid).set(userDataMap);
 
         currentfirebaseUser = firebaseUser;

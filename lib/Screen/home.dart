@@ -159,7 +159,7 @@ class _HomepageState extends State<Homepage> {
                                           centerSpaceRadius: 40,
                                           startDegreeOffset: -90,
                                         ),
-                                      );)
+                                      ));
                                     } else {
                                       return Text(
                                         'Failed to fetch number of deactivated users',

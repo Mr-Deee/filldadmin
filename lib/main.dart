@@ -56,6 +56,7 @@ class DatabaseService {
 }
 
 DatabaseReference admin = FirebaseDatabase.instance.ref().child("Admin");
+DatabaseReference gasStation = FirebaseDatabase.instance.ref().child("GasStation");
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
