@@ -128,7 +128,12 @@ class _HomepageState extends State<Homepage> {
                                     int? numberOfDeactivatedUsers = deactivatedSnapshot.data;
 
                                     if (numberOfDeactivatedUsers != null) {
-                                      return PieChart(
+                                      return Card (
+                                        elevation: 5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+                                      child: PieChart(
                                         PieChartData(
                                           sections: [
                                             PieChartSectionData(
@@ -154,7 +159,7 @@ class _HomepageState extends State<Homepage> {
                                           centerSpaceRadius: 40,
                                           startDegreeOffset: -90,
                                         ),
-                                      );
+                                      );)
                                     } else {
                                       return Text(
                                         'Failed to fetch number of deactivated users',
