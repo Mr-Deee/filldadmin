@@ -91,6 +91,13 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                       fontSize: 52,
                     ),
                   ),
+                  Text(
+                    '${gasprovider?.GasStationNumber}'??"",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[700],
+                    ),
+                  ),
                 ],
               ),
             ),
