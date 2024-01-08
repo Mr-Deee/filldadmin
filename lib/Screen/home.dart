@@ -8,6 +8,7 @@ import '../Models/DatabaseService.dart';
 import '../Models/Rider.dart';
 import '../main.dart';
 import 'deactivatedUSERS.dart';
+import 'earningsScreen.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
@@ -17,7 +18,8 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  final DatabaseReference _ridersRef = FirebaseDatabase.instance.ref().child('Riders');
+  final DatabaseReference _ridersRef =
+      FirebaseDatabase.instance.ref().child('Riders');
   List<Rider> _riders = [];
 
   @override
@@ -32,15 +34,16 @@ class _HomepageState extends State<Homepage> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: Text("Dashboard",style: TextStyle(fontWeight: FontWeight.bold),),
+        title: Text(
+          "Dashboard",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 10),
             child: IconButton(
               onPressed: () {
-
-
                 showDialog<void>(
                   context: context,
                   barrierDismissible: false, // user must tap button!
@@ -99,7 +102,6 @@ class _HomepageState extends State<Homepage> {
             if (event.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicator();
             } else {
-
               int? numberOfRequests = event.data;
 
               if (numberOfRequests != null) {
@@ -119,51 +121,59 @@ class _HomepageState extends State<Homepage> {
 
                             if (earnings != null) {
                               return FutureBuilder<int?>(
-                                future: databaseService.fetchNumberOfDeactivated(),
+                                future:
+                                    databaseService.fetchNumberOfDeactivated(),
                                 builder: (context, deactivatedSnapshot) {
                                   if (deactivatedSnapshot.connectionState ==
                                       ConnectionState.waiting) {
                                     return CircularProgressIndicator();
                                   } else {
-                                    int? numberOfDeactivatedUsers = deactivatedSnapshot.data;
+                                    int? numberOfDeactivatedUsers =
+                                        deactivatedSnapshot.data;
 
                                     if (numberOfDeactivatedUsers != null) {
-                                      return Card (
-                                        elevation: 5,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15.0),
-      ),
-                                      child: PieChart(
-                                        PieChartData(
-                                          sections: [
-                                            PieChartSectionData(
-                                              color: Colors.blue,
-                                              value: numberOfRequests.toDouble(),
-                                              title: '',
-                                              radius: 60,
+                                      return Card(
+                                          elevation: 5,
+                                          color: Colors.yellow,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15.0),
+                                          ),
+                                          child: PieChart(
+                                            PieChartData(
+                                              sections: [
+                                                PieChartSectionData(
+                                                  color: Colors.blue,
+                                                  value: numberOfRequests
+                                                      .toDouble(),
+                                                  title: '',
+                                                  radius: 60,
+                                                ),
+                                                PieChartSectionData(
+                                                  color: Colors.tealAccent,
+                                                  value: earnings.toDouble(),
+                                                  title: '',
+                                                  radius: 60,
+                                                ),
+                                                PieChartSectionData(
+                                                  color: Colors.redAccent,
+                                                  value:
+                                                      numberOfDeactivatedUsers
+                                                          .toDouble(),
+                                                  title: '',
+                                                  radius: 60,
+                                                ),
+                                              ],
+                                              sectionsSpace: 0,
+                                              centerSpaceRadius: 40,
+                                              startDegreeOffset: -90,
                                             ),
-                                            PieChartSectionData(
-                                              color: Colors.tealAccent,
-                                              value: earnings.toDouble(),
-                                              title: '',
-                                              radius: 60,
-                                            ),
-                                            PieChartSectionData(
-                                              color: Colors.redAccent,
-                                              value: numberOfDeactivatedUsers.toDouble(),
-                                              title: '',
-                                              radius: 60,
-                                            ),
-                                          ],
-                                          sectionsSpace: 0,
-                                          centerSpaceRadius: 40,
-                                          startDegreeOffset: -90,
-                                        ),
-                                      ));
+                                          ));
                                     } else {
                                       return Text(
                                         'Failed to fetch number of deactivated users',
-                                        style: TextStyle(fontSize: 18, color: Colors.red),
+                                        style: TextStyle(
+                                            fontSize: 18, color: Colors.red),
                                       );
                                     }
                                   }
@@ -172,7 +182,8 @@ class _HomepageState extends State<Homepage> {
                             } else {
                               return Text(
                                 'Failed to fetch earnings',
-                                style: TextStyle(fontSize: 18, color: Colors.red),
+                                style:
+                                    TextStyle(fontSize: 18, color: Colors.red),
                               );
                             }
                           }
@@ -208,7 +219,6 @@ class _HomepageState extends State<Homepage> {
                         }
                       },
                     ),
-
                     // Legend for Color Codes:
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
@@ -226,9 +236,9 @@ class _HomepageState extends State<Homepage> {
                           ),
                           SizedBox(width: 5),
                           Text('Requests($numberOfRequests)'),
-                      
+
                           SizedBox(width: 20),
-                      
+
                           // Legend for Earnings
                           Container(
                             width: 20,
@@ -239,10 +249,18 @@ class _HomepageState extends State<Homepage> {
                             ),
                           ),
                           SizedBox(width: 5),
-                        Text('Earnings'),
-                      
+                          GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EarningScreen(),
+                                    ));
+                              },
+                              child: Text('Earnings')),
+
                           SizedBox(width: 20),
-                      
+
                           // Legend for Deactivated
                           Container(
                             width: 20,
@@ -254,21 +272,17 @@ class _HomepageState extends State<Homepage> {
                           ),
                           SizedBox(width: 5),
                           GestureDetector(
-
-                            onTap: (){
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                  builder: (context) =>
-                                  deactivatedusers(),
-                              ));
-
-                            },
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => deactivatedusers(),
+                                    ));
+                              },
                               child: Text('Deactivated')),
                         ],
                       ),
                     )
-
                   ],
                 );
               } else {
@@ -280,8 +294,6 @@ class _HomepageState extends State<Homepage> {
             }
           },
         ),
-
-
       ),
     );
   }
@@ -330,4 +342,3 @@ class _HomepageState extends State<Homepage> {
     );
   }
 }
-

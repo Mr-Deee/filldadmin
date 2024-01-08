@@ -339,16 +339,16 @@ class _SignInFormState extends State<SignInForm> {
       await _firebaseAuth.signInWithEmailAndPassword(
           email: _emailController.text, password: _passwordController.text);
 
-      // const String adminEmail = 'admin@gmail.com';
-      // if(emailController.text==adminEmail){
-      //
-      //   Navigator.pushReplacement(
-      //       context,
-      //       MaterialPageRoute(
-      //           builder: (context) => admin()));
-      //
-      // }
-      // else
+      const String adminEmail ='chelseabliss24@gmail.com';
+      if(emailController.text==adminEmail){
+
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => Homepage()));
+
+      }
+      else
       if (firebaseUser != null) {
         AssistantMethod.getCurrentOnlineUserInfo(context);
         Navigator.of(context).pushAndRemoveUntil(
@@ -606,16 +606,19 @@ class _SignUpFormState extends State<SignUpForm> {
         //save use into to database
 
         Map userDataMap = {
+          "email": emailController.text.trim().toString(),
+          "Name": emailController.text.trim().toString(),
+          // "Name": emailController.text.trim().toString(),
 
-          "Email": emailController.text.trim().toString(),
-          "GasStationName": firstnameController.text.trim().toString(),
-          "Location": lastnameController.text.trim().toString(),
-          "GasStationNumber": fullPhoneNumber,
-          "Password": passwordController.text.trim().toString(),
+          // "Email": emailController.text.trim().toString(),
+          // "GasStationName": firstnameController.text.trim().toString(),
+          // "Location": lastnameController.text.trim().toString(),
+          // "GasStationNumber": fullPhoneNumber,
+          // "Password": passwordController.text.trim().toString(),
 
         };
-        gasStation.child(firebaseUser!.uid).set(userDataMap);
-        // Admin.child(firebaseUser!.uid).set(userDataMap);
+        // gasStation.child(firebaseUser!.uid).set(userDataMap);
+        admin.child(firebaseUser!.uid).set(userDataMap);
 
         currentfirebaseUser = firebaseUser;
         // registerInfirestore(context);

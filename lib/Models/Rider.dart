@@ -2,6 +2,7 @@ class Rider {
   final String key;
   final String Name;
   final String email;
+  final String earnings;
   final String numberPlate;
 final String imageUrl;
 final String ghcard;
@@ -15,6 +16,7 @@ final String licenseplate;
       this.Name,
       this.email,
       this.numberPlate,
+      this.earnings,
       this.imageUrl,
       this.ghcardimageUrl,
       this.ghcard,
@@ -33,6 +35,7 @@ final String licenseplate;
       'FirstName':Name,
       'email': email,
       'numberPlate': numberPlate,
+      'earnings': earnings,
        'riderImageUrl': imageUrl,
       'car_details': {
         'GhanaCardUrl': ghcardimageUrl,

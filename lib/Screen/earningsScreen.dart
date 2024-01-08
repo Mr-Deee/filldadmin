@@ -4,68 +4,27 @@ import 'package:flutter/material.dart';
 
 import '../Models/Rider.dart';
 
-class deactivatedusers extends StatefulWidget {
-  const deactivatedusers({super.key});
+class EarningScreen extends StatefulWidget {
+  const EarningScreen({super.key});
 
   @override
-  State<deactivatedusers> createState() => _deactivatedusersState();
+  State<EarningScreen> createState() => _EarningScreenState();
 }
 
-class _deactivatedusersState extends State<deactivatedusers> {
-  final DatabaseReference _ridersRef = FirebaseDatabase.instance.ref().child('Riders');
+class _EarningScreenState extends State<EarningScreen> {
+  final Query  _ridersRef = FirebaseDatabase.instance.ref().child('Riders').orderByChild("earnings");
   List<Rider> _riders = [];
-
   @override
   void initState() {
     super.initState();
     _loadRiders();
   }
-
-  void _loadRiders() {
-    _ridersRef.onValue.listen((event) {
-      _riders.clear();
-
-      if (event.snapshot.value != null) {
-        Map<dynamic, dynamic>? map = event.snapshot.value as Map<dynamic, dynamic>?;
-
-        if (map != null) {
-          map.forEach((key, value) {
-            String status = value['status'];
-
-            if (status == 'deactivated') {
-              _riders.add(
-                  Rider(
-                    key,
-                    value['FirstName'],
-                    value['email'],
-                    value['numberPlate'].toString(),
-                    value['earnings'].toString(),
-                    value['riderImageUrl'],
-                    value['car_details']['GhanaCardUrl'],
-                    value['car_details']['GhanaCardNumber'],
-                    value['car_details']['licensePlateNumber'],
-
-                    // status,
-                  ));
-            }
-          });
-        }
-      }
-
-      setState(() {});
-    });
-  }
-
-  void _editRiderStatus(Rider rider) {
-    _ridersRef.child(rider.key).update({'status': 'activated'});
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: Text("Deactived Users"),
+        title: Text("Earnings"),
       ),
       body: _riders.isEmpty
           ? Center(child: CircularProgressIndicator())
@@ -88,7 +47,12 @@ class _deactivatedusersState extends State<deactivatedusers> {
                 ],
               ),
             ),
-            subtitle: Text(rider.email),
+            subtitle: Column(
+              children: [
+                Text(rider.email),
+                Text(rider.earnings),
+              ],
+            ),
             // trailing: IconButton(
             //   icon: Icon(Icons.switch_account),
             //   onPressed: () => _editRiderStatus(rider),
@@ -160,7 +124,7 @@ class _deactivatedusersState extends State<deactivatedusers> {
             ),
             TextButton(
               onPressed: () {
-                _editRiderStatus(rider);
+                // _editRiderStatus(rider);
                 Navigator.of(context).pop(); // Close the dialog
               },
               child: Text('Activate'),
@@ -170,5 +134,47 @@ class _deactivatedusersState extends State<deactivatedusers> {
       },
     );
   }
+  void _loadRiders() {
+    _ridersRef.onValue.listen((event) {
+      _riders.clear();
 
+      if (event.snapshot.value != null) {
+        Map<dynamic, dynamic>? map = event.snapshot.value as Map<
+            dynamic,
+            dynamic>?;
+
+        if (map != null) {
+          map.forEach((key, value) {
+            //   String status = value['earnings'];
+            if (value['earnings'] != null && value['earnings'] > 0) {
+              _riders.add(
+                  Rider(
+                    key,
+                    value['FirstName'],
+                    value['email'],
+                    value['numberPlate'].toString(),
+                    value['earnings'].toString(),
+                    value['riderImageUrl'],
+                    value['car_details']['GhanaCardUrl'],
+                    value['car_details']['GhanaCardNumber'],
+                    value['car_details']['licensePlateNumber'],
+
+                    // status,
+                  ));
+            }
+          }
+          );
+        }
+      }
+
+      setState(() {});
+    },
+        onError: (Object error, StackTrace? stackTrace) {
+          print('Error loading riders: $error');
+
+
+          //);
+          //}
+        });
+  }
 }
