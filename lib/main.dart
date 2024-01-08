@@ -4,7 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'Authpage.dart';
+import 'Models/GasStation.dart';
 import 'Models/adminusers.dart';
+import 'Screen/GasStationDashboard.dart';
 import 'Screen/deactivatedUSERS.dart';
 import 'Screen/home.dart';
 import 'Models/DatabaseService.dart';
@@ -22,6 +24,9 @@ void main() async{
     ),
     ChangeNotifierProvider<Users>(
       create: (context) => Users(),
+    ),
+   ChangeNotifierProvider<GasStation>(
+      create: (context) => GasStation(),
     ),
 
   //
@@ -74,11 +79,11 @@ class MyApp extends StatelessWidget {
 
     initialRoute: FirebaseAuth.instance.currentUser == null
     ? '/authpage'
-        : '/Homepage',
+        : '/GasDash',
     routes: {
 
       // "/splash": (context) => SplashScreen(),
-      // "/MainScreen": (context) => MainScreen(),
+       "/GasDash": (context) => GasStationDashboard(),
       // "/search": (context) => SearchScreen(),
       "/authpage": (context) => AuthPage(),
       "/Homepage": (context) =>Homepage(),
