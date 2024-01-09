@@ -27,19 +27,30 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
       Provider.of<GasStation>(context, listen: false).gasInfo;
 
     });
-
-
     super.initState();
-
-    // getPicture();
     AssistantMethod.getGasOnlineUserInfo(context);
-
-    //getPicture();
-
-
 
 
   }
+
+
+
+    late LocationService _locationService;
+  late Position _currentPosition;
+  late String _locationName;
+
+
+   Future<void> _getCurrentLocation() async {
+    Position currentPosition = await _locationService.getCurrentLocation();
+    String locationName = await _locationService.getLocationName(
+        currentPosition.latitude, currentPosition.longitude);
+
+    setState(() {
+      _currentPosition = currentPosition;
+      _locationName = locationName;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final gasprovider= Provider.of<GasStation>(context).gasInfo;
@@ -155,6 +166,11 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                       color: Colors.grey[700],
                     ),
                   ),
+
+                  Row(children:<Widget>[
+
+                    Text('Current Location :$_locationName',style: TextStyle(fontsize:20.0))
+                  ])
                 ],
               ),
             ),
