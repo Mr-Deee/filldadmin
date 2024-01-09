@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../Models/assistantmethod.dart';
 import '../utils/app_constant.dart';
@@ -212,5 +214,33 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
       ),
     );
   }
+
+  class LocationService {
+  Future<String> getLocationName(double latitude, double longitude) async {
+    try {
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(latitude, longitude);
+
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks[0];
+        return place.name ?? 'Location Name not available';
+      } else {
+        return 'Location Name not available';
+      }
+    } catch (e) {
+      return 'Error getting location name';
+    }
+  }
+
+  Future<Position> getCurrentLocation() async {
+    try {
+      return await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.best);
+    } catch (e) {
+      return Position(latitude: 0.0, longitude: 0.0);
+    }
+  }
+}
+
 }
 
