@@ -13,7 +13,7 @@ class AuthChecker extends StatelessWidget {
             // Check if 'admin' table exists for the user
             DatabaseReference adminRef = FirebaseDatabase.instance
                 .reference()
-                .child('admin/${user?.uid}');
+                .child('Admin/${user?.uid}');
             return FutureBuilder<DataSnapshot>(
               future: adminRef.once(),
               builder: (context, adminSnapshot) {
@@ -28,7 +28,7 @@ class AuthChecker extends StatelessWidget {
                     // Check if 'client' table exists for the user
                     DatabaseReference clientRef = FirebaseDatabase.instance
                         .reference()
-                        .child('client/${user?.uid}');
+                        .child('GasStation/${user?.uid}');
                     return FutureBuilder<DataSnapshot>(
                       future: clientRef.once(),
                       builder: (context, clientSnapshot) {

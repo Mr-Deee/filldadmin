@@ -35,7 +35,7 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
 
 
 
-    late LocationService _locationService;
+   LocationService? _locationService;
   late Position _currentPosition;
   late String _locationName;
 
@@ -256,7 +256,7 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
               AppData.paymentMethods[index][1] = newValue;
             });
                  }
-                  )
+                  );
                    },
               ),
             ),
