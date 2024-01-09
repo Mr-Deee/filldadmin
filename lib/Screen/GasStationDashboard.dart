@@ -198,7 +198,39 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                 ),
               ),
             ),
+
+            //More Or No Gas
             Expanded(
+              child: GridView.builder(
+                itemCount: AppData.smartDevices.length,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.only(
+                  left: 15,
+                  right: 15,
+                ),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 1 / 1.2,
+                ),
+                itemBuilder: (context, index) {
+                  return SmartOptionBoxWidget(
+                    smartDeviceName: AppData.smartDevices[index][0],
+                    iconPath: AppData.smartDevices[index][1],
+                    isPowerOn: AppData.smartDevices[index][2],
+                    onChanged: (bool newValue) {
+                      setState(() {
+                        AppData.smartDevices[index][0] = newValue?"More Gas":"No Gas";
+                        AppData.smartDevices[index][2] = newValue;
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
+
+
+//Prefered Payment 
+              Expanded(
               child: GridView.builder(
                 itemCount: AppData.smartDevices.length,
                 physics: const NeverScrollableScrollPhysics(),
