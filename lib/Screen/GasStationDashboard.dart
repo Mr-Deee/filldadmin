@@ -243,18 +243,21 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                   childAspectRatio: 1 / 1.2,
                 ),
                 itemBuilder: (context, index) {
-                  return SmartOptionBoxWidget(
-                    smartDeviceName: AppData.smartDevices[index][0],
-                    iconPath: AppData.smartDevices[index][1],
-                    isPowerOn: AppData.smartDevices[index][2],
-                    onChanged: (bool newValue) {
-                      setState(() {
-                        AppData.smartDevices[index][0] = newValue?"More Gas":"No Gas";
-                        AppData.smartDevices[index][2] = newValue;
-                      });
-                    },
-                  );
-                },
+                 return PaymentToggleWidget(
+          isMomoSelected: AppData.paymentMethods[index][0], // Assuming index 0 is for Momo
+          isBankSelected: AppData.paymentMethods[index][1], // Assuming index 1 is for Bank
+          onMomoChanged: (bool newValue) {
+            setState(() {
+              AppData.paymentMethods[index][0] = newValue;
+            });
+          },
+          onBankChanged: (bool newValue) {
+            setState(() {
+              AppData.paymentMethods[index][1] = newValue;
+            });
+                 }
+                  )
+                   },
               ),
             ),
           ],
