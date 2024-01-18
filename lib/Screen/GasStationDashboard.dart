@@ -233,7 +233,7 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                             AppData.smartDevices[index][0] =
                             newValue ? "No Gas":"More Gas";
                             AppData.smartDevices[index][2] = newValue;
-                            updateValue(true);
+_databaseRef.update({"GasStatus":AppData.smartDevices[index][0]});
                           });
                         },
                       );
@@ -295,10 +295,7 @@ final auth =firebaseUser?.uid;
 final DatabaseReference _databaseRef = FirebaseDatabase.instance.ref().child('GasStation/$auth/');
 
 
-void updateValue(bool someCondition) {
-  String newValue = someCondition ? "More Gas" : "No Gas";
 
-}
 
 
 
