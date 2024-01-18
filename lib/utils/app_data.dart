@@ -1,7 +1,5 @@
 class AppData {
 
-  bool isMomoSelected =  true,
-  bool isBankSelected  = true ,
 
   static List smartDevices = [
     ['More Gas', 'assets/images/glass3.png', true],
@@ -11,7 +9,10 @@ class AppData {
   ];
 
 static List paymentMethods = [
-    [isMomoSelected, isBankSelected],
+
+     [true],
+     [true],
+
 ];
 
 }

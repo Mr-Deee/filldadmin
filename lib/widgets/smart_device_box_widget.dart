@@ -41,50 +41,53 @@ class SmartOptionBoxWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(
           vertical: AppConstant.verticalPadding,
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 15.0),
-                  child: Image.asset(
-                    iconPath,
-                    height: 75,
-                   ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      left: 20.0,
-                    ),
-                    child: Text(
-                      smartDeviceName,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                        color: isPowerOn ? Colors.white : Colors.black,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15.0),
+                    child: Image.asset(
+                      iconPath,
+                      height: 75,
+                     ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        left: 20.0,
+                      ),
+                      child: Text(
+                        smartDeviceName,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color: isPowerOn ? Colors.white : Colors.black,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Transform.rotate(
-                  angle: -pi / 2,
-                  child: CupertinoSwitch(
-                    thumbColor: isPowerOn ? Colors.white : Colors.black,
-                    trackColor: isPowerOn ? Colors.grey[400] : Colors.white,
-                    activeColor: isPowerOn ? Colors.grey[400] : null,
-                    value: isPowerOn,
-                    onChanged: onChanged,
+                  Transform.rotate(
+                    angle: -pi / 1,
+                    child: CupertinoSwitch(
+                      thumbColor: isPowerOn ? Colors.white : Colors.black,
+                      trackColor: isPowerOn ? Colors.grey[400] : Colors.white,
+                      activeColor: isPowerOn ? Colors.grey[400] : null,
+                      value: isPowerOn,
+                      onChanged: onChanged,
+                    ),
                   ),
-                ),
-              ],
-            )
-          ],
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );
