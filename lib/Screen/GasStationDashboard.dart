@@ -237,45 +237,48 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                   ),
                 ),
               ),
+              //Prefered Payment
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    ToggleButtons(
+                      children: [
+                        Icon(Icons.phone_android), // MTN Mobile Money icon
+                        Icon(Icons.account_balance), // Bank Transfer icon
+                      ],
+                      isSelected: isSelected,
+                      onPressed: (int index) {
+                        setState(() {
+                          // Toggle the selected state
+                          isSelected[index] = !isSelected[index];
+
+                          // Ensure only one method is selected at a time
+                          if (isSelected[index] && index == 0) {
+                            isSelected[1] = false;
+                          } else if (isSelected[index] && index == 1) {
+                            isSelected[0] = false;
+                          }
+                        });
+                      },
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      isSelected[0]
+                          ? 'Selected Payment Method: MTN Mobile Money'
+                          : isSelected[1]
+                          ? 'Selected Payment Method: Bank Transfer'
+                          : 'Select a Payment Method',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+              )
+
+
           
           
-          //Prefered Payment 
-                Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              ToggleButtons(
-                children: [
-                  Icon(Icons.phone_android), // MTN Mobile Money icon
-                  Icon(Icons.account_balance), // Bank Transfer icon
-                ],
-                isSelected: isSelected,
-                onPressed: (int index) {
-                  setState(() {
-                    // Toggle the selected state
-                    isSelected[index] = !isSelected[index];
-          
-                    // Ensure only one method is selected at a time
-                    if (isSelected[index] && index == 0) {
-                      isSelected[1] = false;
-                    } else if (isSelected[index] && index == 1) {
-                      isSelected[0] = false;
-                    }
-                  });
-                },
-              ),
-              SizedBox(height: 16),
-              Text(
-                isSelected[0]
-                    ? 'Selected Payment Method: MTN Mobile Money'
-                    : isSelected[1]
-                    ? 'Selected Payment Method: Bank Transfer'
-                    : 'Select a Payment Method',
-                style: TextStyle(fontSize: 16),
-              ),
-            ],
-          ),
-                )
+
             ],
           ),
         ),
