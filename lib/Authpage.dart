@@ -606,19 +606,19 @@ class _SignUpFormState extends State<SignUpForm> {
         //save use into to database
 
         Map userDataMap = {
-          "email": emailController.text.trim().toString(),
-          "Name": emailController.text.trim().toString(),
+          // "email": emailController.text.trim().toString(),
+          // "Name": emailController.text.trim().toString(),
           // "Name": emailController.text.trim().toString(),
 
-          // "Email": emailController.text.trim().toString(),
-          // "GasStationName": firstnameController.text.trim().toString(),
-          // "Location": lastnameController.text.trim().toString(),
-          // "GasStationNumber": fullPhoneNumber,
-          // "Password": passwordController.text.trim().toString(),
+          "Email": emailController.text.trim().toString(),
+          "GasStationName": firstnameController.text.trim().toString(),
+          "Location": lastnameController.text.trim().toString(),
+          "GasStationNumber": fullPhoneNumber,
+          "Password": passwordController.text.trim().toString(),
 
         };
-        // gasStation.child(firebaseUser!.uid).set(userDataMap);
-        admin.child(firebaseUser!.uid).set(userDataMap);
+        gasStation.child(firebaseUser!.uid).set(userDataMap);
+        // admin.child(firebaseUser!.uid).set(userDataMap);
 
         currentfirebaseUser = firebaseUser;
         // registerInfirestore(context);

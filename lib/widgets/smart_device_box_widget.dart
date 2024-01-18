@@ -27,7 +27,7 @@ class SmartOptionBoxWidget extends StatelessWidget {
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeInOut,
         decoration: BoxDecoration(
-          color: isPowerOn ? Colors.green : Colors.redAccent,
+          color: isPowerOn ? Colors.red : Colors.green,
           borderRadius: BorderRadius.circular(24),
           /*boxShadow: [
             BoxShadow(

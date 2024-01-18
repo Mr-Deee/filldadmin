@@ -1,5 +1,7 @@
 import 'package:filldadmin/Models/GasStation.dart';
+import 'package:filldadmin/Models/adminusers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -227,9 +229,11 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                         isPowerOn: AppData.smartDevices[index][2],
                         onChanged: (bool newValue) {
                           setState(() {
+
                             AppData.smartDevices[index][0] =
-                            newValue ? "More Gas" : "No Gas";
+                            newValue ? "No Gas":"More Gas";
                             AppData.smartDevices[index][2] = newValue;
+                            updateValue(true);
                           });
                         },
                       );
@@ -286,6 +290,18 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
     );
   }
 }
+final auth =firebaseUser?.uid;
+
+final DatabaseReference _databaseRef = FirebaseDatabase.instance.ref().child('GasStation/$auth/');
+
+
+void updateValue(bool someCondition) {
+  String newValue = someCondition ? "More Gas" : "No Gas";
+
+}
+
+
+
   class LocationService {
     Future<String> getLocationName(double latitude, double longitude) async {
       try {
@@ -312,9 +328,6 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
     return null;
   }}
   }
-
-
-
 
 
   
