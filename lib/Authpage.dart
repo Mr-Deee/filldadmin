@@ -8,7 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'dart:math';
-import 'package:flutter_sms/flutter_sms.dart';
+// import 'package:flutter_sms/flutter_sms.dart';
 import 'package:permission_handler/permission_handler.dart';
 // import '../Models/Assistants/assistantmethods.dart';
 import '../main.dart';
@@ -440,43 +440,43 @@ class _SignUpFormState extends State<SignUpForm> {
     final int verificationCode = random.nextInt(900000) + 100000;
     final String message = 'Your verification code is: $verificationCode';
 
-    sendMS(message);
+    // sendMS(message);
     registerNewUser(context);
   }
 
-  Future<void> sendMS(String message) async {
-    List<String> recipients = [selectedCountryCode+phonecontroller.text];
-    print("rarrr"+'${recipients}');
-    print("message"+'${message}');
-    try {
-      await sendSMS(
-        message: message,
-        recipients: recipients,
-        sendDirect: true, // Set this to true for immediate sending
-      );
-
-      // Show a toast message to indicate success.
-      Fluttertoast.showToast(
-        msg: "Verification code sent!",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-      );
-
-      // Navigate to the verification screen with the verification code.
-      Navigator.pushNamed(
-        context,
-        '/verify',
-        arguments: _verificationCode.toString(),
-      );
-    } catch (error) {
-      // Show a toast message for the error.
-      Fluttertoast.showToast(
-        msg: "Failed to send verification code.",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-      );
-    }
-  }
+  // Future<void> sendMS(String message) async {
+  //   List<String> recipients = [selectedCountryCode+phonecontroller.text];
+  //   print("rarrr"+'${recipients}');
+  //   print("message"+'${message}');
+  //   try {
+  //     await sendSMS(
+  //       message: message,
+  //       recipients: recipients,
+  //       sendDirect: true, // Set this to true for immediate sending
+  //     );
+  //
+  //     // Show a toast message to indicate success.
+  //     Fluttertoast.showToast(
+  //       msg: "Verification code sent!",
+  //       toastLength: Toast.LENGTH_SHORT,
+  //       gravity: ToastGravity.BOTTOM,
+  //     );
+  //
+  //     // Navigate to the verification screen with the verification code.
+  //     Navigator.pushNamed(
+  //       context,
+  //       '/verify',
+  //       arguments: _verificationCode.toString(),
+  //     );
+  //   } catch (error) {
+  //     // Show a toast message for the error.
+  //     Fluttertoast.showToast(
+  //       msg: "Failed to send verification code.",
+  //       toastLength: Toast.LENGTH_SHORT,
+  //       gravity: ToastGravity.BOTTOM,
+  //     );
+  //   }
+  // }
 @override
   Widget build(BuildContext context) {
     return Column(
