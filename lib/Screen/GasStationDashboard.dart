@@ -23,13 +23,10 @@ class GasStationDashboard extends StatefulWidget {
 }
 
 class _GasStationDashboardState extends State<GasStationDashboard> {
-
   @override
   void initState() {
     setState(() {
-      Provider
-          .of<GasStation>(context, listen: false)
-          .gasInfo;
+      Provider.of<GasStation>(context, listen: false).gasInfo;
     });
     super.initState();
     AssistantMethod.getGasOnlineUserInfo(context);
@@ -37,9 +34,13 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
     _getCurrentLocation();
   }
 
+  String? selectedOption = 'momo'; // Set a default value
+  TextEditingController accountNumberController = TextEditingController();
+  TextEditingController accountNameController = TextEditingController();
 
+  String currentGasStatus = ''; // Initialize with an appropriate default value
   LocationService? _locationService;
-   Position? _currentPosition;
+  Position? _currentPosition;
   String? _locationName;
 
   List<bool> isSelected = [false, false]; // Initially, no method selected
@@ -54,14 +55,20 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
     });
   }
 
+  void getcurrentgas() {
+    _databaseRef.once().then((DatabaseEvent event) {
+      var data = event.snapshot.value as Map<String,
+          dynamic>?; // Assuming 'GasStatus' is the key in Firebase where gas status is stored
+      if (data != null && data['GasStatus'] != null) {
+        currentGasStatus = data['GasStatus'];
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final gasprovider = Provider
-        .of<GasStation>(context)
-        .gasInfo;
+    final gasprovider = Provider.of<GasStation>(context).gasInfo;
     return Scaffold(
-
-
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -114,8 +121,8 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                                     onPressed: () {
                                       print('yes');
                                       FirebaseAuth.instance.signOut();
-                                      Navigator.pushNamedAndRemoveUntil(
-                                          context, "/authpage", (route) => false);
+                                      Navigator.pushNamedAndRemoveUntil(context,
+                                          "/authpage", (route) => false);
                                       // Navigator.of(context).pop();
                                     },
                                   ),
@@ -170,11 +177,9 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                         color: Colors.grey[700],
                       ),
                     ),
-          
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(children: <Widget>[
-                      
                         Text('Current Location :$_locationName',
                             style: TextStyle(fontSize: 20.0))
                       ]),
@@ -206,7 +211,7 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                   ),
                 ),
               ),
-          
+
               //More Or No Gas
               SizedBox(
                 height: 300,
@@ -218,116 +223,161 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                       left: 15,
                       right: 15,
                     ),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      childAspectRatio: 1/1.3,
+                      childAspectRatio: 1 / 1.3,
                     ),
                     itemBuilder: (context, index) {
                       return SmartOptionBoxWidget(
-                        smartDeviceName: AppData.smartDevices[index][0],
-                        iconPath: AppData.smartDevices[index][1],
-                        isPowerOn: AppData.smartDevices[index][2],
-                        onChanged: (bool newValue) {
-                          setState(() {
-
-                            AppData.smartDevices[index][0] =
-                            newValue ? "No Gas":"More Gas";
-                            AppData.smartDevices[index][2] = newValue;
-_databaseRef.update({"GasStatus":AppData.smartDevices[index][0]});
+                          smartDeviceName: AppData.smartDevices[index][0],
+                          iconPath: AppData.smartDevices[index][1],
+                          isPowerOn: AppData.smartDevices[index][2],
+                          onChanged: (bool newValue) {
+                            setState(() {
+                              AppData.smartDevices[index][0] =
+                                  newValue ? "No Gas" : "More Gas";
+                              AppData.smartDevices[index][2] = newValue;
+                              if (currentGasStatus !=
+                                  AppData.smartDevices[index][0]) {
+                                // Update the Firebase database with the new gas status
+                                _databaseRef.update({
+                                  "GasStatus": AppData.smartDevices[index][0]
+                                });
+                              }
+                            });
                           });
-                        },
-                      );
                     },
                   ),
                 ),
               ),
               //Prefered Payment
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    ToggleButtons(
-                      children: [
-                        Icon(Icons.phone_android), // MTN Mobile Money icon
-                        Icon(Icons.account_balance), // Bank Transfer icon
-                      ],
-                      isSelected: isSelected,
-                      onPressed: (int index) {
-                        setState(() {
-                          // Toggle the selected state
-                          isSelected[index] = !isSelected[index];
 
-                          // Ensure only one method is selected at a time
-                          if (isSelected[index] && index == 0) {
-                            isSelected[1] = false;
-                          } else if (isSelected[index] && index == 1) {
-                            isSelected[0] = false;
-                          }
+              // Prefered Payment
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppConstant.horizontalPadding,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20),
+                    Text(
+                      'PREFERRED PAYMENT',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[800],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    DropdownButton<String>(
+                      hint: Text('Select payment method'),
+                      value: selectedOption,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedOption = newValue!;
                         });
                       },
+                      items: [
+
+                        DropdownMenuItem<String>(
+                        value: 'momo',
+                        child: Text('Momo'),
+                      ),
+                        DropdownMenuItem<String>(
+                          value: 'bank',
+                          child: Text('Bank'),
+                        ),]
+                      //     .map<DropdownMenuItem<String>>((String value) {
+                      //   return DropdownMenuItem<String>(
+                      //     value: value,
+                      //     child: Text(value),
+                      //   );
+                      // }).toList(),
                     ),
-                    SizedBox(height: 16),
-                    Text(
-                      isSelected[0]
-                          ? 'Selected Payment Method: MTN Mobile Money'
-                          : isSelected[1]
-                          ? 'Selected Payment Method: Bank Transfer'
-                          : 'Select a Payment Method',
-                      style: TextStyle(fontSize: 16),
-                    ),
+                    if (selectedOption!.isNotEmpty)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 10),
+                          TextField(
+                            controller: accountNumberController,
+                            decoration: InputDecoration(
+                              labelText: 'Account Number',
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          TextField(
+                            controller: accountNameController,
+                            decoration: InputDecoration(
+                              labelText: 'Account Name',
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () {
+                              // Save data to Firebase Realtime Database
+                              saveDataToFirebase();
+                            },
+                            child: Text('Done'),
+                          ),
+                        ],
+                      ),
                   ],
                 ),
-              )
-
-
-          
-          
-
+              ),
             ],
           ),
         ),
       ),
     );
   }
+
+  void saveDataToFirebase() {
+    // Use Firebase Realtime Database API to save data
+    // Replace the following placeholder code with the actual Firebase code
+    String accountNumber = accountNumberController.text;
+    String accountName = accountNameController.text;
+    _databaseRef.update({
+      "AccountType": accountName,
+      "AccountNumber":accountNumber,
+    });
+
+    // TODO: Add Firebase Realtime Database code to save accountNumber, accountName, and selectedOption
+  }
 }
-final auth =firebaseUser?.uid;
 
-final DatabaseReference _databaseRef = FirebaseDatabase.instance.ref().child('GasStation/$auth/');
+final auth = firebaseUser?.uid;
 
+final DatabaseReference _databaseRef =
+    FirebaseDatabase.instance.ref().child('GasStation/$auth/');
 
+class LocationService {
+  Future<String> getLocationName(double latitude, double longitude) async {
+    try {
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(latitude, longitude);
 
-
-
-
-  class LocationService {
-    Future<String> getLocationName(double latitude, double longitude) async {
-      try {
-        List<Placemark> placemarks =
-        await placemarkFromCoordinates(latitude, longitude);
-
-        if (placemarks.isNotEmpty) {
-          Placemark place = placemarks[0];
-          return place.name ?? 'Location Name not available';
-        } else {
-          return 'Location Name not available';
-        }
-      } catch (e) {
-        return 'Error getting location name';
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks[0];
+        return place.name ?? 'Location Name not available';
+      } else {
+        return 'Location Name not available';
       }
+    } catch (e) {
+      return 'Error getting location name';
     }
-
-  getCurrentLocation() async { try {
-    Position currentPosition = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.best,
-    );
-    return currentPosition;
-  } catch (e) {
-    return null;
-  }}
   }
 
-
-  
-
-
-
+  getCurrentLocation() async {
+    try {
+      Position currentPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best,
+      );
+      return currentPosition;
+    } catch (e) {
+      return null;
+    }
+  }
+}
