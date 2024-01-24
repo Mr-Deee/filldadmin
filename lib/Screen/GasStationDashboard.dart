@@ -215,45 +215,81 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
               //More Or No Gas
               SizedBox(
                 height: 300,
-                child: Expanded(
-                  child: GridView.builder(
-                    itemCount: AppData.smartDevices.length,
-                    physics: const NeverScrollableScrollPhysics(),
-                    padding: const EdgeInsets.only(
-                      left: 15,
-                      right: 15,
-                    ),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 1 / 1.3,
-                    ),
-                    itemBuilder: (context, index) {
-                      return SmartOptionBoxWidget(
-                          smartDeviceName: AppData.smartDevices[index][0],
-                          iconPath: AppData.smartDevices[index][1],
-                          isPowerOn: AppData.smartDevices[index][2],
-                          onChanged: (bool newValue) {
-                            setState(() {
-                              AppData.smartDevices[index][0] =
-                                  newValue ? "No Gas" : "More Gas";
-                              AppData.smartDevices[index][2] = newValue;
-                              if (currentGasStatus !=
-                                  AppData.smartDevices[index][0]) {
-                                // Update the Firebase database with the new gas status
-                                _databaseRef.update({
-                                  "GasStatus": AppData.smartDevices[index][0]
-                                });
-                              }
-                            });
-                          });
-                    },
+                child: GridView.builder(
+                  itemCount: AppData.smartDevices.length,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.only(
+                    left: 15,
+                    right: 15,
                   ),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 1 / 1.3,
+                  ),
+                  itemBuilder: (context, index) {
+                    return SmartOptionBoxWidget(
+                      smartDeviceName: AppData.smartDevices[index][0],
+                      iconPath: AppData.smartDevices[index][1],
+                      isPowerOn: AppData.smartDevices[index][2],
+                      onChanged: (bool newValue) {
+                        setState(() {
+                          AppData.smartDevices[index][0] =
+                          newValue ? "No Gas" : "More Gas";
+                          AppData.smartDevices[index][2] = newValue;
+                          if (currentGasStatus !=
+                              AppData.smartDevices[index][0]) {
+                            // Update the Firebase database with the new gas status
+                            _databaseRef.update({
+                              "GasStatus": AppData.smartDevices[index][0]
+                            });
+                          }
+                        });
+                      },
+                    );
+                  },
                 ),
               ),
-              //Prefered Payment
+              // SizedBox(
+              //   height: 300,
+              //   child: Expanded(
+              //     child: GridView.builder(
+              //       itemCount: AppData.smartDevices.length,
+              //       physics: const NeverScrollableScrollPhysics(),
+              //       padding: const EdgeInsets.only(
+              //         left: 15,
+              //         right: 15,
+              //       ),
+              //       gridDelegate:
+              //           const SliverGridDelegateWithFixedCrossAxisCount(
+              //         crossAxisCount: 2,
+              //         childAspectRatio: 1 / 1.3,
+              //       ),
+              //       itemBuilder: (context, index) {
+              //         return SmartOptionBoxWidget(
+              //             smartDeviceName: AppData.smartDevices[index][0],
+              //             iconPath: AppData.smartDevices[index][1],
+              //             isPowerOn: AppData.smartDevices[index][2],
+              //             onChanged: (bool newValue) {
+              //               setState(() {
+              //                 AppData.smartDevices[index][0] =
+              //                     newValue ? "No Gas" : "More Gas";
+              //                 AppData.smartDevices[index][2] = newValue;
+              //                 if (currentGasStatus !=
+              //                     AppData.smartDevices[index][0]) {
+              //                   // Update the Firebase database with the new gas status
+              //                   _databaseRef.update({
+              //                     "GasStatus": AppData.smartDevices[index][0]
+              //                   });
+              //                 }
+              //               });
+              //             });
+              //       },
+              //     ),
+              //   ),
+              // ),
 
-              // Prefered Payment
+
+             // Prefered Payment
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppConstant.horizontalPadding,
