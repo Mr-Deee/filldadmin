@@ -319,7 +319,7 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
 
                         DropdownMenuItem<String>(
                         value: 'momo',
-                        child: Text('Momo'),
+                        child: Text('Mobile Money'),
                       ),
                         DropdownMenuItem<String>(
                           value: 'bank',
