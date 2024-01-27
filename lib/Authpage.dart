@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
@@ -285,6 +286,16 @@ class _SignInFormState extends State<SignInForm> {
       ),
     );
   }
+  final DatabaseReference _database = FirebaseDatabase.instance.reference();
+  Future<bool> checkAdmin(String userEmail) async {
+    Future<DatabaseEvent> adminSnapshot = FirebaseDatabase.instance.ref().child('Admin').orderByChild('email').equalTo(userEmail).once()  ;
+    return adminSnapshot != null;
+  }
+
+  Future<bool> checkGasStation(String userEmail) async {
+    Future<DatabaseEvent> gasStationSnapshot = FirebaseDatabase.instance.ref().child('GasStation').orderByChild('Email').equalTo(userEmail).once() ;
+    return gasStationSnapshot != null;
+  }
 
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -324,43 +335,65 @@ class _SignInFormState extends State<SignInForm> {
                       ))));
         });
 
-    final User? firebaseUser = (await _firebaseAuth
-        .signInWithEmailAndPassword(
-      email: _emailController.text.toString().trim(),
-      password: _passwordController.text.toString().trim(),
-    )
-        .catchError((errMsg) {
-      Navigator.pop(context);
-      displayToast("Error" + errMsg.toString(), context);
-    }))
-        .user;
-    try {
-      UserCredential userCredential =
-      await _firebaseAuth.signInWithEmailAndPassword(
-          email: _emailController.text, password: _passwordController.text);
-
-      const String adminEmail ='chelseabliss24@gmail.com';
-      if(emailController.text==adminEmail){
-
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => Homepage()));
-
-      }
-      else
-      if (firebaseUser != null) {
-        AssistantMethod.getCurrentOnlineUserInfo(context);
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => GasStationDashboard()),
-                (Route<dynamic> route) => false);
-        displayToast("Logged-in ", context);
+    String userEmail = _emailController.text.trim();
+    checkAdmin(userEmail).then((isAdmin) async {
+      bool isAdmin = await checkAdmin(userEmail);
+      if (isAdmin) {
+        // Email found in the admin table, navigate to home page
+        Navigator.pushReplacementNamed(context, '/Homepage');
       } else {
-        displayToast("Error: Cannot be signed in", context);
+        // Email not found in the admin table, check gas station table
+        checkGasStation(userEmail).then((isGasStation) {
+          if (isGasStation) {
+            // Email found in the gas station table, navigate to gas station page
+            Navigator.pushReplacementNamed(context, '/GasDash');
+          } else {
+            // Email not found in either table
+            print('Email not found in admin or gas station table');
+            // Handle accordingly, e.g., show an error message
+          }
+        });
+
+        //
+        // final User? firebaseUser = (await _firebaseAuth
+        //     .signInWithEmailAndPassword(
+        //   email: _emailController.text.toString().trim(),
+        //   password: _passwordController.text.toString().trim(),
+        // )
+        //     .catchError((errMsg) {
+        //   Navigator.pop(context);
+        //   displayToast("Error" + errMsg.toString(), context);
+        // }))
+        //     .user;
+        // try {
+        //   UserCredential userCredential =
+        //   await _firebaseAuth.signInWithEmailAndPassword(
+        //       email: _emailController.text, password: _passwordController.text);
+        //
+        //   // const String adminEmail ='chelseabliss24@gmail.com';
+        //   const String adminEmail ='admin@gmail.com';
+        //   if(emailController.text==adminEmail.toString()){
+        //
+        //     Navigator.pushReplacement(
+        //         context,
+        //         MaterialPageRoute(
+        //             builder: (context) => Homepage()));
+        //
+        //   }
+        //   else
+        //   if (firebaseUser != null) {
+        //     AssistantMethod.getCurrentOnlineUserInfo(context);
+        //     Navigator.of(context).pushAndRemoveUntil(
+        //         MaterialPageRoute(builder: (context) => GasStationDashboard()),
+        //             (Route<dynamic> route) => false);
+        //     displayToast("Logged-in ", context);
+        //   } else {
+        //     displayToast("Error: Cannot be signed in", context);
+        //   }
+        // } catch (e) {
+        //   // handle error
       }
-    } catch (e) {
-      // handle error
-    }
+    });
   }
 }
 final emailController = TextEditingController();
