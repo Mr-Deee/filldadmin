@@ -288,13 +288,25 @@ class _SignInFormState extends State<SignInForm> {
   }
   final DatabaseReference _database = FirebaseDatabase.instance.reference();
   Future<bool> checkAdmin(String userEmail) async {
-    Future<DatabaseEvent> adminSnapshot = FirebaseDatabase.instance.ref().child('Admin').orderByChild('email').equalTo(userEmail).once()  ;
-    return adminSnapshot != null;
+    DatabaseEvent adminSnapshot = await FirebaseDatabase.instance
+        .ref()
+        .child('Admin')
+        .orderByChild('email')
+        .equalTo(userEmail)
+        .once();
+
+    return adminSnapshot.snapshot.value != null;
   }
 
   Future<bool> checkGasStation(String userEmail) async {
-    Future<DatabaseEvent> gasStationSnapshot = FirebaseDatabase.instance.ref().child('GasStation').orderByChild('Email').equalTo(userEmail).once() ;
-    return gasStationSnapshot != null;
+    DatabaseEvent gasStationSnapshot = await FirebaseDatabase.instance
+        .ref()
+        .child('GasStation')
+        .orderByChild('Email')
+        .equalTo(userEmail)
+        .once();
+
+    return gasStationSnapshot.snapshot.value != null;
   }
 
 
@@ -355,7 +367,7 @@ class _SignInFormState extends State<SignInForm> {
             Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) =>GasStationDashboard()),
                     (Route<dynamic> route) => false);
-            displayToast("Logged-in ", context);
+            displayToast("Logged-in to Dashboard ", context);
           } else {
             // Email not found in either table
             print('Email not found in admin or gas station table');
