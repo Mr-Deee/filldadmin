@@ -336,23 +336,32 @@ class _SignInFormState extends State<SignInForm> {
         });
 
     String userEmail = _emailController.text.trim();
-    checkAdmin(userEmail).then((isAdmin) async {
+    // checkAdmin(userEmail).then((isAdmin) async {
       bool isAdmin = await checkAdmin(userEmail);
       if (isAdmin) {
         // Email found in the admin table, navigate to home page
-        Navigator.pushReplacementNamed(context, '/Homepage');
+        Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => Homepage()),
+                        (Route<dynamic> route) => false);
+                displayToast("Logged-in ", context);
+
+        // Navigator.pushAndRemoveUntil(context, '/Homepage');
       } else {
         // Email not found in the admin table, check gas station table
-        checkGasStation(userEmail).then((isGasStation) {
+        bool isGasStation = await checkGasStation(userEmail);
+        // checkGasStation(userEmail).then((isGasStation) {
           if (isGasStation) {
             // Email found in the gas station table, navigate to gas station page
-            Navigator.pushReplacementNamed(context, '/GasDash');
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) =>GasStationDashboard()),
+                    (Route<dynamic> route) => false);
+            displayToast("Logged-in ", context);
           } else {
             // Email not found in either table
             print('Email not found in admin or gas station table');
             // Handle accordingly, e.g., show an error message
-          }
-        });
+
+        };
 
         //
         // final User? firebaseUser = (await _firebaseAuth
@@ -392,8 +401,8 @@ class _SignInFormState extends State<SignInForm> {
         //   }
         // } catch (e) {
         //   // handle error
-      }
-    });
+
+    };
   }
 }
 final emailController = TextEditingController();

@@ -24,6 +24,27 @@ Future<int?> fetchNumberOfGasRequests() async {
     throw Exception('Failed to fetch gas requests count');
   }
 }
+Future<int?> fetchNumberOfGasStation() async {
+  try {
+    DatabaseEvent event = await _database.child('GasStation').once();
+    dynamic value = event.snapshot.value;
+
+    print('Value from Firebase: $value');
+
+    if (value != null) {
+      if (value is Map) {
+        return value.length;
+      } else {
+        throw Exception('Invalid data format for gas requests: $value');
+      }
+    } else {
+      return 0; // Return 0 if the gas_requests node is null or empty
+    }
+  } catch (e) {
+    print('Error: $e');
+    throw Exception('Failed to fetch gas requests count');
+  }
+}
 Future<int?> fetchNumberOfDeactivated() async {
   try {
     DatabaseEvent event = await _database.child('Riders').orderByChild("status").equalTo("deactivated").once();
