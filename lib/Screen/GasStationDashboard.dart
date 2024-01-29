@@ -36,6 +36,7 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
 
   String? selectedOption = 'momo'; // Set a default value
   TextEditingController accountNumberController = TextEditingController();
+  TextEditingController GasStationLocontroller = TextEditingController();
   TextEditingController accountNameController = TextEditingController();
 
   String currentGasStatus = ''; // Initialize with an appropriate default value
@@ -248,47 +249,27 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                     );
                   },
                 ),
+              ), // SizedBox(
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.all(18.0),
+                child: TextField(
+                  controller: GasStationLocontroller,
+                  decoration: InputDecoration(
+                    labelText: 'Enter your Location.',
+                  ),
+                ),
               ),
-              // SizedBox(
-              //   height: 300,
-              //   child: Expanded(
-              //     child: GridView.builder(
-              //       itemCount: AppData.smartDevices.length,
-              //       physics: const NeverScrollableScrollPhysics(),
-              //       padding: const EdgeInsets.only(
-              //         left: 15,
-              //         right: 15,
-              //       ),
-              //       gridDelegate:
-              //           const SliverGridDelegateWithFixedCrossAxisCount(
-              //         crossAxisCount: 2,
-              //         childAspectRatio: 1 / 1.3,
-              //       ),
-              //       itemBuilder: (context, index) {
-              //         return SmartOptionBoxWidget(
-              //             smartDeviceName: AppData.smartDevices[index][0],
-              //             iconPath: AppData.smartDevices[index][1],
-              //             isPowerOn: AppData.smartDevices[index][2],
-              //             onChanged: (bool newValue) {
-              //               setState(() {
-              //                 AppData.smartDevices[index][0] =
-              //                     newValue ? "No Gas" : "More Gas";
-              //                 AppData.smartDevices[index][2] = newValue;
-              //                 if (currentGasStatus !=
-              //                     AppData.smartDevices[index][0]) {
-              //                   // Update the Firebase database with the new gas status
-              //                   _databaseRef.update({
-              //                     "GasStatus": AppData.smartDevices[index][0]
-              //                   });
-              //                 }
-              //               });
-              //             });
-              //       },
-              //     ),
-              //   ),
-              // ),
-
-
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Save data to Firebase Realtime Database
+                    savelocationDataToFirebase();
+                  },
+                  child: Text('Save'),
+                ),
+              ),
              // Prefered Payment
               Padding(
                 padding: const EdgeInsets.symmetric(
@@ -380,11 +361,20 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
       "AccountNumber":accountNumber,
     });
 
+
     // TODO: Add Firebase Realtime Database code to save accountNumber, accountName, and selectedOption
   }
+
+  void savelocationDataToFirebase() {
+    // Use Firebase Realtime Database API to save data
+    // Replace the following placeholder code with the actual Firebase code
+    String locationData =GasStationLocontroller.text;
+    _databaseRef.update({
+    "GasStationlocation": locationData,
+    });}
 }
 
-final auth = firebaseUser?.uid;
+final auth =   FirebaseAuth.instance.currentUser?.uid;
 
 final DatabaseReference _databaseRef =
     FirebaseDatabase.instance.ref().child('GasStation/$auth/');

@@ -38,7 +38,8 @@ class _AuthPageState extends State<AuthPage> {
     // TODO: implement initState
     super.initState();
      _requestLocationPermission();
-    AssistantMethod.getCurrentOnlineUserInfo(context);
+    // AssistantMethod.getCurrentOnlineUserInfo(context);
+    // AssistantMethod.getGasOnlineUserInfo(context);
 
 
   }
@@ -278,6 +279,7 @@ class _SignInFormState extends State<SignInForm> {
             ElevatedButton(
               onPressed: () {
                 loginAndAuthenticateUser(context);
+                AssistantMethod.getGasOnlineUserInfo(context);
               },
               child: Text('Sign In'),
             ),
@@ -350,7 +352,35 @@ class _SignInFormState extends State<SignInForm> {
     String userEmail = _emailController.text.trim();
     // checkAdmin(userEmail).then((isAdmin) async {
       bool isAdmin = await checkAdmin(userEmail);
+
+
+    final User? firebaseUser = (await _firebaseAuth
+        .signInWithEmailAndPassword(
+      email: _emailController.text.toString().trim(),
+      password: _passwordController.text.toString().trim(),
+    )
+        .catchError((errMsg) {
+      Navigator.pop(context);
+      displayToast("Error" + errMsg.toString(), context);
+    }))
+        .user;
+    // try {
+    //   UserCredential userCredential =
+    //   await _firebaseAuth.signInWithEmailAndPassword(
+    //       email: _emailController.text, password: _passwordController.text);
+
       if (isAdmin) {
+
+        final User? firebaseUser = (await _firebaseAuth
+            .signInWithEmailAndPassword(
+          email: _emailController.text.toString().trim(),
+          password: _passwordController.text.toString().trim(),
+        )
+            .catchError((errMsg) {
+          Navigator.pop(context);
+          displayToast("Error" + errMsg.toString(), context);
+        }))
+            .user;
         // Email found in the admin table, navigate to home page
         Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => Homepage()),
