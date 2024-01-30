@@ -212,64 +212,85 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                   ),
                 ),
               ),
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left:25,right:25,top: 8.0),
+                    child: TextField(
+                      controller: GasStationLocontroller,
+                      decoration: InputDecoration(
+                        labelText: 'Enter your Location.',
+                      ),
+                    ),
+                  ),
 
+                  // Padding(
+                  //   padding: const EdgeInsets.all(8.0),
+                  //   child: ElevatedButton(
+                  //     onPressed: () {
+                  //       // Save data to Firebase Realtime Database
+                  //       savelocationDataToFirebase();
+                  //     },
+                  //     child: Text('Save'),
+                  //   ),
+                  // ),
+                  // Column(
+                  //   children: [
+                  //     Padding(
+                  //       padding: const EdgeInsets.all(8.0),
+                  //       child: ElevatedButton(
+                  //         onPressed: () {
+                  //           // Save data to Firebase Realtime Database
+                  //           savelocationDataToFirebase();
+                  //         },
+                  //         child: Text('Save'),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                ],
+              ),
               //More Or No Gas
-              SizedBox(
-                height: 300,
-                child: GridView.builder(
-                  itemCount: AppData.smartDevices.length,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.only(
-                    left: 15,
-                    right: 15,
+              Column(
+                children: [
+                  SizedBox(
+                    height: 200,
+                      child: ListView.builder(
+                        itemCount: AppData.smartDevices.length,
+                        physics: const NeverScrollableScrollPhysics(),
+                        padding: const EdgeInsets.only(left: 5, right: 5),
+                        itemBuilder: (context, index) {
+                          return  // Set the elevation for the card
+                             SmartOptionBoxWidget(
+                              smartDeviceName: AppData.smartDevices[index][0],
+                              iconPath: AppData.smartDevices[index][1],
+                              isPowerOn: AppData.smartDevices[index][2],
+                              onChanged: (bool newValue) {
+                                setState(() {
+                                  AppData.smartDevices[index][0] = newValue ? "No Gas" : "More Gas";
+                                  AppData.smartDevices[index][2] = newValue;
+                                  if (currentGasStatus != AppData.smartDevices[index][0]) {
+                                    // Update the Firebase database with the new gas status
+                                    _databaseRef.update({
+                                      "GasStatus": AppData.smartDevices[index][0],
+                                    });
+                                  }
+                                });
+                              },
+                            );
+
+                        },
+                      )
+
+
                   ),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 1 / 1.3,
-                  ),
-                  itemBuilder: (context, index) {
-                    return SmartOptionBoxWidget(
-                      smartDeviceName: AppData.smartDevices[index][0],
-                      iconPath: AppData.smartDevices[index][1],
-                      isPowerOn: AppData.smartDevices[index][2],
-                      onChanged: (bool newValue) {
-                        setState(() {
-                          AppData.smartDevices[index][0] =
-                          newValue ? "No Gas" : "More Gas";
-                          AppData.smartDevices[index][2] = newValue;
-                          if (currentGasStatus !=
-                              AppData.smartDevices[index][0]) {
-                            // Update the Firebase database with the new gas status
-                            _databaseRef.update({
-                              "GasStatus": AppData.smartDevices[index][0]
-                            });
-                          }
-                        });
-                      },
-                    );
-                  },
-                ),
+
+
+                ],
               ), // SizedBox(
-              const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.all(18.0),
-                child: TextField(
-                  controller: GasStationLocontroller,
-                  decoration: InputDecoration(
-                    labelText: 'Enter your Location.',
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Save data to Firebase Realtime Database
-                    savelocationDataToFirebase();
-                  },
-                  child: Text('Save'),
-                ),
-              ),
+
+
+
              // Prefered Payment
               Padding(
                 padding: const EdgeInsets.symmetric(
@@ -354,11 +375,13 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
   void saveDataToFirebase() {
     // Use Firebase Realtime Database API to save data
     // Replace the following placeholder code with the actual Firebase code
+    String locationData =GasStationLocontroller.text;
     String accountNumber = accountNumberController.text;
     String accountName = accountNameController.text;
     _databaseRef.update({
       "AccountType": accountName,
       "AccountNumber":accountNumber,
+      "GasStationlocation": locationData,
     });
 
 

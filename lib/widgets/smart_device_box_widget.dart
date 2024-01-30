@@ -55,10 +55,6 @@ class SmartOptionBoxWidget extends StatelessWidget {
                       height: 75,
                      ),
                   ),
-                ],
-              ),
-              Row(
-                children: [
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.only(
@@ -84,6 +80,12 @@ class SmartOptionBoxWidget extends StatelessWidget {
                       onChanged: onChanged,
                     ),
                   ),
+                ],
+              ),
+              Row(
+                children: [
+
+
                 ],
               )
             ],
