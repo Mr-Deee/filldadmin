@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
+import '../Authpage.dart';
 import '../Models/assistantmethod.dart';
 import '../utils/app_constant.dart';
 import '../utils/app_data.dart';
@@ -215,7 +216,8 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
               Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left:25,right:25,top: 8.0),
+                    padding:
+                        const EdgeInsets.only(left: 25, right: 25, top: 8.0),
                     child: TextField(
                       controller: GasStationLocontroller,
                       decoration: InputDecoration(
@@ -254,44 +256,38 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
               Column(
                 children: [
                   SizedBox(
-                    height: 200,
+                      height: 200,
                       child: ListView.builder(
                         itemCount: AppData.smartDevices.length,
                         physics: const NeverScrollableScrollPhysics(),
                         padding: const EdgeInsets.only(left: 5, right: 5),
                         itemBuilder: (context, index) {
-                          return  // Set the elevation for the card
-                             SmartOptionBoxWidget(
-                              smartDeviceName: AppData.smartDevices[index][0],
-                              iconPath: AppData.smartDevices[index][1],
-                              isPowerOn: AppData.smartDevices[index][2],
-                              onChanged: (bool newValue) {
-                                setState(() {
-                                  AppData.smartDevices[index][0] = newValue ? "No Gas" : "More Gas";
-                                  AppData.smartDevices[index][2] = newValue;
-                                  if (currentGasStatus != AppData.smartDevices[index][0]) {
-                                    // Update the Firebase database with the new gas status
-                                    _databaseRef.update({
-                                      "GasStatus": AppData.smartDevices[index][0],
-                                    });
-                                  }
-                                });
-                              },
-                            );
-
+                          return // Set the elevation for the card
+                              SmartOptionBoxWidget(
+                            smartDeviceName: AppData.smartDevices[index][0],
+                            iconPath: AppData.smartDevices[index][1],
+                            isPowerOn: AppData.smartDevices[index][2],
+                            onChanged: (bool newValue) {
+                              setState(() {
+                                AppData.smartDevices[index][0] =
+                                    newValue ? "No Gas" : "More Gas";
+                                AppData.smartDevices[index][2] = newValue;
+                                if (currentGasStatus !=
+                                    AppData.smartDevices[index][0]) {
+                                  // Update the Firebase database with the new gas status
+                                  _databaseRef.update({
+                                    "GasStatus": AppData.smartDevices[index][0],
+                                  });
+                                }
+                              });
+                            },
+                          );
                         },
-                      )
-
-
-                  ),
-
-
+                      )),
                 ],
               ), // SizedBox(
 
-
-
-             // Prefered Payment
+              // Prefered Payment
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppConstant.horizontalPadding,
@@ -310,30 +306,30 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                     ),
                     const SizedBox(height: 10),
                     DropdownButton<String>(
-                      hint: Text('Select payment method'),
-                      value: selectedOption,
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedOption = newValue!;
-                        });
-                      },
-                      items: [
-
-                        DropdownMenuItem<String>(
-                        value: 'momo',
-                        child: Text('Mobile Money'),
-                      ),
-                        DropdownMenuItem<String>(
-                          value: 'bank',
-                          child: Text('Bank'),
-                        ),]
-                      //     .map<DropdownMenuItem<String>>((String value) {
-                      //   return DropdownMenuItem<String>(
-                      //     value: value,
-                      //     child: Text(value),
-                      //   );
-                      // }).toList(),
-                    ),
+                        hint: Text('Select payment method'),
+                        value: selectedOption,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedOption = newValue!;
+                          });
+                        },
+                        items: [
+                          DropdownMenuItem<String>(
+                            value: 'momo',
+                            child: Text('Mobile Money'),
+                          ),
+                          DropdownMenuItem<String>(
+                            value: 'bank',
+                            child: Text('Bank'),
+                          ),
+                        ]
+                        //     .map<DropdownMenuItem<String>>((String value) {
+                        //   return DropdownMenuItem<String>(
+                        //     value: value,
+                        //     child: Text(value),
+                        //   );
+                        // }).toList(),
+                        ),
                     if (selectedOption!.isNotEmpty)
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -373,31 +369,63 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
   }
 
   void saveDataToFirebase() {
-    // Use Firebase Realtime Database API to save data
-    // Replace the following placeholder code with the actual Firebase code
-    String locationData =GasStationLocontroller.text;
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Dialog(
+              backgroundColor: Colors.transparent,
+              child: Container(
+                  margin: EdgeInsets.all(15.0),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(40.0)),
+                  child: Padding(
+                      padding: EdgeInsets.all(15.0),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 6.0,
+                            ),
+                            CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.black),
+                            ),
+                            SizedBox(
+                              width: 26.0,
+                            ),
+                            Text("Saving,please wait")
+                          ],
+                        ),
+                      ))));
+        });
+    String locationData = GasStationLocontroller.text;
     String accountNumber = accountNumberController.text;
     String accountName = accountNameController.text;
     _databaseRef.update({
       "AccountType": accountName,
-      "AccountNumber":accountNumber,
+      "AccountNumber": accountNumber,
       "GasStationlocation": locationData,
     });
-
-
+    Navigator.pop(context);
+    displayToast("Logged-in ", context);
     // TODO: Add Firebase Realtime Database code to save accountNumber, accountName, and selectedOption
   }
 
   void savelocationDataToFirebase() {
     // Use Firebase Realtime Database API to save data
     // Replace the following placeholder code with the actual Firebase code
-    String locationData =GasStationLocontroller.text;
+    String locationData = GasStationLocontroller.text;
     _databaseRef.update({
-    "GasStationlocation": locationData,
-    });}
+      "GasStationlocation": locationData,
+    });
+  }
 }
 
-final auth =   FirebaseAuth.instance.currentUser?.uid;
+final auth = FirebaseAuth.instance.currentUser?.uid;
 
 final DatabaseReference _databaseRef =
     FirebaseDatabase.instance.ref().child('GasStation/$auth/');
