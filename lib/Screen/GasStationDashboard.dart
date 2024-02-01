@@ -8,13 +8,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-
 import '../Authpage.dart';
 import '../Models/assistantmethod.dart';
 import '../utils/app_constant.dart';
 import '../utils/app_data.dart';
 import '../widgets/prefered_payment_widget.dart';
 import '../widgets/smart_device_box_widget.dart';
+
+
 
 class GasStationDashboard extends StatefulWidget {
   const GasStationDashboard({super.key});
@@ -39,12 +40,17 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
   TextEditingController accountNumberController = TextEditingController();
   TextEditingController GasStationLocontroller = TextEditingController();
   TextEditingController accountNameController = TextEditingController();
+  TextEditingController availableDaysController = TextEditingController();
+  TextEditingController availableTimeController = TextEditingController();
 
+  late DateTime selectedDate;
+  late TimeOfDay selectedTime;
+  List<String> days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   String currentGasStatus = ''; // Initialize with an appropriate default value
   LocationService? _locationService;
   Position? _currentPosition;
   String? _locationName;
-
+  List<bool> selectedDays = List.generate(7, (index) => false);
   List<bool> isSelected = [false, false]; // Initially, no method selected
   Future<void> _getCurrentLocation() async {
     Position? currentPosition = await _locationService!.getCurrentLocation();
@@ -225,6 +231,69 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                       ),
                     ),
                   ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Choose Available Days:',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 150,
+                        child: ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          itemCount: days.length,
+                          itemBuilder: (context, index) {
+                            return Row(
+                              children: [
+                                Checkbox(
+                                  value: selectedDays[index], // You can set the initial value based on your data
+                                  onChanged: (bool? value) {
+                                    setState(() {
+                                      selectedDays[index] = value ?? false;
+                                    });
+                                    // Handle the checkbox change here
+                                    // You may want to update a list of selected days
+                                  },
+                                ),
+                                Text(days[index]),
+                                SizedBox(width: 20),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                      SizedBox(height: 20),
+
+                      Text(
+                        'Choose Available Time:',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          TimeOfDay? pickedTime = await showTimePicker(
+                            context: context,
+                            initialTime: selectedTime,
+                          );
+
+                          if (pickedTime != null && pickedTime != selectedTime) {
+                            setState(() {
+                              selectedTime = pickedTime;
+                            });
+                          }
+                        },
+                        child: Text('Select Time: ${selectedTime.format(context)}'),
+                      ),
+                    ],
+                  ),
+
+
 
                   // Padding(
                   //   padding: const EdgeInsets.all(8.0),
