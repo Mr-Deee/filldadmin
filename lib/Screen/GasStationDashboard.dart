@@ -37,12 +37,13 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
   }
 
   String? selectedOption = 'momo'; // Set a default value
+  Map<String, List<TimeOfDay>> dayTimeMap = Map();
   TextEditingController accountNumberController = TextEditingController();
   TextEditingController GasStationLocontroller = TextEditingController();
   TextEditingController accountNameController = TextEditingController();
   TextEditingController availableDaysController = TextEditingController();
   TextEditingController availableTimeController = TextEditingController();
-
+  List<List<TimeOfDay>> availableTimes = List.generate(7, (index) => [TimeOfDay(hour: 0, minute: 0)]);
   late DateTime selectedDate;
   late TimeOfDay selectedTime;
   List<String> days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -247,51 +248,81 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                           scrollDirection: Axis.vertical,
                           itemCount: days.length,
                           itemBuilder: (context, index) {
-                            return Row(
-                              children: [
-                                Checkbox(
-                                  value: selectedDays[index], // You can set the initial value based on your data
-                                  onChanged: (bool? value) {
-                                    setState(() {
-                                      selectedDays[index] = value ?? false;
-                                    });
-                                    // Handle the checkbox change here
-                                    // You may want to update a list of selected days
-                                  },
-                                ),
-                                Text(days[index]),
-                                SizedBox(width: 20),
-                              ],
+                            return SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  Checkbox(
+                                    value: selectedDays[index], // You can set the initial value based on your data
+                                    onChanged: (bool? value) {
+                                      setState(() {
+                                        selectedDays[index] = value ?? false;
+                                      });
+                                      // Handle the checkbox change here
+                                      // You may want to update a list of selected days
+                                    },
+                                  ),
+                                  Text(days[index]),
+                                  SizedBox(width: 20),
+                                  Row(
+                                    children: [
+                                      ElevatedButton(
+                                        onPressed: () async {
+                                          TimeOfDay? pickedTime = await showTimePicker(
+                                            context: context,
+                                            initialTime: dayTimeMap[days[index]]?[0]?? TimeOfDay.now(),
+                                          );
+                              
+                                          if (pickedTime != null) {
+                                            setState(() {
+                                              dayTimeMap[days[index]]?[0] = pickedTime;
+                                            });
+                                          }
+                                        },
+                                        child: Text('Start Time: ${dayTimeMap[days[index]]?[0]?.format(context) ?? 'Not set'}'),                                      ),
+                                      SizedBox(width: 10),
+                                      ElevatedButton(
+                                        onPressed: () async {
+                                          TimeOfDay? pickedTime = await showTimePicker(
+                                            context: context,
+                                            initialTime: dayTimeMap[days[index]]![1],
+                                          );
+                              
+                                          if (pickedTime != null) {
+                                            setState(() {
+                                              dayTimeMap[days[index]]![1] = pickedTime;
+                                            });
+                                          }
+                                        },
+                                        child: Text('End Time: ${dayTimeMap[days[index]]?[1].format(context)}'),
+                                      ),
+                                    ],
+                                  ),
+                                  // ElevatedButton(
+                                  //   onPressed: () async {
+                                  //     TimeOfDay? pickedTime = await showTimePicker(
+                                  //       context: context,
+                                  //       initialTime: availableTimes[index][0],
+                                  //     );
+                                  //
+                                  //     if (pickedTime != null) {
+                                  //       setState(() {
+                                  //         availableTimes[index][0] = pickedTime;
+                                  //       });
+                                  //     }
+                                  //   },
+                                  //   child: Text('Select Time: ${availableTimes[index][0].format(context)}'),
+                                  // ),
+                                ],
+                              
+                              
+                              ),
                             );
                           },
                         ),
                       ),
                       SizedBox(height: 20),
 
-                      Text(
-                        'Choose Available Time:',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () async {
-                          TimeOfDay? pickedTime = await showTimePicker(
-                            context: context,
-                            initialTime: selectedTime,
-                          );
-
-                          if (pickedTime != null && pickedTime != selectedTime) {
-                            setState(() {
-                              selectedTime = pickedTime;
-                            });
-                          }
-                        },
-                        child: Text('Select Time: ${selectedTime.format(context)}'),
-                      ),
-                    ],
-                  ),
 
 
 
@@ -432,9 +463,9 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
               ),
             ],
           ),
-        ),
+        ]),
       ),
-    );
+    ));
   }
 
   void saveDataToFirebase() {
