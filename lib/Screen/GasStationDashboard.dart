@@ -290,43 +290,7 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                                   ),
                                   Text(days[index]),
                                   SizedBox(width: 20),
-                                  Row(
-                                    children: [
-                                      IconButton(onPressed: () async {
-                            TimeOfDay? pickedTime = await showTimePicker(
-                            context: context,
-                            initialTime: dayTimeMap[days[index]]?[0]?? TimeOfDay.now(),
-                            );
 
-                            if (pickedTime != null) {
-                            setState(() {
-                            dayTimeMap[days[index]]?[0] = pickedTime;
-
-                            });
-                            }
-                            },
-                                icon: Icon(Icons.access_time),
-
-                                      ) ,
-
-                                      ElevatedButton(
-                                        onPressed: () async {
-                                          TimeOfDay? pickedTime = await showTimePicker(
-                                            context: context,
-                                            initialTime: dayTimeMap[days[index]]![1],
-                                          );
-
-                                          if (pickedTime != null) {
-                                            setState(() {
-                                              dayTimeMap[days[index]]![1] = pickedTime;
-                                            });
-                                          }
-                                        },
-                                        child: Text('End Time: ${dayTimeMap[days[index]]?[1].format(context)}'),
-                                      ),
-
-                                    ],
-                                  ),
 
                                 ],
                               
