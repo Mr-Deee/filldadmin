@@ -279,7 +279,7 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                                             });
                                           }
                                         },
-                                        child: Text('Start Time: ${dayTimeMap[days[index]]?[0]?.format(context) ?? 'Not set'}'),                                      ),
+                                        child: Text('Start Time: ${dayTimeMap[days[index]]?[0].format(context) ?? 'Not set'}'),                                      ),
                                       SizedBox(width: 10),
                                       ElevatedButton(
                                         onPressed: () async {
@@ -298,21 +298,7 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                                       ),
                                     ],
                                   ),
-                                  // ElevatedButton(
-                                  //   onPressed: () async {
-                                  //     TimeOfDay? pickedTime = await showTimePicker(
-                                  //       context: context,
-                                  //       initialTime: availableTimes[index][0],
-                                  //     );
-                                  //
-                                  //     if (pickedTime != null) {
-                                  //       setState(() {
-                                  //         availableTimes[index][0] = pickedTime;
-                                  //       });
-                                  //     }
-                                  //   },
-                                  //   child: Text('Select Time: ${availableTimes[index][0].format(context)}'),
-                                  // ),
+
                                 ],
                               
                               
