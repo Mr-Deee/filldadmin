@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:filldadmin/Models/GasStation.dart';
 import 'package:filldadmin/Models/adminusers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -235,18 +237,202 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                   ),
                 ),
               ),
+
+              //More Or No Gas
               Column(
                 children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 25, right: 25, top: 8.0),
-                    child: TextField(
-                      controller: GasStationLocontroller,
-                      decoration: InputDecoration(
-                        labelText: 'Enter your Location.',
+                  SizedBox(
+                      height: 130,
+                      child: ListView.builder(
+                        itemCount: AppData.smartDevices.length,
+                        physics: const NeverScrollableScrollPhysics(),
+                        padding: const EdgeInsets.only(left: 5, right: 5),
+                        itemBuilder: (context, index) {
+                          return // Set the elevation for the card
+                            SmartOptionBoxWidget(
+                              smartDeviceName: AppData.smartDevices[index][0],
+                              iconPath: AppData.smartDevices[index][1],
+                              isPowerOn: AppData.smartDevices[index][2],
+                              onChanged: (bool newValue) {
+                                setState(() {
+                                  AppData.smartDevices[index][0] =
+                                  newValue ? "No Gas" : "More Gas";
+                                  AppData.smartDevices[index][2] = newValue;
+                                  if (currentGasStatus !=
+                                      AppData.smartDevices[index][0]) {
+                                    // Update the Firebase database with the new gas status
+                                    _databaseRef.update({
+                                      "GasStatus": AppData.smartDevices[index][0],
+                                    });
+                                  }
+                                });
+                              },
+                            );
+                        },
+                      )),
+                ],
+              ),
+              Column(
+                children: [
+
+
+
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left:18.0),
+                        child: TextButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Preferred Payment'),
+                                  content: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: AppConstant.horizontalPadding,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        const SizedBox(height: 20),
+                                        SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.payments_outlined, size: 30, color: Colors.grey[800]),
+                                              const SizedBox(width: 10),
+                                              Text(
+                                                'PREFERRED PAYMENT',
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.grey[800],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        DropdownButton<String>(
+                                          // ... (unchanged)
+
+                                            hint: Text('Select payment method'),
+                                            value: selectedOption,
+                                            onChanged: (String? newValue) {
+                                              setState(() {
+                                                selectedOption = newValue!;
+                                              });
+                                            },
+                                            items: [
+                                              DropdownMenuItem<String>(
+                                                value: 'momo',
+                                                child: Text('Mobile Money'),
+                                              ),
+                                              DropdownMenuItem<String>(
+                                                value: 'bank',
+                                                child: Text('Bank'),
+                                              ),
+                                            ]
+                                          //     .map<DropdownMenuItem<String>>((String value) {
+                                          //   return DropdownMenuItem<String>(
+                                          //     value: value,
+                                          //     child: Text(value),
+                                          //   );
+                                          // }).toList(),
+                                        ),
+                                        if (selectedOption!.isNotEmpty)
+                                          Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              const SizedBox(height: 10),
+                                              TextField(
+                                                controller: accountNumberController,
+                                                decoration: InputDecoration(
+                                                  labelText: 'Account Number',
+                                                ),
+                                              ),
+                                              const SizedBox(height: 10),
+                                              TextField(
+                                                controller: accountNameController,
+                                                decoration: InputDecoration(
+                                                  labelText: 'Account Name',
+                                                ),
+                                              ),
+                                              const SizedBox(height: 20),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  // Save data to Firebase Realtime Database
+                                                  saveDataToFirebase();
+                                                },
+                                                child: Text('Done'),
+                                              ),
+                                            ],
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          child: Row(
+                            children: [
+                              Icon(Icons.payment),
+                              const SizedBox(width: 10),
+                              Text('Prefered Payment'),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
+                      TextButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Add Location'),
+                                content: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: AppConstant.horizontalPadding,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 20),
+                                      TextField(
+                                        controller: GasStationLocontroller,
+                                        decoration: InputDecoration(
+                                          labelText: 'Enter your Location.',
+                                        ),
+                                      ),
+                                      const SizedBox(height: 20),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          // Update location in the Firebase Realtime Database
+                                          updateLocationInFirebase(GasStationLocontroller.text);
+                                          Navigator.pop(context); // Close the pop-up after updating
+                                        },
+                                        child: Text('Done'),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        child: Row(
+                          children: [
+                            Icon(Icons.location_on),
+                            const SizedBox(width: 10),
+                            Text('Add Location'),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
+
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -306,115 +492,10 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
 
                 ],
               ),
-              //More Or No Gas
-              Column(
-                children: [
-                  SizedBox(
-                      height: 200,
-                      child: ListView.builder(
-                        itemCount: AppData.smartDevices.length,
-                        physics: const NeverScrollableScrollPhysics(),
-                        padding: const EdgeInsets.only(left: 5, right: 5),
-                        itemBuilder: (context, index) {
-                          return // Set the elevation for the card
-                              SmartOptionBoxWidget(
-                            smartDeviceName: AppData.smartDevices[index][0],
-                            iconPath: AppData.smartDevices[index][1],
-                            isPowerOn: AppData.smartDevices[index][2],
-                            onChanged: (bool newValue) {
-                              setState(() {
-                                AppData.smartDevices[index][0] =
-                                    newValue ? "No Gas" : "More Gas";
-                                AppData.smartDevices[index][2] = newValue;
-                                if (currentGasStatus !=
-                                    AppData.smartDevices[index][0]) {
-                                  // Update the Firebase database with the new gas status
-                                  _databaseRef.update({
-                                    "GasStatus": AppData.smartDevices[index][0],
-                                  });
-                                }
-                              });
-                            },
-                          );
-                        },
-                      )),
-                ],
-              ), // SizedBox(
+       // SizedBox(
 
               // Prefered Payment
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppConstant.horizontalPadding,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    Text(
-                      'PREFERRED PAYMENT',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[800],
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    DropdownButton<String>(
-                        hint: Text('Select payment method'),
-                        value: selectedOption,
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selectedOption = newValue!;
-                          });
-                        },
-                        items: [
-                          DropdownMenuItem<String>(
-                            value: 'momo',
-                            child: Text('Mobile Money'),
-                          ),
-                          DropdownMenuItem<String>(
-                            value: 'bank',
-                            child: Text('Bank'),
-                          ),
-                        ]
-                        //     .map<DropdownMenuItem<String>>((String value) {
-                        //   return DropdownMenuItem<String>(
-                        //     value: value,
-                        //     child: Text(value),
-                        //   );
-                        // }).toList(),
-                        ),
-                    if (selectedOption!.isNotEmpty)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 10),
-                          TextField(
-                            controller: accountNumberController,
-                            decoration: InputDecoration(
-                              labelText: 'Account Number',
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          TextField(
-                            controller: accountNameController,
-                            decoration: InputDecoration(
-                              labelText: 'Account Name',
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          ElevatedButton(
-                            onPressed: () {
-                              // Save data to Firebase Realtime Database
-                              saveDataToFirebase();
-                            },
-                            child: Text('Done'),
-                          ),
-                        ],
-                      ),
-                  ],
-                ),
-              ),
+
             ],
           ),
         ]),
@@ -422,6 +503,18 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
     ));
 
 
+  }
+  void updateLocationInFirebase( GasStationLocontroller) {
+    // Assuming you have a specific node for gas station locations in your database
+    _databaseRef.update({
+      'Location': GasStationLocontroller,
+    }).then((_) {
+      print('Location updated successfully');
+      // You can add any additiona logic after updating the location
+    }).catchError((error) {
+      print('Failed to update location: $error');
+      // Handle errors if necessary
+    });
   }
 
   Future<void> _showTimePickerDialog(String day) async {
