@@ -50,8 +50,8 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
   String currentGasStatus = ''; // Initialize with an appropriate default value
   LocationService? _locationService;
   Position? _currentPosition;
-  String? _locationName;
-  List<bool> selectedDays = List.generate(7, (index) => false);
+
+  Map<String, Map<String, String>> selectedDays = {};
   List<bool> isSelected = [false, false]; // Initially, no method selected
   Future<void> _getCurrentLocation() async {
     Position? currentPosition = await _locationService!.getCurrentLocation();
@@ -60,7 +60,7 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
 
     setState(() {
       _currentPosition = currentPosition!;
-      _locationName = locationName!;
+      // _locationName = locationName!;
     });
   }
 
@@ -179,20 +179,35 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                         fontSize: 52,
                       ),
                     ),
-                    Text(
-                      '${gasprovider?.GasStationNumber}' ?? "",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[700],
-                      ),
-                    ),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      child: Row(children: <Widget>[
-                        Text('Current Location :$_locationName',
-                            style: TextStyle(fontSize: 20.0))
-                      ]),
-                    )
+                      child: Row(
+                        children: [
+                          Text(
+                            '${gasprovider?.GasStationNumber}' ?? "",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                          Text(
+                            ' | ${gasprovider?.Location}' ?? "",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                          Text(
+                            ' | ${gasprovider?.Preferedpayment}',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
                   ],
                 ),
               ),
@@ -235,28 +250,39 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Choose Available Days:',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                      Padding(
+                        padding:  EdgeInsets.only(top:8.0,right:12,left:12),
+                        child: Text(
+                          'Choose Available Days:',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       SizedBox(
-                        height: 150,
+                        height: 290,
                         child: ListView.builder(
                           scrollDirection: Axis.vertical,
                           itemCount: days.length,
                           itemBuilder: (context, index) {
+                            String day = days[index];
+
                             return SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Row(
                                 children: [
                                   Checkbox(
-                                    value: selectedDays[index], // You can set the initial value based on your data
-                                    onChanged: (bool? value) {
+                                    value: selectedDays.containsKey(day), // You can set the initial value based on your data
+                                    onChanged: (value) {
                                       setState(() {
-                                        selectedDays[index] = value ?? false;
+
+                                        if (value != null && value) {
+                                          _showTimePickerDialog(day as String);
+                                        } else {
+                                          selectedDays.remove(day);
+                                        }
+
                                       });
                                       // Handle the checkbox change here
                                       // You may want to update a list of selected days
@@ -266,28 +292,30 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                                   SizedBox(width: 20),
                                   Row(
                                     children: [
-                                      ElevatedButton(
-                                        onPressed: () async {
-                                          TimeOfDay? pickedTime = await showTimePicker(
-                                            context: context,
-                                            initialTime: dayTimeMap[days[index]]?[0]?? TimeOfDay.now(),
-                                          );
-                              
-                                          if (pickedTime != null) {
-                                            setState(() {
-                                              dayTimeMap[days[index]]?[0] = pickedTime;
-                                            });
-                                          }
-                                        },
-                                        child: Text('Start Time: ${dayTimeMap[days[index]]?[0].format(context) ?? 'Not set'}'),                                      ),
-                                      SizedBox(width: 10),
+                                      IconButton(onPressed: () async {
+                            TimeOfDay? pickedTime = await showTimePicker(
+                            context: context,
+                            initialTime: dayTimeMap[days[index]]?[0]?? TimeOfDay.now(),
+                            );
+
+                            if (pickedTime != null) {
+                            setState(() {
+                            dayTimeMap[days[index]]?[0] = pickedTime;
+
+                            });
+                            }
+                            },
+                                icon: Icon(Icons.access_time),
+
+                                      ) ,
+
                                       ElevatedButton(
                                         onPressed: () async {
                                           TimeOfDay? pickedTime = await showTimePicker(
                                             context: context,
                                             initialTime: dayTimeMap[days[index]]![1],
                                           );
-                              
+
                                           if (pickedTime != null) {
                                             setState(() {
                                               dayTimeMap[days[index]]![1] = pickedTime;
@@ -296,6 +324,7 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                                         },
                                         child: Text('End Time: ${dayTimeMap[days[index]]?[1].format(context)}'),
                                       ),
+
                                     ],
                                   ),
 
@@ -311,31 +340,6 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
 
 
 
-
-                  // Padding(
-                  //   padding: const EdgeInsets.all(8.0),
-                  //   child: ElevatedButton(
-                  //     onPressed: () {
-                  //       // Save data to Firebase Realtime Database
-                  //       savelocationDataToFirebase();
-                  //     },
-                  //     child: Text('Save'),
-                  //   ),
-                  // ),
-                  // Column(
-                  //   children: [
-                  //     Padding(
-                  //       padding: const EdgeInsets.all(8.0),
-                  //       child: ElevatedButton(
-                  //         onPressed: () {
-                  //           // Save data to Firebase Realtime Database
-                  //           savelocationDataToFirebase();
-                  //         },
-                  //         child: Text('Save'),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
                 ],
               ),
               //More Or No Gas
@@ -452,6 +456,50 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
         ]),
       ),
     ));
+
+
+  }
+
+  Future<void> _showTimePickerDialog(String day) async {
+    TimeOfDay? startTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+
+    if (startTime != null) {
+      TimeOfDay? endTime = await showTimePicker(
+        context: context,
+        initialTime: startTime,
+      );
+
+      if (endTime != null) {
+        setState(() {
+
+
+          // if (dayIndex != -1) {
+          //   selectedDays[dayIndex] = true;
+          //   _saveSelectedDays();
+          // }
+          selectedDays[day] = {
+            "Start": startTime.format(context),
+                "End": endTime.format(context)
+
+          }  ;
+      _saveSelectedDays();
+        }
+        );
+      }
+    }
+  }
+
+  void _saveSelectedDays()
+  {
+    _databaseRef.update({
+      "SelectedDays": selectedDays,
+
+    });
+    // TODO: Implement your logic to save selected days and times
+    print("Selected Days and Times: $selectedDays");
   }
 
   void saveDataToFirebase() {

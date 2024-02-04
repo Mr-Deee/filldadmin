@@ -6,6 +6,8 @@ class GasStation extends ChangeNotifier {
  String? GasStationNumber;
  String? email;
  String? Location;
+ String? Preferedpayment ;
+
  String? numberPlate;
 
 
@@ -16,6 +18,7 @@ class GasStation extends ChangeNotifier {
   this.key,
   this.GasStationName,
   this.GasStationNumber,
+  this.Preferedpayment,
   this.email,
   this.Location,
   this.numberPlate,
@@ -30,6 +33,8 @@ class GasStation extends ChangeNotifier {
    email: map["Email"],
    GasStationName: map["GasStationName"],
    GasStationNumber: map["GasStationNumber"],
+   Location: map["Location"],
+   Preferedpayment: map["Preferred Payment"]
    // profilepicture: map["Profilepicture"].toString(),
    // phone : map["phone"],
 
