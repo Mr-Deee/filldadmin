@@ -34,7 +34,7 @@ class GasStation extends ChangeNotifier {
    GasStationName: map["GasStationName"],
    GasStationNumber: map["GasStationNumber"],
    Location: map["Location"],
-   Preferedpayment: map["Preferred Payment"]
+   Preferedpayment: map["Preferred Payment"]??"Not Set"
    // profilepicture: map["Profilepicture"].toString(),
    // phone : map["phone"],
 
