@@ -287,89 +287,93 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
+                                  backgroundColor: Colors.white,
                                   title: Text('Preferred Payment'),
                                   content: Padding(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: AppConstant.horizontalPadding,
                                     ),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(height: 20),
-                                        SingleChildScrollView(
-                                          scrollDirection: Axis.horizontal,
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.payments_outlined, size: 30, color: Colors.grey[800]),
-                                              const SizedBox(width: 10),
-                                              Text(
-                                                'PREFERRED PAYMENT',
-                                                style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.grey[800],
+                                    child: SizedBox(
+                                      height:360,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(height: 20),
+                                          SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal,
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.payments_outlined, size: 30, color: Colors.grey[800]),
+                                                const SizedBox(width: 10),
+                                                Text(
+                                                  'PREFERRED PAYMENT',
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.grey[800],
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                        const SizedBox(height: 10),
-                                        DropdownButton<String>(
-                                          // ... (unchanged)
+                                          const SizedBox(height: 10),
+                                          DropdownButton<String>(
+                                            // ... (unchanged)
 
-                                            hint: Text('Select payment method'),
-                                            value: selectedOption,
-                                            onChanged: (String? newValue) {
-                                              setState(() {
-                                                selectedOption = newValue!;
-                                              });
-                                            },
-                                            items: [
-                                              DropdownMenuItem<String>(
-                                                value: 'momo',
-                                                child: Text('Mobile Money'),
-                                              ),
-                                              DropdownMenuItem<String>(
-                                                value: 'bank',
-                                                child: Text('Bank'),
-                                              ),
-                                            ]
-                                          //     .map<DropdownMenuItem<String>>((String value) {
-                                          //   return DropdownMenuItem<String>(
-                                          //     value: value,
-                                          //     child: Text(value),
-                                          //   );
-                                          // }).toList(),
-                                        ),
-                                        if (selectedOption!.isNotEmpty)
-                                          Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              const SizedBox(height: 10),
-                                              TextField(
-                                                controller: accountNumberController,
-                                                decoration: InputDecoration(
-                                                  labelText: 'Account Number',
+                                              hint: Text('Select payment method'),
+                                              value: selectedOption,
+                                              onChanged: (String? newValue) {
+                                                setState(() {
+                                                  selectedOption = newValue!;
+                                                });
+                                              },
+                                              items: [
+                                                DropdownMenuItem<String>(
+                                                  value: 'momo',
+                                                  child: Text('Mobile Money'),
                                                 ),
-                                              ),
-                                              const SizedBox(height: 10),
-                                              TextField(
-                                                controller: accountNameController,
-                                                decoration: InputDecoration(
-                                                  labelText: 'Account Name',
+                                                DropdownMenuItem<String>(
+                                                  value: 'bank',
+                                                  child: Text('Bank'),
                                                 ),
-                                              ),
-                                              const SizedBox(height: 20),
-                                              ElevatedButton(
-                                                onPressed: () {
-                                                  // Save data to Firebase Realtime Database
-                                                  saveDataToFirebase();
-                                                },
-                                                child: Text('Done'),
-                                              ),
-                                            ],
+                                              ]
+                                            //     .map<DropdownMenuItem<String>>((String value) {
+                                            //   return DropdownMenuItem<String>(
+                                            //     value: value,
+                                            //     child: Text(value),
+                                            //   );
+                                            // }).toList(),
                                           ),
-                                      ],
+                                          if (selectedOption!.isNotEmpty)
+                                            Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                const SizedBox(height: 10),
+                                                TextField(
+                                                  controller: accountNumberController,
+                                                  decoration: InputDecoration(
+                                                    labelText: 'Account Number',
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 10),
+                                                TextField(
+                                                  controller: accountNameController,
+                                                  decoration: InputDecoration(
+                                                    labelText: 'Account Name',
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 20),
+                                                ElevatedButton(
+                                                  onPressed: () {
+                                                    // Save data to Firebase Realtime Database
+                                                    saveDataToFirebase();
+                                                  },
+                                                  child: Text('Done'),
+                                                ),
+                                              ],
+                                            ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 );
@@ -391,31 +395,36 @@ class _GasStationDashboardState extends State<GasStationDashboard> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
+                                backgroundColor: Colors.white,
                                 title: Text('Add Location'),
                                 content: Padding(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: AppConstant.horizontalPadding,
                                   ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 20),
-                                      TextField(
-                                        controller: GasStationLocontroller,
-                                        decoration: InputDecoration(
-                                          labelText: 'Enter your Location.',
+                                  child: SizedBox(
+                                    height: 200,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text("${gasprovider?.Location}"),
+                                        const SizedBox(height: 10),
+                                        TextField(
+                                          controller: GasStationLocontroller,
+                                          decoration: InputDecoration(
+                                            labelText: 'Enter your Location.',
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(height: 20),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          // Update location in the Firebase Realtime Database
-                                          updateLocationInFirebase(GasStationLocontroller.text);
-                                          Navigator.pop(context); // Close the pop-up after updating
-                                        },
-                                        child: Text('Done'),
-                                      ),
-                                    ],
+                                        const SizedBox(height: 20),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            // Update location in the Firebase Realtime Database
+                                            updateLocationInFirebase(GasStationLocontroller.text);
+                                            Navigator.pop(context); // Close the pop-up after updating
+                                          },
+                                            child: Text('Update'),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               );
