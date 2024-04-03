@@ -3,14 +3,14 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class addfacts extends StatefulWidget {
-  const addfacts({super.key});
+class AddFacts extends StatefulWidget {
+  const AddFacts({super.key});
 
   @override
-  State<addfacts> createState() => _addfactsState();
+  State<AddFacts> createState() => _AddFactsState();
 }
 
-class _addfactsState extends State<addfacts> {
+class _AddFactsState extends State<AddFacts> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _detailsController = TextEditingController();
 
@@ -34,6 +34,25 @@ class _addfactsState extends State<addfacts> {
     // Clear text fields after submitting
     _nameController.clear();
     _detailsController.clear();
+
+    // Show a pop-up message
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Submitted'),
+          content: Text('Fun fact submitted successfully!'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
