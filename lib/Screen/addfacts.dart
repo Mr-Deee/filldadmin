@@ -78,7 +78,9 @@ class _AddFactsState extends State<AddFacts> {
               controller: _detailsController,
               decoration: InputDecoration(
                 labelText: 'Fun Fact Details',
+
               ),
+
               maxLines: null, // Allows multiple lines
             ),
             SizedBox(height: 16.0),
