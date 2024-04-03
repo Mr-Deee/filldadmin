@@ -46,6 +46,7 @@ class _AddFactsState extends State<AddFacts> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
+                Navigator.of(context).pop();
               },
               child: Text('OK'),
             ),
