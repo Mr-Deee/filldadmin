@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../Models/DatabaseService.dart';
 import '../Models/Rider.dart';
 import '../main.dart';
+import 'addfacts.dart';
 import 'deactivatedUSERS.dart';
 import 'earningsScreen.dart';
 
@@ -334,6 +335,25 @@ class _HomepageState extends State<Homepage> {
             Padding(
               padding: const EdgeInsets.all(18.0),
               child: Text("Highest Earner",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 27),),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: IconButton(
+                onPressed: () {
+
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => addfacts(),
+                      ));
+
+                  },
+                icon: const Icon(
+                  Icons.comment,
+                  color: Colors.black,
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(18.0),
