@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -26,7 +27,7 @@ class _HomepageState extends State<Homepage> {
   @override
   void initState() {
     super.initState();
-  _loadRiders();
+    _loadRiders();
   }
 
   @override
@@ -99,8 +100,9 @@ class _HomepageState extends State<Homepage> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(18.0),
+              padding: const EdgeInsets.all(11.0),
               child: Card(
+                color: Colors.white,
                 child: FutureBuilder<int?>(
                   future: databaseService.fetchNumberOfGasRequests(),
                   builder: (context, event) {
@@ -128,48 +130,49 @@ class _HomepageState extends State<Homepage> {
                                       return FutureBuilder<int?>(
                                         future: databaseService
                                             .fetchNumberOfDeactivated(),
-                                        builder: (context, deactivatedSnapshot) {
-                                          if (deactivatedSnapshot.connectionState ==
+                                        builder:
+                                            (context, deactivatedSnapshot) {
+                                          if (deactivatedSnapshot
+                                                  .connectionState ==
                                               ConnectionState.waiting) {
                                             return CircularProgressIndicator();
                                           } else {
                                             int? numberOfDeactivatedUsers =
                                                 deactivatedSnapshot.data;
 
-                                            if (numberOfDeactivatedUsers != null) {
-                                              return
-
-                                               PieChart(
-                                                    PieChartData(
-                                                      sections: [
-                                                        PieChartSectionData(
-                                                          color: Colors.blue,
-                                                          value: numberOfRequests
-                                                              .toDouble(),
-                                                          title: '',
-                                                          radius: 20,
-                                                        ),
-                                                        PieChartSectionData(
-                                                          color: Colors.tealAccent,
-                                                          value:
-                                                              earnings.toDouble(),
-                                                          title: '',
-                                                          radius: 20,
-                                                        ),
-                                                        PieChartSectionData(
-                                                          color: Colors.redAccent,
-                                                          value:
-                                                              numberOfDeactivatedUsers
-                                                                  .toDouble(),
-                                                          title: '',
-                                                          radius: 20,
-                                                        ),
-                                                      ],
-                                                      sectionsSpace: 0,
-                                                      centerSpaceRadius: 30,
-                                                      startDegreeOffset: -90,
+                                            if (numberOfDeactivatedUsers !=
+                                                null) {
+                                              return PieChart(
+                                                PieChartData(
+                                                  sections: [
+                                                    PieChartSectionData(
+                                                      color: Colors.blue,
+                                                      value: numberOfRequests
+                                                          .toDouble(),
+                                                      title: '',
+                                                      radius: 20,
                                                     ),
-                                                  );
+                                                    PieChartSectionData(
+                                                      color: Colors.tealAccent,
+                                                      value:
+                                                          earnings.toDouble(),
+                                                      title: '',
+                                                      radius: 20,
+                                                    ),
+                                                    PieChartSectionData(
+                                                      color: Colors.redAccent,
+                                                      value:
+                                                          numberOfDeactivatedUsers
+                                                              .toDouble(),
+                                                      title: '',
+                                                      radius: 20,
+                                                    ),
+                                                  ],
+                                                  sectionsSpace: 0,
+                                                  centerSpaceRadius: 20,
+                                                  startDegreeOffset: -90,
+                                                ),
+                                              );
                                             } else {
                                               return Text(
                                                 'Failed to fetch number of deactivated users',
@@ -197,7 +200,7 @@ class _HomepageState extends State<Homepage> {
                             //   'Number of Requests: $numberOfRequests',
                             //   style: TextStyle(fontSize: 18),
                             // ),
-                            SizedBox(height: 10),
+
                             FutureBuilder<num?>(
                               future: databaseService.fetchTotalEarnings(),
                               builder: (context, snapshot) {
@@ -225,9 +228,13 @@ class _HomepageState extends State<Homepage> {
                             Padding(
                               padding: const EdgeInsets.all(18.0),
                               child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
+                                  //gas stations
                                   FutureBuilder<num?>(
-                                    future: databaseService.fetchNumberOfGasStation(),
+                                    future: databaseService
+                                        .fetchNumberOfGasStation(),
                                     builder: (context, snapshot) {
                                       if (snapshot.connectionState ==
                                           ConnectionState.waiting) {
@@ -238,17 +245,55 @@ class _HomepageState extends State<Homepage> {
                                         if (gasStation != null) {
                                           return Text(
                                             'GasStation: ${gasStation}',
-                                            style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold),
                                           );
                                         } else {
                                           return Text(
                                             'Failed to fetch earnings',
                                             style: TextStyle(
-                                                fontSize: 18, color: Colors.red),
+                                                fontSize: 18,
+                                                color: Colors.red),
                                           );
                                         }
                                       }
                                     },
+                                  ),
+//Add funnfact
+                                  GestureDetector(
+                                    onTap: () {
+
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                          builder: (context) =>
+                                          AddFacts(),
+                                      ),);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(right: 10),
+                                      child: Row(
+                                        children: [
+                                          IconButton(
+                                            onPressed: () {
+
+
+                                            },
+                                            icon: const Icon(
+                                              Icons.comment,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                          Text(
+                                            'Add FunFact',
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -289,7 +334,8 @@ class _HomepageState extends State<Homepage> {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) => EarningScreen(),
+                                              builder: (context) =>
+                                                  EarningScreen(),
                                             ));
                                       },
                                       child: Text('Earnings')),
@@ -335,31 +381,13 @@ class _HomepageState extends State<Homepage> {
                 ),
               ),
             ),
-
-            Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: IconButton(
-                onPressed: () {
-
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AddFacts(),
-                      ));
-
-                },
-                icon: const Icon(
-                  Icons.comment,
-                  color: Colors.black,
-                ),
-              ),
-            ),
             Padding(
               padding: const EdgeInsets.all(18.0),
-              child: Text("Highest Earner",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 27),),
+              child: Text(
+                "Highest Earner",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+              ),
             ),
-
-
             Padding(
               padding: const EdgeInsets.all(18.0),
               child: Container(
@@ -368,45 +396,43 @@ class _HomepageState extends State<Homepage> {
                 decoration: BoxDecoration(
                     color: Colors.white60,
                     borderRadius: BorderRadius.circular(30)),
-                child:
-        
-                    _riders.isEmpty
-                        ? Center(child: CircularProgressIndicator())
-                        : ListView.builder(
-                      itemCount: _riders.length,
-                      itemBuilder: (context, index) {
-                        Rider rider = _riders[index];
-                        return ListTile(
-                          leading: CircleAvatar(
-                            radius: 30,
-                            backgroundImage:rider.imageUrl != null
-                                ? NetworkImage(rider.imageUrl,scale: 1.0)
-                                : AssetImage("assets/images/useri.png") as ImageProvider<Object>,
-                          ),
-                          title: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
+                child: _riders.isEmpty
+                    ? Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                        itemCount: _riders.length,
+                        itemBuilder: (context, index) {
+                          Rider rider = _riders[index];
+                          return ListTile(
+                            leading: CircleAvatar(
+                              radius: 30,
+                              backgroundImage: rider.imageUrl != null
+                                  ? NetworkImage(rider.imageUrl, scale: 1.0)
+                                  : AssetImage("assets/images/useri.png")
+                                      as ImageProvider<Object>,
+                            ),
+                            title: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  Text(rider.Name),
+                                ],
+                              ),
+                            ),
+                            subtitle: Column(
                               children: [
-                                Text(rider.Name),
+                                Text(rider.email),
+                                Text(rider.earnings),
                               ],
                             ),
-                          ),
-                          subtitle: Column(
-                            children: [
-                              Text(rider.email),
-                              Text(rider.earnings),
-                            ],
-                          ),
-                          // trailing: IconButton(
-                          //   icon: Icon(Icons.switch_account),
-                          //   onPressed: () => _editRiderStatus(rider),
-                          // ),
-        
-                          // onTap:  () => _showRiderDetails(rider),
-                        );
-                      },
-                    
-                ),
+                            // trailing: IconButton(
+                            //   icon: Icon(Icons.switch_account),
+                            //   onPressed: () => _editRiderStatus(rider),
+                            // ),
+
+                            // onTap:  () => _showRiderDetails(rider),
+                          );
+                        },
+                      ),
               ),
             )
           ],
@@ -487,11 +513,8 @@ class _HomepageState extends State<Homepage> {
       }
 
       setState(() {});
-    })
-        .catchError((error) {
+    }).catchError((error) {
       print('Error loading riders: $error');
     });
   }
-
-
 }
