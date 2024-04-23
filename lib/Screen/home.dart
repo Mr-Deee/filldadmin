@@ -166,7 +166,7 @@ class _HomepageState extends State<Homepage> {
                                                         ),
                                                       ],
                                                       sectionsSpace: 0,
-                                                      centerSpaceRadius: 40,
+                                                      centerSpaceRadius: 30,
                                                       startDegreeOffset: -90,
                                                     ),
                                                   );
