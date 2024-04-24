@@ -77,12 +77,13 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
 
-    initialRoute: FirebaseAuth.instance.currentUser == null
-    ? '/authpage'
-        : '/GasDash',
+    initialRoute:'/',
+
+    //FirebaseAuth.instance.currentUser == null ? '/authpage'
+        //: '/GasDash',
     routes: {
 
-      // "/splash": (context) => SplashScreen(),
+      "/": (context) => CheckUserRole(),
        "/GasDash": (context) => GasStationDashboard(),
       // "/search": (context) => SearchScreen(),
       "/authpage": (context) => AuthPage(),
@@ -98,3 +99,57 @@ class MyApp extends StatelessWidget {
 }
 
 
+class CheckUserRole extends StatefulWidget {
+  @override
+  _CheckUserRoleState createState() => _CheckUserRoleState();
+}
+
+class _CheckUserRoleState extends State<CheckUserRole> {
+  FirebaseAuth _auth = FirebaseAuth.instance;
+  DatabaseReference _databaseReference =
+  FirebaseDatabase.instance.reference();
+
+  @override
+  void initState() {
+    super.initState();
+    _checkUserRoleAndNavigate();
+  }
+  void _checkUserRoleAndNavigate() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      DatabaseEvent adminSnapshot = await _databaseReference.child('Admin').once();
+      DatabaseEvent gasStationSnapshot = await _databaseReference.child('GasStation').once();
+
+      if (adminSnapshot.snapshot.value != null &&
+          (adminSnapshot.snapshot.value as Map<dynamic, dynamic>).containsKey(user.uid)) {
+        // User is an admin
+        Future.delayed(Duration.zero, () {
+        Navigator.pushReplacementNamed(context, '/Homepage');});
+      } else if (gasStationSnapshot.snapshot.value != null &&
+          (gasStationSnapshot.snapshot.value as Map<dynamic, dynamic>).containsKey(user.uid)) {
+        // User is a gas station
+
+        Future.delayed(Duration.zero, () {
+        Navigator.pushReplacementNamed(context, '/GasDash');});
+      } else {
+        // User is not assigned a role
+        Future.delayed(Duration.zero, () {
+        Navigator.pushReplacementNamed(context, '/authpage');});
+      }
+    } else {
+      // No user logged in
+      Future.delayed(Duration.zero, () {
+      Navigator.pushReplacementNamed(context, '/authpage');});
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // You can show a loading indicator while checking user role
+    return Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+}
