@@ -55,7 +55,23 @@ class _AddFactsState extends State<AddFacts> {
       },
     );
   }
+  final DatabaseReference _database = FirebaseDatabase.instance.reference();
+  List<String> funFacts = [];
+  @override
+  void initState() {
+    super.initState();
+    _fetchFunFacts();
+  }
 
+  void _fetchFunFacts() {
+    _database.child('fun_facts').once().then((DataSnapshot snapshot) {
+      if (snapshot.value != null) {
+        setState(() {
+          funFacts = List<String>.from(snapshot.value);
+        });
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,6 +104,24 @@ class _AddFactsState extends State<AddFacts> {
               onPressed: _submitFunFact,
               child: Text('Submit'),
             ),
+
+        ListView.builder(
+          itemCount: funFacts.length,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                elevation: 4,
+                child: ListTile(
+                  title: Text(
+                    funFacts[index],
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
           ],
         ),
       ),
