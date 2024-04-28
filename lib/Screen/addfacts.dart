@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class AddFacts extends StatefulWidget {
   const AddFacts({super.key});
@@ -64,10 +65,10 @@ class _AddFactsState extends State<AddFacts> {
   }
 
   void _fetchFunFacts() {
-    _database.child('fun_facts').once().then((DataSnapshot snapshot) {
-      if (snapshot.value != null) {
+    _database.child('fun_facts').once().then((DatabaseEvent event) {
+      if (event.snapshot.value != null) {
         setState(() {
-          funFacts = List<String>.from(snapshot.value);
+          funFacts = List<String>.from(event.snapshot.value  as dynamic);
         });
       }
     });
@@ -105,22 +106,24 @@ class _AddFactsState extends State<AddFacts> {
               child: Text('Submit'),
             ),
 
-        ListView.builder(
-          itemCount: funFacts.length,
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                elevation: 4,
-                child: ListTile(
-                  title: Text(
-                    funFacts[index],
-                    style: TextStyle(fontSize: 18),
+        Expanded(
+          child: ListView.builder(
+            itemCount: funFacts.length,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Card(
+                  elevation: 4,
+                  child: ListTile(
+                    title: Text(
+                      funFacts[index].toString(),
+                      style: TextStyle(fontSize: 18),
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
           ],
         ),
