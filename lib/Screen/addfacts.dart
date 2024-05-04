@@ -13,7 +13,7 @@ class _AddFactsState extends State<AddFacts> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _detailsController = TextEditingController();
   final DatabaseReference _database = FirebaseDatabase.instance.ref();
-  List<Map<String, dynamic>> funFacts = [];
+  List<DocumentSnapshot> funFacts = []; // List to store fun facts fetched from Firestore
 
   @override
   void initState() {
@@ -21,44 +21,36 @@ class _AddFactsState extends State<AddFacts> {
     _fetchFunFacts();
   }
 
-  Future<void> _fetchFunFacts() async {
-    final snapshot = await _database.child("fun_facts").once();
-    if (snapshot.snapshot.value!= null) {
-      final data = snapshot.snapshot.value as Map<dynamic, dynamic>;
-      final fetchedFacts = data.entries.map((entry) => {
-        'details': entry.value['details'] as String,
-      }).toList();
-      setState(() {
-        funFacts = fetchedFacts;
-      });
-    } else {
-      print('No fun facts found in database');
-    }
-  }
-  void _deleteFunFact(int index) {
-    // Remove the fun fact from the list
-    setState(() {
-      funFacts.removeAt(index);
-    });
-
-    // Remove the fun fact from Firebase Realtime Database
-    DatabaseReference databaseReference = FirebaseDatabase.instance.reference();
-    databaseReference.child("fun_facts").remove();
-
-    // Remove the fun fact from Cloud Firestore
-    FirebaseFirestore.instance.collection('fun_facts').get().then((querySnapshot) {
-      querySnapshot.docs.forEach((doc) {
-        if (doc.data()['details'] == funFacts[index]['details']) {
-          doc.reference.delete();
-        }
-      });
-    }).catchError((error) {
-      print("Error deleting document: $error");
-    });
-  }
+  // Future<void> _fetchFunFacts() async {
+  //   final snapshot = await _database.child("fun_facts").once();
+  //   if (snapshot.snapshot.value!= null) {
+  //     final data = snapshot.snapshot.value as Map<dynamic, dynamic>;
+  //     final fetchedFacts = data.entries.map((entry) => {
+  //       'details': entry.value['details'] as String,
+  //     }).toList();
+  //     setState(() {
+  //       funFacts = fetchedFacts;
+  //     });
+  //   } else {
+  //     print('No fun facts found in database');
+  //   }
+  // }
 
 // ... rest of your build method using funFacts
+  // Function to fetch fun facts from Firestore
+  Future<void> _fetchFunFacts() async {
+    QuerySnapshot querySnapshot =
+    await FirebaseFirestore.instance.collection('fun_facts').get();
+    setState(() {
+      funFacts = querySnapshot.docs.cast<DocumentSnapshot<Object?>>();
+    });
+  }
 
+  // Function to delete a fun fact from Firestore
+  Future<void> _deleteFunFact(DocumentSnapshot document) async {
+    await document.reference.delete();
+    _fetchFunFacts(); // Fetch updated fun facts after deleting
+  }
   void _submitFunFact() {
 
     String details = _detailsController.text;
@@ -66,7 +58,6 @@ class _AddFactsState extends State<AddFacts> {
     // Write to Firebase Realtime Database
     DatabaseReference databaseReference = FirebaseDatabase.instance.reference();
     databaseReference.child("fun_facts").push().set({
-
       'details': details,
     });
 
@@ -126,6 +117,7 @@ class _AddFactsState extends State<AddFacts> {
             ),
             SizedBox(height: 16.0),
             Expanded(
+
               child: ListView.builder(
                 itemCount: funFacts.length,
                 itemBuilder: (context, index) {
@@ -136,7 +128,8 @@ class _AddFactsState extends State<AddFacts> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            content: Text(funFacts[index]['details']),
+                            content: Text(funFacts[index]['details']
+                            ),
                             actions: [
                               TextButton(
                                 onPressed: () {
@@ -144,25 +137,25 @@ class _AddFactsState extends State<AddFacts> {
                                 },
                                 child: Text('Close'),
                               ),
-
                               TextButton(
                                 onPressed: () {
-                                  // Delete the fun fact
-                                  _deleteFunFact(index);
+                                  _deleteFunFact(funFacts[index] as DocumentSnapshot<Object?>);
                                   Navigator.of(context).pop();
-                                },
+                                  },
                                 child: Text('Delete'),
                               ),
+
                             ],
                           );
                         },
                       );
                     },
                     child: Card(
+                      color: Colors.white,
                       elevation: 4,
                       child: ListTile(
                         title: Text(
-                          funFacts[index]['details'],
+                          funFacts[index]['details'].toString(),
                           style: TextStyle(fontSize: 18),
                         ),
                       ),
