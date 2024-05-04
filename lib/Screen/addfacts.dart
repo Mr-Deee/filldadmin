@@ -35,6 +35,27 @@ class _AddFactsState extends State<AddFacts> {
       print('No fun facts found in database');
     }
   }
+  void _deleteFunFact(int index) {
+    // Remove the fun fact from the list
+    setState(() {
+      funFacts.removeAt(index);
+    });
+
+    // Remove the fun fact from Firebase Realtime Database
+    DatabaseReference databaseReference = FirebaseDatabase.instance.reference();
+    databaseReference.child("fun_facts").remove();
+
+    // Remove the fun fact from Cloud Firestore
+    FirebaseFirestore.instance.collection('fun_facts').get().then((querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        if (doc.data()['details'] == funFacts[index]['details']) {
+          doc.reference.delete();
+        }
+      });
+    }).catchError((error) {
+      print("Error deleting document: $error");
+    });
+  }
 
 // ... rest of your build method using funFacts
 
@@ -115,7 +136,6 @@ class _AddFactsState extends State<AddFacts> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: Text(funFacts[index]['name']),
                             content: Text(funFacts[index]['details']),
                             actions: [
                               TextButton(
@@ -123,6 +143,15 @@ class _AddFactsState extends State<AddFacts> {
                                   Navigator.of(context).pop();
                                 },
                                 child: Text('Close'),
+                              ),
+
+                              TextButton(
+                                onPressed: () {
+                                  // Delete the fun fact
+                                  _deleteFunFact(index);
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Delete'),
                               ),
                             ],
                           );
