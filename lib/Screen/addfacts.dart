@@ -39,19 +39,18 @@ class _AddFactsState extends State<AddFacts> {
 // ... rest of your build method using funFacts
 
   void _submitFunFact() {
-    String name = _nameController.text;
+
     String details = _detailsController.text;
 
     // Write to Firebase Realtime Database
     DatabaseReference databaseReference = FirebaseDatabase.instance.reference();
     databaseReference.child("fun_facts").push().set({
-      'name': name,
+
       'details': details,
     });
 
     // Write to Cloud Firestore
     FirebaseFirestore.instance.collection('fun_facts').add({
-      'name': name,
       'details': details,
     });
 
@@ -90,12 +89,7 @@ class _AddFactsState extends State<AddFacts> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: 'Fun Fact Name',
-              ),
-            ),
+
             SizedBox(height: 16.0),
             TextField(
               controller: _detailsController,
