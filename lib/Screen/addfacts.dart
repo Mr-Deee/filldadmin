@@ -1,11 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddFacts extends StatefulWidget {
-  const AddFacts({super.key});
+  const AddFacts({Key? key}) : super(key: key);
 
   @override
   State<AddFacts> createState() => _AddFactsState();
@@ -14,6 +12,31 @@ class AddFacts extends StatefulWidget {
 class _AddFactsState extends State<AddFacts> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _detailsController = TextEditingController();
+  final DatabaseReference _database = FirebaseDatabase.instance.ref();
+  List<Map<String, dynamic>> funFacts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchFunFacts();
+  }
+
+  Future<void> _fetchFunFacts() async {
+    final snapshot = await _database.child("fun_facts").once();
+    if (snapshot.snapshot.value!= null) {
+      final data = snapshot.snapshot.value as Map<dynamic, dynamic>;
+      final fetchedFacts = data.entries.map((entry) => {
+        'details': entry.value['details'] as String,
+      }).toList();
+      setState(() {
+        funFacts = fetchedFacts;
+      });
+    } else {
+      print('No fun facts found in database');
+    }
+  }
+
+// ... rest of your build method using funFacts
 
   void _submitFunFact() {
     String name = _nameController.text;
@@ -47,7 +70,6 @@ class _AddFactsState extends State<AddFacts> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                Navigator.of(context).pop();
               },
               child: Text('OK'),
             ),
@@ -56,23 +78,7 @@ class _AddFactsState extends State<AddFacts> {
       },
     );
   }
-  final DatabaseReference _database = FirebaseDatabase.instance.reference();
-  List<String> funFacts = [];
-  @override
-  void initState() {
-    super.initState();
-    _fetchFunFacts();
-  }
 
-  void _fetchFunFacts() {
-    _database.child('fun_facts').once().then((DatabaseEvent event) {
-      if (event.snapshot.value != null) {
-        setState(() {
-          funFacts = List<String>.from(event.snapshot.value  as dynamic);
-        });
-      }
-    });
-  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,9 +101,7 @@ class _AddFactsState extends State<AddFacts> {
               controller: _detailsController,
               decoration: InputDecoration(
                 labelText: 'Fun Fact Details',
-
               ),
-
               maxLines: null, // Allows multiple lines
             ),
             SizedBox(height: 16.0),
@@ -105,26 +109,45 @@ class _AddFactsState extends State<AddFacts> {
               onPressed: _submitFunFact,
               child: Text('Submit'),
             ),
-
-        Expanded(
-          child: ListView.builder(
-            itemCount: funFacts.length,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Card(
-                  elevation: 4,
-                  child: ListTile(
-                    title: Text(
-                      funFacts[index].toString(),
-                      style: TextStyle(fontSize: 18),
+            SizedBox(height: 16.0),
+            Expanded(
+              child: ListView.builder(
+                itemCount: funFacts.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      // Show full details when tapped
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text(funFacts[index]['name']),
+                            content: Text(funFacts[index]['details']),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Close'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    child: Card(
+                      elevation: 4,
+                      child: ListTile(
+                        title: Text(
+                          funFacts[index]['details'],
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),
