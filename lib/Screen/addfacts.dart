@@ -56,10 +56,10 @@ class _AddFactsState extends State<AddFacts> {
     String details = _detailsController.text;
 
     // Write to Firebase Realtime Database
-    DatabaseReference databaseReference = FirebaseDatabase.instance.reference();
-    databaseReference.child("fun_facts").push().set({
-      'details': details,
-    });
+    // DatabaseReference databaseReference = FirebaseDatabase.instance.reference();
+    // databaseReference.child("fun_facts").push().set({
+    //   'details': details,
+    // });
 
     // Write to Cloud Firestore
     FirebaseFirestore.instance.collection('fun_facts').add({
@@ -81,6 +81,7 @@ class _AddFactsState extends State<AddFacts> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
+                _fetchFunFacts();
               },
               child: Text('OK'),
             ),
