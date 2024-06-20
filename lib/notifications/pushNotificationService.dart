@@ -32,7 +32,7 @@ class PushNotificationService {
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message)   {
       print('Got a message whilst in the foreground!');
-      retrieveRideRequestInfo(getRideRequestId(message.data), context);
+      //retrieveRideRequestInfo(getRideRequestId(message.data), context);
 
 
     });
@@ -40,7 +40,7 @@ class PushNotificationService {
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('in the foreground!');
-      retrieveRideRequestInfo(getRideRequestId(message.data), context);
+     // retrieveRideRequestInfo(getRideRequestId(message.data), context);
     });
 
 
@@ -48,7 +48,7 @@ class PushNotificationService {
 
     final RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
-      retrieveRideRequestInfo(getRideRequestId(context), context);
+     // retrieveRideRequestInfo(getRideRequestId(context), context);
     }
   }
 
@@ -81,61 +81,61 @@ class PushNotificationService {
     return rideRequestId;
   }
 
-  void retrieveRideRequestInfo(String rideRequestId, BuildContext context) {
-    clientRequestRef.child(rideRequestId).once().then((event) {
-      final map = event.snapshot.value as Map<dynamic,dynamic>;
-
-      print("reqid3:$rideRequestId");
-      // var dataSnapshot = value.snapshot;
-      // final map = dataSnapshot.value as Map<dynamic, dynamic>;
-      //var map = Map<String, dynamic>.from(event.snapshot.value as Map);
-      if (event.snapshot.value != null) {
-      //  assetsAudioPlayer.open(Audio("sounds/alert.mp3"));
-        //assetsAudioPlayer.play();
-
-        double pickUpLocationLat = double.parse(
-            map['pickup']['latitude'].toString());
-        double pickUpLocationLng = double.parse(
-            map['pickup']['longitude'].toString());
-        String pickUpAddress = map['pickup_address'].toString();
-
-        double dropOffLocationLat = double.parse(
-            map['dropoff']['latitude'].toString());
-        double dropOffLocationLng = double.parse(
-            map['dropoff']['longitude'].toString());
-        String dropOffAddress = map['dropoff_address']
-            .toString();
-
-        String paymentMethod = map['payment_method'].toString();
-
-        String client_name = map["client_name"];
-        String client_phone = map["client_phone"];
-
-        ClientDetails clientDetails = ClientDetails();
-        clientDetails.ride_request_id = rideRequestId;
-        clientDetails.pickup_address = pickUpAddress;
-        clientDetails.dropoff_address = dropOffAddress;
-        clientDetails.pickup = LatLng(pickUpLocationLat, pickUpLocationLng);
-        clientDetails.dropoff = LatLng(dropOffLocationLat, dropOffLocationLng);
-        clientDetails.payment_method = paymentMethod;
-        clientDetails.client_name = client_name;
-        clientDetails.client_phone = client_phone;
-
-        print("Information :: ");
-        print(clientDetails.pickup_address);
-        print(clientDetails.dropoff_address);
-
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) => NotificationDialog(clientDetails: clientDetails,),
-        );
-
-
-      }
-    }
-    );
-  }
+  // void retrieveRideRequestInfo(String rideRequestId, BuildContext context) {
+  //   clientRequestRef.child(rideRequestId).once().then((event) {
+  //     final map = event.snapshot.value as Map<dynamic,dynamic>;
+  //
+  //     print("reqid3:$rideRequestId");
+  //     // var dataSnapshot = value.snapshot;
+  //     // final map = dataSnapshot.value as Map<dynamic, dynamic>;
+  //     //var map = Map<String, dynamic>.from(event.snapshot.value as Map);
+  //     if (event.snapshot.value != null) {
+  //     //  assetsAudioPlayer.open(Audio("sounds/alert.mp3"));
+  //       //assetsAudioPlayer.play();
+  //
+  //       double pickUpLocationLat = double.parse(
+  //           map['pickup']['latitude'].toString());
+  //       double pickUpLocationLng = double.parse(
+  //           map['pickup']['longitude'].toString());
+  //       String pickUpAddress = map['pickup_address'].toString();
+  //
+  //       double dropOffLocationLat = double.parse(
+  //           map['dropoff']['latitude'].toString());
+  //       double dropOffLocationLng = double.parse(
+  //           map['dropoff']['longitude'].toString());
+  //       String dropOffAddress = map['dropoff_address']
+  //           .toString();
+  //
+  //       String paymentMethod = map['payment_method'].toString();
+  //
+  //       String client_name = map["client_name"];
+  //       String client_phone = map["client_phone"];
+  //
+  //       ClientDetails clientDetails = ClientDetails();
+  //       clientDetails.ride_request_id = rideRequestId;
+  //       clientDetails.pickup_address = pickUpAddress;
+  //       clientDetails.dropoff_address = dropOffAddress;
+  //       clientDetails.pickup = LatLng(pickUpLocationLat, pickUpLocationLng);
+  //       clientDetails.dropoff = LatLng(dropOffLocationLat, dropOffLocationLng);
+  //       clientDetails.payment_method = paymentMethod;
+  //       clientDetails.client_name = client_name;
+  //       clientDetails.client_phone = client_phone;
+  //
+  //       print("Information :: ");
+  //       print(clientDetails.pickup_address);
+  //       print(clientDetails.dropoff_address);
+  //
+  //       // showDialog(
+  //       //   context: context,
+  //       //   barrierDismissible: false,
+  //       //   builder: (BuildContext context) => NotificationDialog(clientDetails: clientDetails,),
+  //       // );
+  //
+  //
+  //     }
+  //   }
+  //   );
+  // }
 }
 
 
