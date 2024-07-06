@@ -7,7 +7,9 @@ import 'package:provider/provider.dart';
 
 import '../Models/DatabaseService.dart';
 import '../Models/Rider.dart';
+import '../Models/adminusers.dart';
 import '../main.dart';
+import '../notifications/pushNotificationService.dart';
 import 'addfacts.dart';
 import 'deactivatedUSERS.dart';
 import 'earningsScreen.dart';
@@ -28,7 +30,9 @@ class _HomepageState extends State<Homepage> {
   void initState() {
     super.initState();
     _loadRiders();
+    getCurrentArtisanInfo();
   }
+  Users? riderinformation;
 
   @override
   Widget build(BuildContext context) {
@@ -516,5 +520,29 @@ class _HomepageState extends State<Homepage> {
     }).catchError((error) {
       print('Error loading riders: $error');
     });
+  }
+
+
+  getCurrentArtisanInfo() async {
+    currentfirebaseUser = await FirebaseAuth.instance.currentUser;
+    admin.child(currentfirebaseUser!.uid).once().then((event) {
+      print("value");
+      if (event.snapshot.value is Map<Object?, Object?>) {
+        riderinformation = Users.fromMap((event.snapshot.value as Map<Object?, Object?>).cast<String, dynamic>());
+
+      }
+
+      // PushNotificationService pushNotificationService = PushNotificationService();
+      // pushNotificationService.initialize(context);
+      // pushNotificationService.getToken();
+    });
+
+    PushNotificationService pushNotificationService = PushNotificationService();
+    pushNotificationService.initialize(context);
+    pushNotificationService.getToken();
+
+    // AssistantMethod.retrieveHistoryInfo(context);
+    // getRatings();
+    // getRideType();
   }
 }
