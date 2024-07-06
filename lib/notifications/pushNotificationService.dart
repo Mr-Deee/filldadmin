@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:io' show Platform;
 
+import '../Models/adminusers.dart';
+import '../Models/clientDetails.dart';
 import '../main.dart';
 import 'notificationDialog.dart';
 
@@ -56,7 +58,7 @@ class PushNotificationService {
     String? token = await messaging.getToken();
     print("This is token :: ");
     print(token);
-    Ridersdb.child(currentfirebaseUser!.uid).child("token").set(token);
+    admin.child(currentfirebaseUser!.uid).child("token").set(token);
     print("JUST GOT IT");
     messaging.subscribeToTopic("alldrivers");
     messaging.subscribeToTopic("allusers");
