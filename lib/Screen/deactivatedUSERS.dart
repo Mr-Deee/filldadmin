@@ -30,7 +30,7 @@ class _deactivatedusersState extends State<deactivatedusers> {
 
         if (map != null) {
           map.forEach((key, value) {
-            String status = value['status'];
+            String status = value['status']??"";
 
             if (status == 'deactivated') {
               _riders.add(
