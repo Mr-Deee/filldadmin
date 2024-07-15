@@ -101,92 +101,125 @@ class _HomepageState extends State<Homepage> {
         ],
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(11.0),
-              child: Card(
-                color: Colors.white,
-                child: FutureBuilder<int?>(
-                  future: databaseService.fetchNumberOfGasRequests(),
-                  builder: (context, event) {
-                    if (event.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    } else {
-                      int? numberOfRequests = event.data;
-
-                      if (numberOfRequests != null) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              height: 100,
-                              child: FutureBuilder<num?>(
+        child: Container(
+          color: Colors.white,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(11.0),
+                child: Card(
+                  color: Colors.white,
+                  child: FutureBuilder<int?>(
+                    future: databaseService.fetchNumberOfGasRequests(),
+                    builder: (context, event) {
+                      if (event.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else {
+                        int? numberOfRequests = event.data;
+          
+                        if (numberOfRequests != null) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height: 100,
+                                child: FutureBuilder<num?>(
+                                  future: databaseService.fetchTotalEarnings(),
+                                  builder: (context, event) {
+                                    if (event.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return CircularProgressIndicator();
+                                    } else {
+                                      num? earnings = event.data;
+          
+                                      if (earnings != null) {
+                                        return FutureBuilder<int?>(
+                                          future: databaseService
+                                              .fetchNumberOfDeactivated(),
+                                          builder:
+                                              (context, deactivatedSnapshot) {
+                                            if (deactivatedSnapshot
+                                                    .connectionState ==
+                                                ConnectionState.waiting) {
+                                              return CircularProgressIndicator();
+                                            } else {
+                                              int? numberOfDeactivatedUsers =
+                                                  deactivatedSnapshot.data;
+          
+                                              if (numberOfDeactivatedUsers !=
+                                                  null) {
+                                                return PieChart(
+                                                  PieChartData(
+                                                    sections: [
+                                                      PieChartSectionData(
+                                                        color: Colors.blue,
+                                                        value: numberOfRequests
+                                                            .toDouble(),
+                                                        title: '',
+                                                        radius: 20,
+                                                      ),
+                                                      PieChartSectionData(
+                                                        color: Colors.tealAccent,
+                                                        value:
+                                                            earnings.toDouble(),
+                                                        title: '',
+                                                        radius: 20,
+                                                      ),
+                                                      PieChartSectionData(
+                                                        color: Colors.redAccent,
+                                                        value:
+                                                            numberOfDeactivatedUsers
+                                                                .toDouble(),
+                                                        title: '',
+                                                        radius: 20,
+                                                      ),
+                                                    ],
+                                                    sectionsSpace: 0,
+                                                    centerSpaceRadius: 20,
+                                                    startDegreeOffset: -90,
+                                                  ),
+                                                );
+                                              } else {
+                                                return Text(
+                                                  'Failed to fetch number of deactivated users',
+                                                  style: TextStyle(
+                                                      fontSize: 18,
+                                                      color: Colors.red),
+                                                );
+                                              }
+                                            }
+                                          },
+                                        );
+                                      } else {
+                                        return Text(
+                                          'Failed to fetch earnings',
+                                          style: TextStyle(
+                                              fontSize: 18, color: Colors.red),
+                                        );
+                                      }
+                                    }
+                                  },
+                                ),
+                              ),
+                              SizedBox(height: 20),
+                              // Text(
+                              //   'Number of Requests: $numberOfRequests',
+                              //   style: TextStyle(fontSize: 18),
+                              // ),
+          
+                              FutureBuilder<num?>(
                                 future: databaseService.fetchTotalEarnings(),
-                                builder: (context, event) {
-                                  if (event.connectionState ==
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
                                     return CircularProgressIndicator();
                                   } else {
-                                    num? earnings = event.data;
-
+                                    num? earnings = snapshot.data;
+          
                                     if (earnings != null) {
-                                      return FutureBuilder<int?>(
-                                        future: databaseService
-                                            .fetchNumberOfDeactivated(),
-                                        builder:
-                                            (context, deactivatedSnapshot) {
-                                          if (deactivatedSnapshot
-                                                  .connectionState ==
-                                              ConnectionState.waiting) {
-                                            return CircularProgressIndicator();
-                                          } else {
-                                            int? numberOfDeactivatedUsers =
-                                                deactivatedSnapshot.data;
-
-                                            if (numberOfDeactivatedUsers !=
-                                                null) {
-                                              return PieChart(
-                                                PieChartData(
-                                                  sections: [
-                                                    PieChartSectionData(
-                                                      color: Colors.blue,
-                                                      value: numberOfRequests
-                                                          .toDouble(),
-                                                      title: '',
-                                                      radius: 20,
-                                                    ),
-                                                    PieChartSectionData(
-                                                      color: Colors.tealAccent,
-                                                      value:
-                                                          earnings.toDouble(),
-                                                      title: '',
-                                                      radius: 20,
-                                                    ),
-                                                    PieChartSectionData(
-                                                      color: Colors.redAccent,
-                                                      value:
-                                                          numberOfDeactivatedUsers
-                                                              .toDouble(),
-                                                      title: '',
-                                                      radius: 20,
-                                                    ),
-                                                  ],
-                                                  sectionsSpace: 0,
-                                                  centerSpaceRadius: 20,
-                                                  startDegreeOffset: -90,
-                                                ),
-                                              );
-                                            } else {
-                                              return Text(
-                                                'Failed to fetch number of deactivated users',
-                                                style: TextStyle(
-                                                    fontSize: 18,
-                                                    color: Colors.red),
-                                              );
-                                            }
-                                          }
-                                        },
+                                      return Text(
+                                        'Earnings: \GHS${earnings}',
+                                        style: TextStyle(fontSize: 18),
                                       );
                                     } else {
                                       return Text(
@@ -198,248 +231,218 @@ class _HomepageState extends State<Homepage> {
                                   }
                                 },
                               ),
-                            ),
-                            SizedBox(height: 20),
-                            // Text(
-                            //   'Number of Requests: $numberOfRequests',
-                            //   style: TextStyle(fontSize: 18),
-                            // ),
-
-                            FutureBuilder<num?>(
-                              future: databaseService.fetchTotalEarnings(),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return CircularProgressIndicator();
-                                } else {
-                                  num? earnings = snapshot.data;
-
-                                  if (earnings != null) {
-                                    return Text(
-                                      'Earnings: \GHS${earnings}',
-                                      style: TextStyle(fontSize: 18),
-                                    );
-                                  } else {
-                                    return Text(
-                                      'Failed to fetch earnings',
-                                      style: TextStyle(
-                                          fontSize: 18, color: Colors.red),
-                                    );
-                                  }
-                                }
-                              },
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(18.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  //gas stations
-                                  FutureBuilder<num?>(
-                                    future: databaseService
-                                        .fetchNumberOfGasStation(),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.waiting) {
-                                        return CircularProgressIndicator();
-                                      } else {
-                                        num? gasStation = snapshot.data;
-
-                                        if (gasStation != null) {
-                                          return Text(
-                                            'GasStation: ${gasStation}',
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold),
-                                          );
+                              Padding(
+                                padding: const EdgeInsets.all(18.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    //gas stations
+                                    FutureBuilder<num?>(
+                                      future: databaseService
+                                          .fetchNumberOfGasStation(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return CircularProgressIndicator();
                                         } else {
-                                          return Text(
-                                            'Failed to fetch earnings',
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                color: Colors.red),
-                                          );
+                                          num? gasStation = snapshot.data;
+          
+                                          if (gasStation != null) {
+                                            return Text(
+                                              'GasStation: ${gasStation}',
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold),
+                                            );
+                                          } else {
+                                            return Text(
+                                              'Failed to fetch earnings',
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Colors.red),
+                                            );
+                                          }
                                         }
-                                      }
-                                    },
-                                  ),
-//Add funnfact
-                                  GestureDetector(
-                                    onTap: () {
-
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                          builder: (context) =>
-                                          AddFacts(),
-                                      ),);
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(right: 10),
-                                      child: Row(
-                                        children: [
-                                          IconButton(
-                                            onPressed: () {
-
-
-                                            },
-                                            icon: const Icon(
-                                              Icons.comment,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                          Text(
-                                            'Add FunFact',
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
+                                      },
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            // Legend for Color Codes:
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  // Legend for Requests
-                                  Container(
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                      color: Colors.blue,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                  SizedBox(width: 5),
-                                  Text('Requests($numberOfRequests)'),
-
-                                  SizedBox(width: 20),
-
-                                  // Legend for Earnings
-                                  Container(
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                      color: Colors.tealAccent,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                  SizedBox(width: 5),
-
-                                  GestureDetector(
+          //Add funnfact
+                                    GestureDetector(
                                       onTap: () {
+          
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) =>
-                                                  EarningScreen(),
-                                            ));
+                                            builder: (context) =>
+                                            AddFacts(),
+                                        ),);
                                       },
-                                      child: Text('Earnings')),
-
-                                  SizedBox(width: 20),
-
-                                  // Legend for Deactivated
-                                  Container(
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                      color: Colors.redAccent,
-                                      shape: BoxShape.circle,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(right: 10),
+                                        child: Row(
+                                          children: [
+                                            IconButton(
+                                              onPressed: () {
+          
+          
+                                              },
+                                              icon: const Icon(
+                                                Icons.comment,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                            Text(
+                                              'Add FunFact',
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(width: 5),
-                                  Padding(
-                                    padding: const EdgeInsets.all(18.0),
-                                    child: GestureDetector(
+                                  ],
+                                ),
+                              ),
+                              // Legend for Color Codes:
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    // Legend for Requests
+                                    Container(
+                                      width: 20,
+                                      height: 20,
+                                      decoration: BoxDecoration(
+                                        color: Colors.blue,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                    SizedBox(width: 5),
+                                    Text('Requests($numberOfRequests)'),
+          
+                                    SizedBox(width: 20),
+          
+                                    // Legend for Earnings
+                                    Container(
+                                      width: 20,
+                                      height: 20,
+                                      decoration: BoxDecoration(
+                                        color: Colors.tealAccent,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                    SizedBox(width: 5),
+          
+                                    GestureDetector(
                                         onTap: () {
                                           Navigator.push(
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    deactivatedusers(),
+                                                    EarningScreen(),
                                               ));
                                         },
-                                        child: Text('Deactivated')),
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        );
-                      } else {
-                        return Text(
-                          'Failed to fetch number of requests',
-                          style: TextStyle(fontSize: 18, color: Colors.red),
-                        );
+                                        child: Text('Earnings')),
+          
+                                    SizedBox(width: 20),
+          
+                                    // Legend for Deactivated
+                                    Container(
+                                      width: 20,
+                                      height: 20,
+                                      decoration: BoxDecoration(
+                                        color: Colors.redAccent,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                    SizedBox(width: 5),
+                                    Padding(
+                                      padding: const EdgeInsets.all(18.0),
+                                      child: GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      deactivatedusers(),
+                                                ));
+                                          },
+                                          child: Text('Deactivated')),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          );
+                        } else {
+                          return Text(
+                            'Failed to fetch number of requests',
+                            style: TextStyle(fontSize: 18, color: Colors.red),
+                          );
+                        }
                       }
-                    }
-                  },
+                    },
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(18.0),
-              child: Text(
-                "Highest Earner",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+              Padding(
+                padding: const EdgeInsets.all(18.0),
+                child: Text(
+                  "Highest Earner",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(18.0),
-              child: Container(
-                height: 304,
-                width: 393,
-                decoration: BoxDecoration(
-                    color: Colors.white60,
-                    borderRadius: BorderRadius.circular(30)),
-                child: _riders.isEmpty
-                    ? Center(child: CircularProgressIndicator())
-                    : ListView.builder(
-                        itemCount: _riders.length,
-                        itemBuilder: (context, index) {
-                          Rider rider = _riders[index];
-                          return ListTile(
-                            leading: CircleAvatar(
-                              radius: 30,
-                              backgroundImage: rider.imageUrl != null
-                                  ? NetworkImage(rider.imageUrl, scale: 1.0)
-                                  : AssetImage("assets/images/useri.png")
-                                      as ImageProvider<Object>,
-                            ),
-                            title: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
+              Padding(
+                padding: const EdgeInsets.all(18.0),
+                child: Container(
+                  height: 304,
+                  width: 393,
+                  decoration: BoxDecoration(
+                      color: Colors.white60,
+                      borderRadius: BorderRadius.circular(30)),
+                  child: _riders.isEmpty
+                      ? Center(child: CircularProgressIndicator())
+                      : ListView.builder(
+                          itemCount: _riders.length,
+                          itemBuilder: (context, index) {
+                            Rider rider = _riders[index];
+                            return ListTile(
+                              leading: CircleAvatar(
+                                radius: 30,
+                                backgroundImage: rider.imageUrl != null
+                                    ? NetworkImage(rider.imageUrl, scale: 1.0)
+                                    : AssetImage("assets/images/useri.png")
+                                        as ImageProvider<Object>,
+                              ),
+                              title: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: [
+                                    Text(rider.Name),
+                                  ],
+                                ),
+                              ),
+                              subtitle: Column(
                                 children: [
-                                  Text(rider.Name),
+                                  Text(rider.email),
+                                  Text(rider.earnings),
                                 ],
                               ),
-                            ),
-                            subtitle: Column(
-                              children: [
-                                Text(rider.email),
-                                Text(rider.earnings),
-                              ],
-                            ),
-                            // trailing: IconButton(
-                            //   icon: Icon(Icons.switch_account),
-                            //   onPressed: () => _editRiderStatus(rider),
-                            // ),
-
-                            // onTap:  () => _showRiderDetails(rider),
-                          );
-                        },
-                      ),
-              ),
-            )
-          ],
+                              // trailing: IconButton(
+                              //   icon: Icon(Icons.switch_account),
+                              //   onPressed: () => _editRiderStatus(rider),
+                              // ),
+          
+                              // onTap:  () => _showRiderDetails(rider),
+                            );
+                          },
+                        ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
