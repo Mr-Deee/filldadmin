@@ -1,3 +1,4 @@
+import 'package:filldadmin/Screen/requests.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -320,7 +321,16 @@ class _HomepageState extends State<Homepage> {
                                       ),
                                     ),
                                     SizedBox(width: 5),
-                                    Text('Requests($numberOfRequests)'),
+                                    GestureDetector(
+                                      onTap: (){
+                                         Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    Requests(),
+                                              ));
+                                      },
+                                      child: Text('Requests($numberOfRequests)')),
           
                                     SizedBox(width: 20),
           
