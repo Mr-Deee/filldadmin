@@ -32,6 +32,7 @@ class _HomepageState extends State<Homepage> {
     super.initState();
     _loadRiders();
     getCurrentArtisanInfo();
+    fetchOngoingRequests();
   }
   Users? riderinformation;
 
@@ -400,7 +401,7 @@ class _HomepageState extends State<Homepage> {
               Padding(
                 padding: const EdgeInsets.all(18.0),
                 child: Text(
-                  "Highest Earner",
+                  "Ongoing Delieveries",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
                 ),
               ),
@@ -412,17 +413,16 @@ class _HomepageState extends State<Homepage> {
                   decoration: BoxDecoration(
                       color: Colors.white60,
                       borderRadius: BorderRadius.circular(30)),
-                  child: _riders.isEmpty
+                  child: ongoingRequests.isEmpty
                       ? Center(child: CircularProgressIndicator())
                       : ListView.builder(
-                          itemCount: _riders.length,
+                          itemCount: ongoingRequests.length,
                           itemBuilder: (context, index) {
-                            Rider rider = _riders[index];
+                    final rider = ongoingRequests[index];
                             return ListTile(
                               leading: CircleAvatar(
                                 radius: 30,
-                                backgroundImage: rider.imageUrl != null
-                                    ? NetworkImage(rider.imageUrl, scale: 1.0)
+                                backgroundImage
                                     : AssetImage("assets/images/useri.png")
                                         as ImageProvider<Object>,
                               ),
@@ -430,14 +430,22 @@ class _HomepageState extends State<Homepage> {
                                 scrollDirection: Axis.horizontal,
                                 child: Row(
                                   children: [
-                                    Text(rider.Name),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment. spaceEvenly,
+                                      children: [
+                                        Text(rider['driver_name']??""),
+                                          Text(rider["Gas Amount"]??"N/A"),
+                                      ],
+                                    ),
+                                        //  Text(rider['driver_name']??""),
                                   ],
                                 ),
                               ),
                               subtitle: Column(
                                 children: [
-                                  Text(rider.email),
-                                  Text(rider.earnings),
+                                  Icon(Icons.person_4_outlined),
+                                  Text(rider["client_name"??""]),
+                                
                                 ],
                               ),
                               // trailing: IconButton(
@@ -502,6 +510,33 @@ class _HomepageState extends State<Homepage> {
     );
   }
 
+    List<Map<String, dynamic>> ongoingRequests = [];
+
+ Future<void> fetchOngoingRequests() async {
+    final databaseReference = FirebaseDatabase.instance.ref('GasRequests').orderByChild('status').equalTo('onride');
+    final snapshot = await databaseReference.get();
+
+    if (snapshot.exists) {
+       final List<Map<String, dynamic>> requests = [];
+      (snapshot.value as Map<dynamic, dynamic>).forEach((key, value) {
+        requests.add({
+          'id': key,
+          'driver_name': value['driver_name'],
+          'client_name': value['client_name'],
+          'fare': value['fare'],
+           'clientphone': value['client_phone'],
+          // 'gasPrice': value['gasPrice'],
+          // 'location': value['location'],
+          // 'kilometers': value['kilometers'],
+        });
+      });
+      setState(() {
+        ongoingRequests = requests;
+        
+        //(snapshot.value as List).map((e) => Map<String, dynamic>.from(e)).toList();
+      });
+    }
+  }
   void _loadRiders() {
     _ridersRef
         .orderByChild('earnings')
