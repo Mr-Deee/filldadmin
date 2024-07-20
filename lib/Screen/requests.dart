@@ -502,11 +502,11 @@ class _RidersDeliveriesScreenState extends State<RidersDeliveriesScreen> {
                     : AssetImage("assets/images/useri.png") as ImageProvider<Object>,
               ),
             ),
-            title: Text("Rider: ${delivery['rider']}"),
+            title: Text("Rider: ${delivery['driver_name']}"),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Client: ${delivery['client']}"),
+                Text("To Client: ${delivery['client_name']}"),
                 // Text("Completed Deliveries: ${delivery['completedDeliveries']}"),
                 Text("Fare: ${delivery['fare']}"),
               ],
