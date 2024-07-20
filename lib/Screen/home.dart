@@ -562,6 +562,8 @@ class _HomepageState extends State<Homepage> {
     final databaseReference = FirebaseDatabase.instance.ref('GasRequests').orderByChild('status').equalTo('onride');
     final snapshot = await databaseReference.get();
 print('geeer:$snapshot');
+
+    databaseReference.onValue.listen((event) {
     if (snapshot.exists) {
       print('geeer2:$snapshot');
        final List<Map<String, dynamic>> requests = [];
@@ -585,7 +587,9 @@ print('geeer:$snapshot');
         //(snapshot.value as List).map((e) => Map<String, dynamic>.from(e)).toList();
       });
     }
-  }
+  });
+ }
+
   void _loadRiders() {
     _ridersRef
         .orderByChild('earnings')
