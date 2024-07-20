@@ -118,7 +118,7 @@ class _HomepageState extends State<Homepage> {
                         return CircularProgressIndicator();
                       } else {
                         int? numberOfRequests = event.data;
-          
+
                         if (numberOfRequests != null) {
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -133,7 +133,7 @@ class _HomepageState extends State<Homepage> {
                                       return CircularProgressIndicator();
                                     } else {
                                       num? earnings = event.data;
-          
+
                                       if (earnings != null) {
                                         return FutureBuilder<int?>(
                                           future: databaseService
@@ -147,7 +147,7 @@ class _HomepageState extends State<Homepage> {
                                             } else {
                                               int? numberOfDeactivatedUsers =
                                                   deactivatedSnapshot.data;
-          
+
                                               if (numberOfDeactivatedUsers !=
                                                   null) {
                                                 return PieChart(
@@ -208,7 +208,7 @@ class _HomepageState extends State<Homepage> {
                               //   'Number of Requests: $numberOfRequests',
                               //   style: TextStyle(fontSize: 18),
                               // ),
-          
+
                               FutureBuilder<num?>(
                                 future: databaseService.fetchTotalEarnings(),
                                 builder: (context, snapshot) {
@@ -217,7 +217,7 @@ class _HomepageState extends State<Homepage> {
                                     return CircularProgressIndicator();
                                   } else {
                                     num? earnings = snapshot.data;
-          
+
                                     if (earnings != null) {
                                       return Text(
                                         'Earnings: \GHS${earnings}',
@@ -249,7 +249,7 @@ class _HomepageState extends State<Homepage> {
                                           return CircularProgressIndicator();
                                         } else {
                                           num? gasStation = snapshot.data;
-          
+
                                           if (gasStation != null) {
                                             return Text(
                                               'GasStation: ${gasStation}',
@@ -271,7 +271,7 @@ class _HomepageState extends State<Homepage> {
           //Add funnfact
                                     GestureDetector(
                                       onTap: () {
-          
+
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
@@ -285,8 +285,8 @@ class _HomepageState extends State<Homepage> {
                                           children: [
                                             IconButton(
                                               onPressed: () {
-          
-          
+
+
                                               },
                                               icon: const Icon(
                                                 Icons.comment,
@@ -332,9 +332,9 @@ class _HomepageState extends State<Homepage> {
                                               ));
                                       },
                                       child: Text('Requests($numberOfRequests)')),
-          
+
                                     SizedBox(width: 20),
-          
+
                                     // Legend for Earnings
                                     Container(
                                       width: 20,
@@ -345,7 +345,7 @@ class _HomepageState extends State<Homepage> {
                                       ),
                                     ),
                                     SizedBox(width: 5),
-          
+
                                     GestureDetector(
                                         onTap: () {
                                           Navigator.push(
@@ -356,9 +356,9 @@ class _HomepageState extends State<Homepage> {
                                               ));
                                         },
                                         child: Text('Earnings')),
-          
+
                                     SizedBox(width: 20),
-          
+
                                     // Legend for Deactivated
                                     Container(
                                       width: 20,
@@ -398,67 +398,113 @@ class _HomepageState extends State<Homepage> {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(18.0),
-                child: Text(
-                  "Ongoing Delieveries",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+
+                  Padding(
+                    padding: const EdgeInsets.only(left:10,top: 10.0),
+                    child: Text(
+                      "Ongoing Delieveries",
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                    ),
+                  ),
+                ],
               ),
               Padding(
-                padding: const EdgeInsets.all(18.0),
+                padding: const EdgeInsets.all(11.0),
                 child: Container(
                   height: 304,
                   width: 393,
                   decoration: BoxDecoration(
-                      color: Colors.white60,
-                      borderRadius: BorderRadius.circular(30)),
+                    color: Colors.white60,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
                   child: ongoingRequests.isEmpty
                       ? Center(child: CircularProgressIndicator())
                       : ListView.builder(
-                          itemCount: ongoingRequests.length,
-                          itemBuilder: (context, index) {
-                    final rider = ongoingRequests[index];
-                            return ListTile(
-                              leading: CircleAvatar(
-                                radius: 30,
-                                backgroundImage
-                                    : AssetImage("assets/images/useri.png")
-                                        as ImageProvider<Object>,
+                    itemCount: ongoingRequests.length,
+                    itemBuilder: (context, index) {
+                      final rider = ongoingRequests[index];
+                      return ListTile(
+                        leading: Container(
+                          width: 60, // Specify a fixed width for the leading container
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(13),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 5,
+                                blurRadius: 7,
+                                offset: Offset(0, 3),
                               ),
-                              title: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
+                            ],
+                          ),
+                          child: CircleAvatar(
+                            radius: 20,
+                            backgroundImage: rider['profilepicture'] != null
+                                ? NetworkImage(rider['profilepicture'])
+                                : AssetImage("assets/images/useri.png") as ImageProvider<Object>,
+                          ),
+                        ),
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
                                   children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment. spaceEvenly,
-                                      children: [
-                                        Text(rider['driver_name']??""),
-                                          Text(rider["Gas Amount"]??"N/A"),
-                                      ],
-                                    ),
-                                        //  Text(rider['driver_name']??""),
+                                    Icon(Icons.motorcycle, size: 16),
+                                    SizedBox(width: 4),
+                                    Text(rider['driver_name'] ?? ""),
                                   ],
                                 ),
-                              ),
-                              subtitle: Column(
-                                children: [
-                                  Icon(Icons.person_4_outlined),
-                                  Text(rider["client_name"??""]),
-                                
-                                ],
-                              ),
-                              // trailing: IconButton(
-                              //   icon: Icon(Icons.switch_account),
-                              //   onPressed: () => _editRiderStatus(rider),
-                              // ),
-          
-                              // onTap:  () => _showRiderDetails(rider),
-                            );
-                          },
+                                Row(
+                                  children: [
+                                    Icon(Icons.person, size: 16),
+                                    SizedBox(width: 4),
+                                    Text(rider['client_name'] ?? ""),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.gas_meter, size: 16),
+                                    SizedBox(width: 4),
+                                    Text('GHS${rider["Gas Amount"]??'-'}'??"N/A"),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Icon(Icons.money, size: 16),
+                                    SizedBox(width: 4),
+                                    Text('GHS${rider["fare"]??'-'}'),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
+                        // subtitle: Row(
+                        //   children: [
+                        //     Icon(Icons.person_4_outlined, size: 16),
+                        //     SizedBox(width: 4),
+                        //     Text(rider["client_name"] ?? ""),
+                        //   ],
+                        // ),
+                      );
+                    },
+                  ),
                 ),
               )
+
             ],
           ),
         ),
@@ -515,8 +561,9 @@ class _HomepageState extends State<Homepage> {
  Future<void> fetchOngoingRequests() async {
     final databaseReference = FirebaseDatabase.instance.ref('GasRequests').orderByChild('status').equalTo('onride');
     final snapshot = await databaseReference.get();
-
+print('geeer:$snapshot');
     if (snapshot.exists) {
+      print('geeer2:$snapshot');
        final List<Map<String, dynamic>> requests = [];
       (snapshot.value as Map<dynamic, dynamic>).forEach((key, value) {
         requests.add({
@@ -524,7 +571,9 @@ class _HomepageState extends State<Homepage> {
           'driver_name': value['driver_name'],
           'client_name': value['client_name'],
           'fare': value['fare'],
-           'clientphone': value['client_phone'],
+           'client_phone': value['client_phone'],
+           'profilepicture': value['profilepicture'],
+           'Gas Amount': value['Gas Amount'],
           // 'gasPrice': value['gasPrice'],
           // 'location': value['location'],
           // 'kilometers': value['kilometers'],
@@ -532,7 +581,7 @@ class _HomepageState extends State<Homepage> {
       });
       setState(() {
         ongoingRequests = requests;
-        
+
         //(snapshot.value as List).map((e) => Map<String, dynamic>.from(e)).toList();
       });
     }

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:intl/intl.dart';
@@ -96,64 +97,67 @@ class _RequestsState extends State<Requests> {
       ),
       body: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  showGasRequests(context);
-                },
-                child: Card(
-                  child: Container(
-                    padding: EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        Text(
-                          "Gas Requests",
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        Icon(Icons.local_gas_station, size: 50),
-                      ],
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    showGasRequests(context);
+                  },
+                  child: Card(
+                    child: Container(
+                      padding: EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          Text(
+                            "Gas Requests",
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          Icon(Icons.local_gas_station, size: 50),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  showRidersDeliveries(context);
-                },
-                child: Card(
-                  child: Container(
-                    padding: EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        Text(
-                          "Riders' Deliveries",
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        Icon(Icons.delivery_dining, size: 50),
-                      ],
+                GestureDetector(
+                  onTap: () {
+                    showRidersDeliveries(context);
+                  },
+                  child: Card(
+                    child: Container(
+                      padding: EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          Text(
+                            "Riders' Deliveries",
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          Icon(Icons.delivery_dining, size: 50),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          ongoingRequests.isEmpty
-                      ? Center(child: CircularProgressIndicator())
-                      : 
-          Expanded(
-            child: ListView.builder(
-              itemCount: ongoingRequests.length,
-              itemBuilder: (context, index) {
-                final request = ongoingRequests[index];
-                return ListTile(
-                  title: Text("Client Name: ${request['client_name']}"),
-                  subtitle: Text("Fare: ${request['fare']}"),
-                );
-              },
+              ],
             ),
           ),
+          // ongoingRequests.isEmpty
+          //             ? Center(child: CircularProgressIndicator())
+          //             :
+          // Expanded(
+          //   child: ListView.builder(
+          //     itemCount: ongoingRequests.length,
+          //     itemBuilder: (context, index) {
+          //       final request = ongoingRequests[index];
+          //       return ListTile(
+          //         title: Text("Client Name: ${request['client_name']}"),
+          //         subtitle: Text("Fare: ${request['fare']}"),
+          //       );
+          //     },
+          //   ),
+          // ),
         ],
       ),
     );
@@ -204,7 +208,7 @@ class _GasRequestsScreenState extends State<GasRequestsScreen> {
   }
 
   Future<void> fetchGasRequests() async {
-    Query ref = FirebaseDatabase.instance.ref('GasRequests').orderByChild('status').equalTo('onride');
+    Query ref = FirebaseDatabase.instance.ref('GasRequests');
     DataSnapshot snapshot = await ref.get();
     // List<Map<String, dynamic>> requests = [];
     // for (var data in snapshot.children) {
@@ -220,7 +224,8 @@ class _GasRequestsScreenState extends State<GasRequestsScreen> {
             'id': key,
             'driver_name': value['driver_name'],
             'client_name': value['client_name'],
-            'fare': value['deliveryPrice'],
+            'fare': value['fare'],
+            'Gas Amount': value['Gas Amount'],
             // 'gasPrice': value['gasPrice'],
             // 'location': value['location'],
             // 'kilometers': value['kilometers'],
@@ -278,27 +283,27 @@ class _GasRequestsScreenState extends State<GasRequestsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Client Requests'),
-        actions: [
-          DropdownButton<String>(
-            value: selectedFilter,
-            items: <String>['Day', 'Month'].map((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-            onChanged: (String? newValue) {
-              setState(() {
-                selectedFilter = newValue!;
-                filterRequests();
-              });
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.calendar_today),
-            onPressed: () => _selectDate(context),
-          ),
-        ],
+        // actions: [
+        //   DropdownButton<String>(
+        //     value: selectedFilter,
+        //     items: <String>['Day', 'Month'].map((String value) {
+        //       return DropdownMenuItem<String>(
+        //         value: value,
+        //         child: Text(value),
+        //       );
+        //     }).toList(),
+        //     onChanged: (String? newValue) {
+        //       setState(() {
+        //         selectedFilter = newValue!;
+        //         filterRequests();
+        //       });
+        //     },
+        //   ),
+        //   IconButton(
+        //     icon: Icon(Icons.calendar_today),
+        //     onPressed: () => _selectDate(context),
+        //   ),
+        // ],
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
@@ -307,12 +312,44 @@ class _GasRequestsScreenState extends State<GasRequestsScreen> {
               itemBuilder: (context, index) {
                 final request = filteredRequests[index];
                 return ListTile(
-                  title: Text("Request ID: ${request['id']}"),
+
+                  leading:Container(width: 60, // Specify a fixed width for the leading container
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(13),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: CircleAvatar(
+                      radius: 30,
+                      backgroundImage:AssetImage("assets/images/delivery-with-white-background-1.png") as ImageProvider<Object>,
+                    ),
+                  ),
+                  title: Text(" ${request['id']}",style: TextStyle(fontSize: 12),),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Rider: ${request['driver_name']}"),
-                      Text("Client: ${request['client_name']}"),
+
+                      Row(
+                        children: [
+                          Icon(Icons.person, size: 16),
+                          Text("${request['client_name']}"),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.money, size: 16),
+                          Text('GasAmount: GHS '"${request['Gas Amount']}"),
+                        ],
+                      ),
+
                       // Text("Delivery Price: ${request['deliveryPrice']}"),
                       // Text("Gas Price: ${request['gasPrice']}"),
                       // Text("Location: ${request['location']}"),
@@ -345,14 +382,48 @@ class _RidersDeliveriesScreenState extends State<RidersDeliveriesScreen> {
   late String selectedFilter;
   late List<Map<String, dynamic>> filteredDeliveries;
   DateTime? selectedDate;
-
+  late List<Map<String, dynamic>> gasRequests;
+  bool isLoading = true;
   @override
   void initState() {
     super.initState();
     selectedFilter = widget.filter;
     filteredDeliveries = widget.ridersDeliveries;
+    fetchGasRequests();
   }
+  Future<void> fetchGasRequests() async {
+    Query ref = FirebaseDatabase.instance.ref('GasRequests');
+    DataSnapshot snapshot = await ref.get();
+    // List<Map<String, dynamic>> requests = [];
+    // for (var data in snapshot.children) {
+    //   Map<String, dynamic> request = Map<String, dynamic>.from(data.value as Map);
+    //   requests.add(request);
+    // }
 
+    if (snapshot.exists) {
+      final List<Map<String, dynamic>> requests = [];
+      (snapshot.value as Map<dynamic, dynamic>).forEach((key, value) {
+
+        requests.add({
+          'id': key,
+          'driver_name': value['driver_name'],
+          'profilepicture': value['profilepicture'],
+          'client_name': value['client_name'],
+          'fare': value['fare'],
+          'Gas Amount': value['Gas Amount'],
+          // 'gasPrice': value['gasPrice'],
+          // 'location': value['location'],
+          // 'kilometers': value['kilometers'],
+        });
+
+      });
+      setState(() {
+        gasRequests = requests;
+        filteredDeliveries = gasRequests;
+        isLoading = false;
+      });
+    }
+  }
   void filterDeliveries() {
     setState(() {
       if (selectedDate != null) {
@@ -380,39 +451,63 @@ class _RidersDeliveriesScreenState extends State<RidersDeliveriesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Riders Deliveries'),
-        actions: [
-          DropdownButton<String>(
-            value: selectedFilter,
-            items: <String>['Day', 'Month'].map((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-            onChanged: (String? newValue) {
-              setState(() {
-                selectedFilter = newValue!;
-                filterDeliveries();
-              });
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.calendar_today),
-            onPressed: (){},
-          ),
-        ],
+        // actions: [
+        //   DropdownButton<String>(
+        //     value: selectedFilter,
+        //     items: <String>['Day', 'Month'].map((String value) {
+        //       return DropdownMenuItem<String>(
+        //         value: value,
+        //         child: Text(value),
+        //       );
+        //     }).toList(),
+        //     onChanged: (String? newValue) {
+        //       setState(() {
+        //         selectedFilter = newValue!;
+        //         filterDeliveries();
+        //       });
+        //     },
+        //   ),
+        //   IconButton(
+        //     icon: Icon(Icons.calendar_today),
+        //     onPressed: (){},
+        //   ),
+        // ],
       ),
-      body: ListView.builder(
+      body:filteredDeliveries.isEmpty
+          ? Center(child: CircularProgressIndicator())
+          : ListView.builder(
         itemCount: filteredDeliveries.length,
         itemBuilder: (context, index) {
           final delivery = filteredDeliveries[index];
           return ListTile(
+            leading: Container(
+              width: 60, // Specify a fixed width for the leading container
+              padding: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(13),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 5,
+                    blurRadius: 7,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: CircleAvatar(
+                radius: 20,
+                backgroundImage: delivery['profilepicture'] != null
+                    ? NetworkImage(delivery['profilepicture'])
+                    : AssetImage("assets/images/useri.png") as ImageProvider<Object>,
+              ),
+            ),
             title: Text("Rider: ${delivery['rider']}"),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("Client: ${delivery['client']}"),
-                Text("Completed Deliveries: ${delivery['completedDeliveries']}"),
+                // Text("Completed Deliveries: ${delivery['completedDeliveries']}"),
                 Text("Fare: ${delivery['fare']}"),
               ],
             ),
