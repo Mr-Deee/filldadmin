@@ -2,23 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:introduction_screen/introduction_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'dart:math';
-// import 'package:flutter_sms/flutter_sms.dart';
 import 'package:permission_handler/permission_handler.dart';
-// import '../Models/Assistants/assistantmethods.dart';
 import '../main.dart';
 import 'package:firebase_phone_auth_handler/firebase_phone_auth_handler.dart';
-// import 'Onetimepassword.dart';
-// import 'homepage.dart';
-
-// import 'package:flutter/services.dart';
-// import 'mainscreen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'Models/assistantmethod.dart';
@@ -110,7 +101,7 @@ class _AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffF2E9E9),
+      backgroundColor: Color(0xFFF0F3FA),
       //Color(0xff23252A),
       body: SingleChildScrollView(
         child: Container(
@@ -122,9 +113,15 @@ class _AuthPageState extends State<AuthPage> {
                     height: 300,
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+
+                      gradient: LinearGradient(
+                      colors: [Color(0xff72B2E4), Color(0xff98e6e6)], // Gradient colors
+                begin: Alignment.topLeft, // Gradient start position
+                end: Alignment.bottomRight, // Gradient end position
+              ),
+                      // color: Color(0xffD1E9F6),
                       borderRadius:
-                          BorderRadius.all( Radius.circular(40)),
+                          BorderRadius.all( Radius.circular(13)),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(18.0),
@@ -155,7 +152,7 @@ class _AuthPageState extends State<AuthPage> {
                 ),
               ),),
                           //
-                        Text('GAS STATIONS'),
+                        Text('GAS STATIONS',style: TextStyle(fontWeight: FontWeight.bold),),
                           Center(
                             child: Padding(
                               padding: EdgeInsets.only(top:1.0),
@@ -251,6 +248,7 @@ class _SignInFormState extends State<SignInForm> {
   Widget build(BuildContext context) {
 
     return SingleChildScrollView(
+
       child: Padding(
         padding: const EdgeInsets.only(top: 10.0, left: 35, right: 35, bottom: 30),
         child: Column(
@@ -258,16 +256,109 @@ class _SignInFormState extends State<SignInForm> {
             SizedBox(height: 30.0),
             TextField(
               controller: _emailController,
-              decoration: InputDecoration(labelText: 'E-mail'),
+              keyboardType: TextInputType.emailAddress,
+              style: TextStyle(
+                color: Colors.black87, // Text color
+                fontSize: 16.0, // Font size
+              ),
+              decoration: InputDecoration(
+                labelText: 'E-mail',
+                labelStyle: TextStyle(
+                  color: Colors.grey[600], // Label color
+                  fontSize: 14.0, // Label font size
+                ),
+                hintText: 'Enter your e-mail',
+                hintStyle: TextStyle(
+                  color: Colors.grey[400], // Hint color
+                  fontSize: 14.0, // Hint font size
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Rounded corners
+                  borderSide: BorderSide(
+                    color: Color(0xff98e6e6), // Border color when enabled
+                    width: 1.0, // Border width
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Rounded corners
+                  borderSide: BorderSide(
+                    color: Colors.blue, // Border color when focused
+                    width: 2.0, // Border width
+                  ),
+
+                ),
+                filled: true,
+                fillColor: Colors.grey[100], // Background color
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: 15.0,
+                  horizontal: 20.0, // Padding inside the TextField
+                ),
+                prefixIcon: Icon(
+                  Icons.email_outlined, // Email icon
+                  color: Colors.grey[600],
+                ),
+              ),
             ),
+
+
             SizedBox(height: 40.0),
+
             TextField(
               controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
+              keyboardType: TextInputType.emailAddress,
+              style: TextStyle(
+                color: Colors.black87, // Text color
+                fontSize: 16.0, // Font size
+              ),
+              decoration: InputDecoration(
+                labelText: 'Password',
+                labelStyle: TextStyle(
+                  color: Colors.grey[600], // Label color
+                  fontSize: 14.0, // Label font size
+                ),
+                hintText: 'Password',
+                hintStyle: TextStyle(
+                  color: Colors.grey[400], // Hint color
+                  fontSize: 14.0, // Hint font size
+                ),
+
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Rounded corners
+                  borderSide: BorderSide(
+                    color: Color(0xff98e6e6), // Border color when enabled
+                    width: 1.0, // Border width
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Rounded corners
+                  borderSide: BorderSide(
+                    color: Colors.blue, // Border color when focused
+                    width: 2.0, // Border width
+                  ),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Rounded corners
+                  borderSide: BorderSide(
+
+                    color: Colors.white, // Border color
+                    width:0.0, // Border width
+                  ),
+                ),
+                filled: true,
+                fillColor: Colors.grey[100], // Background color
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: 15.0,
+                  horizontal: 20.0, // Padding inside the TextField
+                ),
+                prefixIcon: Icon(
+                  Icons.password, // Email icon
+                  color: Colors.grey[600],
+                ),
+              ),
             ),
             SizedBox(height: 10.0),
             Row(
+              mainAxisAlignment:MainAxisAlignment.end,
               children: [
                 Text(
                   'Forgot password?',
@@ -277,12 +368,44 @@ class _SignInFormState extends State<SignInForm> {
             ),
             SizedBox(height: 40.0),
             ElevatedButton(
+              child: Ink(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xff72B2E4), Color(0xff98e6e6)], // Gradient colors
+                    begin: Alignment.topLeft, // Gradient start position
+                    end: Alignment.bottomRight, // Gradient end position
+                  ),
+                  borderRadius: BorderRadius.circular(13), // Rounded corners
+                ),
+                child: Container(
+                  constraints: BoxConstraints(
+                    minWidth: 200.0, // Minimum button width
+                    minHeight: 50.0, // Minimum button height
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Sign In',
+                    style: TextStyle(
+                      color: Colors.white, // Text color
+                      fontSize: 16.0, // Text size
+                    ),
+                  ),
+                ),
+              ),
               onPressed: () {
                 loginAndAuthenticateUser(context);
                 AssistantMethod.getGasOnlineUserInfo(context);
               },
-              child: Text('Sign In'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent, // Make button background transparent
+                shadowColor: Colors.transparent, // Remove shadow to prevent overlap
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(13), // Match border radius
+                ),
+              ),
             ),
+
+
           ],
         ),
       ),
@@ -405,44 +528,6 @@ class _SignInFormState extends State<SignInForm> {
 
         };
 
-        //
-        // final User? firebaseUser = (await _firebaseAuth
-        //     .signInWithEmailAndPassword(
-        //   email: _emailController.text.toString().trim(),
-        //   password: _passwordController.text.toString().trim(),
-        // )
-        //     .catchError((errMsg) {
-        //   Navigator.pop(context);
-        //   displayToast("Error" + errMsg.toString(), context);
-        // }))
-        //     .user;
-        // try {
-        //   UserCredential userCredential =
-        //   await _firebaseAuth.signInWithEmailAndPassword(
-        //       email: _emailController.text, password: _passwordController.text);
-        //
-        //   // const String adminEmail ='chelseabliss24@gmail.com';
-        //   const String adminEmail ='admin@gmail.com';
-        //   if(emailController.text==adminEmail.toString()){
-        //
-        //     Navigator.pushReplacement(
-        //         context,
-        //         MaterialPageRoute(
-        //             builder: (context) => Homepage()));
-        //
-        //   }
-        //   else
-        //   if (firebaseUser != null) {
-        //     AssistantMethod.getCurrentOnlineUserInfo(context);
-        //     Navigator.of(context).pushAndRemoveUntil(
-        //         MaterialPageRoute(builder: (context) => GasStationDashboard()),
-        //             (Route<dynamic> route) => false);
-        //     displayToast("Logged-in ", context);
-        //   } else {
-        //     displayToast("Error: Cannot be signed in", context);
-        //   }
-        // } catch (e) {
-        //   // handle error
 
     };
   }
@@ -528,39 +613,7 @@ class _SignUpFormState extends State<SignUpForm> {
     registerNewUser(context);
   }
 
-  // Future<void> sendMS(String message) async {
-  //   List<String> recipients = [selectedCountryCode+phonecontroller.text];
-  //   print("rarrr"+'${recipients}');
-  //   print("message"+'${message}');
-  //   try {
-  //     await sendSMS(
-  //       message: message,
-  //       recipients: recipients,
-  //       sendDirect: true, // Set this to true for immediate sending
-  //     );
-  //
-  //     // Show a toast message to indicate success.
-  //     Fluttertoast.showToast(
-  //       msg: "Verification code sent!",
-  //       toastLength: Toast.LENGTH_SHORT,
-  //       gravity: ToastGravity.BOTTOM,
-  //     );
-  //
-  //     // Navigate to the verification screen with the verification code.
-  //     Navigator.pushNamed(
-  //       context,
-  //       '/verify',
-  //       arguments: _verificationCode.toString(),
-  //     );
-  //   } catch (error) {
-  //     // Show a toast message for the error.
-  //     Fluttertoast.showToast(
-  //       msg: "Failed to send verification code.",
-  //       toastLength: Toast.LENGTH_SHORT,
-  //       gravity: ToastGravity.BOTTOM,
-  //     );
-  //   }
-  // }
+
 @override
   Widget build(BuildContext context) {
     return Column(
