@@ -452,7 +452,7 @@ class _SignInFormState extends State<SignInForm> {
                             SizedBox(
                               width: 26.0,
                             ),
-                            Text("Loging In,please wait")
+                            Text("Logging In,please wait")
                           ],
                         ),
                       ))));
