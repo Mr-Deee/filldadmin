@@ -1,7 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import '../Models/Rider.dart';
 
 class deactivatedusers extends StatefulWidget {
@@ -58,6 +58,8 @@ class _deactivatedusersState extends State<deactivatedusers> {
 
   void _editRiderStatus(Rider rider) {
     _ridersRef.child(rider.key).update({'status': 'activated'});
+
+    _sendActivationEmail(rider.email);
   }
 
   @override
@@ -173,5 +175,19 @@ class _deactivatedusersState extends State<deactivatedusers> {
       },
     );
   }
+  Future<void> _sendActivationEmail(String userEmail) async {
+    final Email email = Email(
+      body: 'Hello, your account has been activated. You can now enjoy the app!',
+      subject: 'Your Account Has Been Activated!',
+      recipients: [userEmail],
+      isHTML: false,
+    );
 
+    try {
+      await FlutterEmailSender.send(email);
+      print('Activation email sent to $userEmail');
+    } catch (error) {
+      print('Failed to send email: $error');
+    }
+  }
 }
