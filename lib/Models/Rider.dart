@@ -39,7 +39,7 @@ final String licenseplate;
        'riderImageUrl': imageUrl,
       'car_details': {
         'GhanaCardUrl': ghcardimageUrl,
-      'GhanaCardNumber': ghcard,
+      'ghanaCardNumber': ghcard,
       'licensePlateNumber': licenseplate,
 
       // Add other properties within 'car_details' if needed

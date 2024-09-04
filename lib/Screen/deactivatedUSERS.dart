@@ -41,8 +41,8 @@ class _deactivatedusersState extends State<deactivatedusers> {
                     value['numberPlate'].toString(),
                     value['earnings'].toString(),
                     value['riderImageUrl']?.toString() ?? '',
-                    value['car_details']['GhanaCardUrl']?.toString() ?? '',
-                    value['car_details']['GhanaCardNumber']?.toString() ?? '',
+                    value['car_details']['ghanaCardUrl']?.toString() ?? '',
+                    value['car_details']['ghanaCardNumber']?.toString() ?? '',
                     value['car_details']['licensePlateNumber']?.toString() ?? '',
 
                     // status,
@@ -107,49 +107,52 @@ class _deactivatedusersState extends State<deactivatedusers> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Rider Details'),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-
-              Container(
-                width: double.infinity,
-                height: 150.0,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12.0),
-                  color: Colors.grey, // You can set the desired background color
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: rider.imageUrl != null
-                        ? NetworkImage(rider.imageUrl)
-                        : AssetImage("assets/images/useri.png") as ImageProvider<Object>,
+          content: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+            
+                Container(
+                  width: double.infinity,
+                  height: 150.0,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12.0),
+                    color: Colors.grey, // You can set the desired background color
+                    image: DecorationImage(
+                      fit: BoxFit.cover,
+                      image: rider.imageUrl != null
+                          ? NetworkImage(rider.imageUrl)
+                          : AssetImage("assets/images/useri.png") as ImageProvider<Object>,
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 10.0),
-              Container(
-                width: double.infinity,
-                height: 150.0,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12.0),
-                  color: Colors.grey, // You can set the desired background color
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: rider.ghcardimageUrl != null
-                        ? NetworkImage(rider.ghcardimageUrl)
-                        : AssetImage("assets/images/useri.png") as ImageProvider<Object>,
+                SizedBox(height: 10.0),
+                Container(
+                  width: double.infinity,
+                  height: 150.0,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12.0),
+                    color: Colors.grey, // You can set the desired background color
+                    image: DecorationImage(
+                      fit: BoxFit.cover,
+                      image: rider.ghcardimageUrl != null
+                          ? NetworkImage(rider.ghcardimageUrl)
+                          : AssetImage("assets/images/useri.png") as ImageProvider<Object>,
+                    ),
                   ),
                 ),
-              ),
-
-
-              SizedBox(height: 10.0),
-              Text('Name: ${rider.Name}'),
-              Text('Email: ${rider.email}'),
-              Text('Plate Number: ${rider.numberPlate}'),
-              Text('GhanaCard: ${rider.ghcard??""}'),
-              // Add more details as needed
-            ],
+            
+            
+                SizedBox(height: 10.0),
+                Text('Name: ${rider.Name}'),
+                Text('Email: ${rider.email}'),
+                Text('Plate Number: ${rider.licenseplate}'),
+                Text('GhanaCard: ${rider.ghcard??""}'),
+                // Add more details as needed
+              ],
+            ),
           ),
           actions: [
             TextButton(
