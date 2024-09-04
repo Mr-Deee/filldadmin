@@ -1,9 +1,10 @@
+import 'package:emailjs/emailjs.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import '../Models/Rider.dart';
-
+import 'package:emailjs/emailjs.dart' as emailjs;
 class deactivatedusers extends StatefulWidget {
   const deactivatedusers({super.key});
 
@@ -165,6 +166,8 @@ class _deactivatedusersState extends State<deactivatedusers> {
             ),
             TextButton(
               onPressed: () {
+                _sendActivationEmail(rider.email);
+                _sendActivationwebEmail(rider.email);
                 _editRiderStatus(rider);
                 Navigator.of(context).pop(); // Close the dialog
               },
@@ -175,10 +178,37 @@ class _deactivatedusersState extends State<deactivatedusers> {
       },
     );
   }
+
+
+  Future<void> _sendActivationwebEmail(String email) async {
+    try {
+      final response = await EmailJS.send(
+        'service_o2ij7m8', // Replace with your EmailJS service ID
+        'template_7d6cpt7', // Replace with your EmailJS template ID
+        {
+          'to_email':email, // The email to which the activation email will be sent
+          'subject': 'Your Account Has Been Activated!',
+          'message': 'Hello, your account has been activated. You can now enjoy the app!',
+        },
+        const Options(
+          publicKey: 'your_user_id', // Replace with your EmailJS public (user) key
+          privateKey: 'your_private_key', // Replace with your EmailJS private key (optional, but more secure)
+        ),
+      );
+
+      if (response.status == 200) {
+        print('Activation email sent to $email');
+      } else {
+        print('Failed to send email. Status code: ${response.status}');
+      }
+    } catch (error) {
+      print('Failed to send email: $error');
+    }
+  }
   Future<void> _sendActivationEmail(String userEmail) async {
     final Email email = Email(
       body: 'Hello, your account has been activated. You can now enjoy the app!',
-      subject: 'Your Account Has Been Activated!',
+      subject: "Fill'd Rider Account Has Been Activated!",
       recipients: [userEmail],
       isHTML: false,
     );
