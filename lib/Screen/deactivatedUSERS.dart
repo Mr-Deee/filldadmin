@@ -1,4 +1,5 @@
 import 'package:emailjs/emailjs.dart';
+import 'package:filldadmin/Models/adminusers.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -164,9 +165,12 @@ class _deactivatedusersState extends State<deactivatedusers> {
               },
               child: Text('Close'),
             ),
+
             TextButton(
               onPressed: () {
-                _sendActivationEmail(rider.email);
+                // String?  email1=currentfirebaseUser?.email;
+                print(rider.email);
+                // _sendActivationEmail(email1!);
                 _sendActivationwebEmail(rider.email);
                 _editRiderStatus(rider);
                 Navigator.of(context).pop(); // Close the dialog
@@ -191,8 +195,8 @@ class _deactivatedusersState extends State<deactivatedusers> {
           'message': 'Hello, your account has been activated. You can now enjoy the app!',
         },
         const Options(
-          publicKey: 'your_user_id', // Replace with your EmailJS public (user) key
-          privateKey: 'your_private_key', // Replace with your EmailJS private key (optional, but more secure)
+          publicKey: 'N1l73HklBxqzJG95A', // Replace with your EmailJS public (user) key
+          privateKey: 'JAnCLaI0hA8xbim_HZ8vy', // Replace with your EmailJS private key (optional, but more secure)
         ),
       );
 
