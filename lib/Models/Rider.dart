@@ -1,6 +1,7 @@
 class Rider {
   final String key;
   final String Name;
+  final String number;
   final String email;
   final String earnings;
   final String numberPlate;
@@ -21,6 +22,7 @@ final String licenseplate;
       this.ghcardimageUrl,
       this.ghcard,
       this.licenseplate,
+      this.number,
       // this.status,
 
   // this.isActive
@@ -33,6 +35,7 @@ final String licenseplate;
     return {
       'id':key,
       'FirstName':Name,
+      'phoneNumber':number,
       'email': email,
       'numberPlate': numberPlate,
       'earnings': earnings,

@@ -49,12 +49,13 @@ class _deactivatedusersState extends State<deactivatedusers> {
                     key,
                     value['FirstName'],
                     value['email'],
+                    value['phoneNumber'].toString(),
                     value['numberPlate'].toString(),
                     value['earnings'].toString(),
                     value['riderImageUrl']?.toString() ?? '',
                     value['car_details']['ghanaCardUrl']?.toString() ?? '',
                     value['car_details']['ghanaCardNumber']?.toString() ?? '',
-                    value['car_details']['licensePlateNumber']?.toString() ?? '',
+                    value['car_details']['licensePlateNumber']?.toString() ?? ,
 
                     // status,
                   ));
@@ -177,6 +178,16 @@ class _deactivatedusersState extends State<deactivatedusers> {
 
             TextButton(
               onPressed: () {
+        final phoneNumber = rider.number.trim();
+        final message ="Hi there you've been activated. Thank You";
+
+        if (phoneNumber.isNotEmpty && message.isNotEmpty) {
+        sendSms(phoneNumber, message);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Please fill in all fields'),
+          ));
+        }
                 // String?  email1=currentfirebaseUser?.email;
                 print(rider.email);
                 // _sendActivationEmail(email1!);
@@ -251,7 +262,7 @@ class _deactivatedusersState extends State<deactivatedusers> {
         body: '''
         {
           "From": "$sender",
-          "To": "$phoneNumber",
+          "To": "0503026630",
           "Content": "$message",
           "RegisteredDelivery": true
         }
