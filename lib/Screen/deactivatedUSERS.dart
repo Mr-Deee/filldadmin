@@ -55,7 +55,7 @@ class _deactivatedusersState extends State<deactivatedusers> {
                     value['riderImageUrl']?.toString() ?? '',
                     value['car_details']['ghanaCardUrl']?.toString() ?? '',
                     value['car_details']['ghanaCardNumber']?.toString() ?? '',
-                    value['car_details']['licensePlateNumber']?.toString() ?? ,
+                    value['car_details']['licensePlateNumber']?.toString() ?? '',
 
                     // status,
                   ));
