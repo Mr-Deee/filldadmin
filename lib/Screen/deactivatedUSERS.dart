@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:emailjs/emailjs.dart';
 import 'package:filldadmin/Models/adminusers.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -5,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import '../Models/Rider.dart';
+import 'package:http/http.dart' as http;
 import 'package:emailjs/emailjs.dart' as emailjs;
 class deactivatedusers extends StatefulWidget {
   const deactivatedusers({super.key});
@@ -16,6 +19,12 @@ class deactivatedusers extends StatefulWidget {
 class _deactivatedusersState extends State<deactivatedusers> {
   final DatabaseReference _ridersRef = FirebaseDatabase.instance.ref().child('Riders');
   List<Rider> _riders = [];
+  bool _isSending = false;
+
+  // Replace these with your Hubtel credentials and sender info
+  final String clientId = 'ttuouezo';
+  final String clientSecret = 'wxyewyap';
+  final String sender = 'Filld';
 
   @override
   void initState() {
@@ -184,6 +193,7 @@ class _deactivatedusersState extends State<deactivatedusers> {
   }
 
 
+
   Future<void> _sendActivationwebEmail(String email) async {
     try {
       final response = await EmailJS.send(
@@ -222,6 +232,49 @@ class _deactivatedusersState extends State<deactivatedusers> {
       print('Activation email sent to $userEmail');
     } catch (error) {
       print('Failed to send email: $error');
+    }
+  }
+  Future<void> sendSms(String phoneNumber, String message) async {
+    setState(() {
+      _isSending = true;
+    });
+
+    final url = Uri.parse('https://sms.hubtel.com/v1/messages/send?');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Basic ${base64Encode(utf8.encode('$clientId:$clientSecret'))}',
+          'Content-Type': 'application/json',
+        },
+        body: '''
+        {
+          "From": "$sender",
+          "To": "$phoneNumber",
+          "Content": "$message",
+          "RegisteredDelivery": true
+        }
+        ''',
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('SMS sent successfully!'),
+        ));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Failed to send SMS: ${response.body}'),
+        ));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Error: $e'),
+      ));
+    } finally {
+      setState(() {
+        _isSending = false;
+      });
     }
   }
 }
