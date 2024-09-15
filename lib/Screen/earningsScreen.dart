@@ -154,6 +154,7 @@ class _EarningScreenState extends State<EarningScreen> {
                     value['email'],
                     value['numberPlate'].toString(),
                     value['earnings'].toString(),
+                    value['phoneNumber'].toString(),
                     value['riderImageUrl'],
                     value['car_details']['GhanaCardUrl'],
                     value['car_details']['GhanaCardNumber'],
