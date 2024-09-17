@@ -1,5 +1,4 @@
-import 'dart:convert';
-
+import 'dart:convert'; // This is the missing import for base64Encode
 import 'package:emailjs/emailjs.dart';
 import 'package:filldadmin/Models/adminusers.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -9,19 +8,19 @@ import 'package:flutter_email_sender/flutter_email_sender.dart';
 import '../Models/Rider.dart';
 import 'package:http/http.dart' as http;
 import 'package:emailjs/emailjs.dart' as emailjs;
-class deactivatedusers extends StatefulWidget {
-  const deactivatedusers({super.key});
+
+class deactivatedUsers extends StatefulWidget {
+  const deactivatedUsers({super.key});
 
   @override
-  State<deactivatedusers> createState() => _deactivatedusersState();
+  State<deactivatedUsers> createState() => _DeactivatedUsersState();
 }
 
-class _deactivatedusersState extends State<deactivatedusers> {
+class _DeactivatedUsersState extends State<deactivatedUsers> {
   final DatabaseReference _ridersRef = FirebaseDatabase.instance.ref().child('Riders');
   List<Rider> _riders = [];
   bool _isSending = false;
 
-  // Replace these with your Hubtel credentials and sender info
   final String clientId = 'ttuouezo';
   final String clientSecret = 'wxyewyap';
   final String sender = 'Filld';
@@ -41,24 +40,21 @@ class _deactivatedusersState extends State<deactivatedusers> {
 
         if (map != null) {
           map.forEach((key, value) {
-            String status = value['status']??"";
+            String status = value['status'] ?? "";
 
             if (status == 'deactivated') {
-              _riders.add(
-                  Rider(
-                    key,
-                    value['FirstName'],
-                    value['email'],
-                    value['phoneNumber'].toString(),
-                    value['numberPlate'].toString(),
-                    value['earnings'].toString(),
-                    value['riderImageUrl']?.toString() ?? '',
-                    value['car_details']['ghanaCardUrl']?.toString() ?? '',
-                    value['car_details']['ghanaCardNumber']?.toString() ?? '',
-                    value['car_details']['licensePlateNumber']?.toString() ?? '',
-
-                    // status,
-                  ));
+              _riders.add(Rider(
+                key,
+                value['FirstName'],
+                value['email'],
+                value['phoneNumber'].toString(),
+                value['numberPlate'].toString(),
+                value['earnings'].toString(),
+                value['riderImageUrl'],
+                value['car_details']['ghanaCardUrl']?.toString() ?? '',
+                value['car_details']['ghanaCardNumber']?.toString() ?? '',
+                value['car_details']['licensePlateNumber']?.toString() ?? '',
+              ));
             }
           });
         }
@@ -70,7 +66,6 @@ class _deactivatedusersState extends State<deactivatedusers> {
 
   void _editRiderStatus(Rider rider) {
     _ridersRef.child(rider.key).update({'status': 'activated'});
-
     _sendActivationEmail(rider.email);
   }
 
@@ -79,7 +74,7 @@ class _deactivatedusersState extends State<deactivatedusers> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: Text("Deactived Users"),
+        title: Text("Deactivated Users",style: TextStyle(fontSize: 15),),
       ),
       body: _riders.isEmpty
           ? Center(child: CircularProgressIndicator())
@@ -90,10 +85,13 @@ class _deactivatedusersState extends State<deactivatedusers> {
           return ListTile(
             leading: CircleAvatar(
               radius: 30,
-              backgroundImage:rider.imageUrl != null
-                  ? NetworkImage(rider.imageUrl,scale: 1.0)
-                  : AssetImage("assets/images/useri.png") as ImageProvider<Object>,
+              backgroundImage: (rider.ghcardimageUrl != null &&
+                  rider.ghcardimageUrl.isNotEmpty &&
+                  Uri.tryParse(rider.ghcardimageUrl)?.hasAbsolutePath == true)
+                  ? NetworkImage(rider.ghcardimageUrl)
+                  :  AssetImage("assets/images/user_icon.png") as ImageProvider,
             ),
+
             title: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -103,12 +101,7 @@ class _deactivatedusersState extends State<deactivatedusers> {
               ),
             ),
             subtitle: Text(rider.email),
-            // trailing: IconButton(
-            //   icon: Icon(Icons.switch_account),
-            //   onPressed: () => _editRiderStatus(rider),
-            // ),
-
-            onTap:  () => _showRiderDetails(rider),
+            onTap: () => _showRiderDetails(rider),
           );
         },
       ),
@@ -127,18 +120,17 @@ class _deactivatedusersState extends State<deactivatedusers> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-            
                 Container(
                   width: double.infinity,
                   height: 150.0,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12.0),
-                    color: Colors.grey, // You can set the desired background color
+                    color: Colors.grey,
                     image: DecorationImage(
                       fit: BoxFit.cover,
                       image: rider.imageUrl != null
                           ? NetworkImage(rider.imageUrl)
-                          : AssetImage("assets/images/useri.png") as ImageProvider<Object>,
+                          : AssetImage("assets/images/useri.png") as ImageProvider,
                     ),
                   ),
                 ),
@@ -148,7 +140,7 @@ class _deactivatedusersState extends State<deactivatedusers> {
                   height: 150.0,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12.0),
-                    color: Colors.grey, // You can set the desired background color
+                    color: Colors.grey,
                     image: DecorationImage(
                       fit: BoxFit.cover,
                       image: rider.ghcardimageUrl != null
@@ -157,43 +149,35 @@ class _deactivatedusersState extends State<deactivatedusers> {
                     ),
                   ),
                 ),
-            
-            
                 SizedBox(height: 10.0),
                 Text('Name: ${rider.Name}'),
                 Text('Email: ${rider.email}'),
                 Text('Plate Number: ${rider.licenseplate}'),
-                Text('GhanaCard: ${rider.ghcard??""}'),
-                // Add more details as needed
+                Text('GhanaCard: ${rider.ghcard ?? ""}'),
               ],
             ),
           ),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
               child: Text('Close'),
             ),
-
             TextButton(
               onPressed: () {
-        final phoneNumber = rider.number.trim();
-        final message ="Hi there you've been activated. Thank You";
-
-        if (phoneNumber.isNotEmpty && message.isNotEmpty) {
-        sendSms(phoneNumber, message);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Please fill in all fields'),
-          ));
-        }
-                // String?  email1=currentfirebaseUser?.email;
-                print(rider.email);
-                // _sendActivationEmail(email1!);
+                final phoneNumber = rider.number.trim();
+                final message = "Hi there, you've been activated. Thank you!";
+                if (phoneNumber.isNotEmpty && message.isNotEmpty) {
+                  sendSms(phoneNumber, message);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text('Please fill in all fields'),
+                  ));
+                }
                 _sendActivationwebEmail(rider.email);
                 _editRiderStatus(rider);
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
               child: Text('Activate'),
             ),
@@ -203,21 +187,19 @@ class _deactivatedusersState extends State<deactivatedusers> {
     );
   }
 
-
-
   Future<void> _sendActivationwebEmail(String email) async {
     try {
       final response = await EmailJS.send(
-        'service_o2ij7m8', // Replace with your EmailJS service ID
-        'template_7d6cpt7', // Replace with your EmailJS template ID
+        'service_o2ij7m8',
+        'template_7d6cpt7',
         {
-          'to_email':email, // The email to which the activation email will be sent
+          'to_email': email,
           'subject': 'Your Account Has Been Activated!',
           'message': 'Hello, your account has been activated. You can now enjoy the app!',
         },
         const Options(
-          publicKey: 'N1l73HklBxqzJG95A', // Replace with your EmailJS public (user) key
-          privateKey: 'JAnCLaI0hA8xbim_HZ8vy', // Replace with your EmailJS private key (optional, but more secure)
+          publicKey: 'N1l73HklBxqzJG95A',
+          privateKey: 'JAnCLaI0hA8xbim_HZ8vy',
         ),
       );
 
@@ -230,6 +212,7 @@ class _deactivatedusersState extends State<deactivatedusers> {
       print('Failed to send email: $error');
     }
   }
+
   Future<void> _sendActivationEmail(String userEmail) async {
     final Email email = Email(
       body: 'Hello, your account has been activated. You can now enjoy the app!',
@@ -245,6 +228,7 @@ class _deactivatedusersState extends State<deactivatedusers> {
       print('Failed to send email: $error');
     }
   }
+
   Future<void> sendSms(String phoneNumber, String message) async {
     setState(() {
       _isSending = true;
@@ -262,7 +246,7 @@ class _deactivatedusersState extends State<deactivatedusers> {
         body: '''
         {
           "From": "$sender",
-          "To": "0503026630",
+          "To": "$phoneNumber",
           "Content": "$message",
           "RegisteredDelivery": true
         }

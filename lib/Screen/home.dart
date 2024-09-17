@@ -377,7 +377,7 @@ class _HomepageState extends State<Homepage> {
                                                 context,
                                                 MaterialPageRoute(
                                                   builder: (context) =>
-                                                      deactivatedusers(),
+                                                      deactivatedUsers(),
                                                 ));
                                           },
                                           child: Text('Deactivated')),
