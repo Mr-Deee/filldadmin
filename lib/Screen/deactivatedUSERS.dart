@@ -1,22 +1,19 @@
-import 'dart:convert'; // This is the missing import for base64Encode
+import 'dart:convert';
 import 'package:emailjs/emailjs.dart';
-import 'package:filldadmin/Models/adminusers.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
-import '../Models/Rider.dart';
 import 'package:http/http.dart' as http;
-import 'package:emailjs/emailjs.dart' as emailjs;
+import '../Models/Rider.dart';
 
-class deactivatedUsers extends StatefulWidget {
-  const deactivatedUsers({super.key});
+class DeactivatedUsers extends StatefulWidget {
+  const DeactivatedUsers({super.key});
 
   @override
-  State<deactivatedUsers> createState() => _DeactivatedUsersState();
+  State<DeactivatedUsers> createState() => _DeactivatedUsersState();
 }
 
-class _DeactivatedUsersState extends State<deactivatedUsers> {
+class _DeactivatedUsersState extends State<DeactivatedUsers> {
   final DatabaseReference _ridersRef = FirebaseDatabase.instance.ref().child('Riders');
   List<Rider> _riders = [];
   bool _isSending = false;
@@ -34,32 +31,27 @@ class _DeactivatedUsersState extends State<deactivatedUsers> {
   void _loadRiders() {
     _ridersRef.onValue.listen((event) {
       _riders.clear();
-
       if (event.snapshot.value != null) {
         Map<dynamic, dynamic>? map = event.snapshot.value as Map<dynamic, dynamic>?;
-
-        if (map != null) {
-          map.forEach((key, value) {
-            String status = value['status'] ?? "";
-
-            if (status == 'deactivated') {
-              _riders.add(Rider(
+        map?.forEach((key, value) {
+          if (value['status'] == 'deactivated') {
+            _riders.add(
+              Rider(
                 key,
                 value['FirstName'],
                 value['email'],
                 value['phoneNumber'].toString(),
                 value['numberPlate'].toString(),
                 value['earnings'].toString(),
-                value['riderImageUrl'],
+                value['car_details']['riderImageUrl']?.toString() ?? '',
                 value['car_details']['ghanaCardUrl']?.toString() ?? '',
                 value['car_details']['ghanaCardNumber']?.toString() ?? '',
                 value['car_details']['licensePlateNumber']?.toString() ?? '',
-              ));
-            }
-          });
-        }
+              ),
+            );
+          }
+        });
       }
-
       setState(() {});
     });
   }
@@ -74,10 +66,10 @@ class _DeactivatedUsersState extends State<deactivatedUsers> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: Text("Deactivated Users",style: TextStyle(fontSize: 15),),
+        title: const Text("Deactivated Users", style: TextStyle(fontSize: 15)),
       ),
       body: _riders.isEmpty
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
         itemCount: _riders.length,
         itemBuilder: (context, index) {
@@ -85,13 +77,11 @@ class _DeactivatedUsersState extends State<deactivatedUsers> {
           return ListTile(
             leading: CircleAvatar(
               radius: 30,
-              backgroundImage: (rider.ghcardimageUrl != null &&
-                  rider.ghcardimageUrl.isNotEmpty &&
-                  Uri.tryParse(rider.ghcardimageUrl)?.hasAbsolutePath == true)
-                  ? NetworkImage(rider.ghcardimageUrl)
-                  :  AssetImage("assets/images/user_icon.png") as ImageProvider,
+              backgroundImage: (rider.imageUrl.isNotEmpty &&
+                  Uri.tryParse(rider.imageUrl)?.hasAbsolutePath == true)
+                  ? NetworkImage(rider.imageUrl)
+                  : const AssetImage("assets/images/user_icon.png") as ImageProvider,
             ),
-
             title: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -113,43 +103,15 @@ class _DeactivatedUsersState extends State<deactivatedUsers> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Rider Details'),
+          title: const Text('Rider Details'),
           content: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  width: double.infinity,
-                  height: 150.0,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.0),
-                    color: Colors.grey,
-                    image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: rider.imageUrl != null
-                          ? NetworkImage(rider.imageUrl)
-                          : AssetImage("assets/images/useri.png") as ImageProvider,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10.0),
-                Container(
-                  width: double.infinity,
-                  height: 150.0,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.0),
-                    color: Colors.grey,
-                    image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: rider.ghcardimageUrl != null
-                          ? NetworkImage(rider.ghcardimageUrl)
-                          : AssetImage("assets/images/useri.png") as ImageProvider<Object>,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10.0),
+                _buildImageContainer(rider.imageUrl),
+                const SizedBox(height: 10),
+                _buildImageContainer(rider.ghcardimageUrl),
+                const SizedBox(height: 10),
                 Text('Name: ${rider.Name}'),
                 Text('Email: ${rider.email}'),
                 Text('Plate Number: ${rider.licenseplate}'),
@@ -159,27 +121,14 @@ class _DeactivatedUsersState extends State<deactivatedUsers> {
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Close'),
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Close'),
             ),
             TextButton(
               onPressed: () {
-                final phoneNumber = rider.number.trim();
-                final message = "Hi there, you've been activated. Thank you!";
-                if (phoneNumber.isNotEmpty && message.isNotEmpty) {
-                  sendSms(phoneNumber, message);
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text('Please fill in all fields'),
-                  ));
-                }
-                _sendActivationwebEmail(rider.email);
-                _editRiderStatus(rider);
-                Navigator.of(context).pop();
+                _handleRiderActivation(rider);
               },
-              child: Text('Activate'),
+              child: const Text('Activate'),
             ),
           ],
         );
@@ -187,7 +136,39 @@ class _DeactivatedUsersState extends State<deactivatedUsers> {
     );
   }
 
-  Future<void> _sendActivationwebEmail(String email) async {
+  Widget _buildImageContainer(String? imageUrl) {
+    return Container(
+      width: double.infinity,
+      height: 150.0,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12.0),
+        color: Colors.grey,
+        image: DecorationImage(
+          fit: BoxFit.cover,
+          image: imageUrl != null && imageUrl.isNotEmpty
+              ? NetworkImage(imageUrl)
+              : const AssetImage("assets/images/useri.png") as ImageProvider,
+        ),
+      ),
+    );
+  }
+
+  void _handleRiderActivation(Rider rider) {
+    final phoneNumber = rider.number.trim();
+    const message = "Hi there, you've been activated. Thank you!";
+    if (phoneNumber.isNotEmpty && message.isNotEmpty) {
+      sendSms(phoneNumber, message);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields')),
+      );
+    }
+    _sendActivationWebEmail(rider.email);
+    _editRiderStatus(rider);
+    Navigator.of(context).pop();
+  }
+
+  Future<void> _sendActivationWebEmail(String email) async {
     try {
       final response = await EmailJS.send(
         'service_o2ij7m8',
@@ -243,29 +224,27 @@ class _DeactivatedUsersState extends State<deactivatedUsers> {
           'Authorization': 'Basic ${base64Encode(utf8.encode('$clientId:$clientSecret'))}',
           'Content-Type': 'application/json',
         },
-        body: '''
-        {
-          "From": "$sender",
-          "To": "$phoneNumber",
-          "Content": "$message",
-          "RegisteredDelivery": true
-        }
-        ''',
+        body: jsonEncode({
+          "From": sender,
+          "To": phoneNumber,
+          "Content": message,
+          "RegisteredDelivery": true,
+        }),
       );
 
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('SMS sent successfully!'),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('SMS sent successfully!')),
+        );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Failed to send SMS: ${response.body}'),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to send SMS: ${response.body}')),
+        );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Error: $e'),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
     } finally {
       setState(() {
         _isSending = false;

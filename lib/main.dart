@@ -88,7 +88,7 @@ class MyApp extends StatelessWidget {
       // "/search": (context) => SearchScreen(),
       "/authpage": (context) => AuthPage(),
       "/Homepage": (context) =>Homepage(),
-      "/deactivatedusers": (context) =>deactivatedUsers(),
+      "/deactivatedusers": (context) =>DeactivatedUsers(),
     });
 
 
