@@ -169,6 +169,7 @@ class _DeactivatedUsersState extends State<deactivatedUsers> {
                 final phoneNumber = rider.number.trim();
                 final message = "Hi there, you've been activated. Thank you!";
                 if (phoneNumber.isNotEmpty && message.isNotEmpty) {
+                  print('Number :$phoneNumber');
                   sendSms(phoneNumber, message);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
