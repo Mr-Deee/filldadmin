@@ -248,13 +248,13 @@ class _DeactivatedUsersState extends State<DeactivatedUsers> {
   //   }
   // }
   Future<void> sendSms(String phoneNumber, String message) async {
-    final url = Uri.parse('https://cors-anywhere.herokuapp.com/https://sms.hubtel.com/v1/messages/send');
+    final url = Uri.parse('https://sms.hubtel.com/v1/messages/send');
 
     try {
       final response = await http.post(
         url,
         headers: {
-          'Authorization': 'Basic ${base64Encode(utf8.encode('your-client-id:your-client-secret'))}',
+          'Authorization': 'Basic ${base64Encode(utf8.encode('$clientId:$clientSecret'))}',
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
