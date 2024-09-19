@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:http/http.dart' as http;
 import '../Models/Rider.dart';
-import 'package:flutter_js/flutter_js.dart';
+
 
 class DeactivatedUsers extends StatefulWidget {
   const DeactivatedUsers({super.key});
@@ -18,7 +18,6 @@ class _DeactivatedUsersState extends State<DeactivatedUsers> {
   final DatabaseReference _ridersRef = FirebaseDatabase.instance.ref().child('Riders');
   List<Rider> _riders = [];
   bool _isSending = false;
-  JavascriptRuntime? jsRuntime;
 
   final String clientId = 'ttuouezo';
   final String clientSecret = 'wxyewyap';
@@ -28,7 +27,6 @@ class _DeactivatedUsersState extends State<DeactivatedUsers> {
   void initState() {
     super.initState();
     _loadRiders();
-    jsRuntime = getJavascriptRuntime();
 
   }
 
