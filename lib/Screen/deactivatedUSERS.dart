@@ -231,45 +231,72 @@ class _DeactivatedUsersState extends State<DeactivatedUsers> {
   //   }
   // }
 
-  Future<void> sendSms(String phoneNumber, String message) async {
-    setState(() {
-      _isSending = true;
-    });
+  // Future<void> sendSms(String phoneNumber, String message) async {
+  //   setState(() {
+  //     _isSending = true;
+  //   });
+  //
+  //   final url = Uri.parse('https://sms.hubtel.com/v1/messages/send');
+  //
+  //   try {
+  //     final response = await http.post(
+  //       url,
+  //       headers: {
+  //         'Authorization': 'Basic ${base64Encode(utf8.encode('$clientId:$clientSecret'))}',
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: jsonEncode({
+  //         "From": sender,
+  //         "To": phoneNumber,
+  //         "Content": message,
+  //         "RegisteredDelivery": true,
+  //       }),
+  //     );
+  //
+  //     if (response.statusCode == 200) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text('SMS sent successfully!')),
+  //       );
+  //     } else {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Failed to send SMS: ${response.body}')),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Error: $e')),
+  //     );
+  //   } finally {
+  //     setState(() {
+  //       _isSending = false;
+  //     });
+  //   }
+  // }
 
-    final url = Uri.parse('https://sms.hubtel.com/v1/messages/send?');
+
+  Future<void> sendSms(String phoneNumber, String message) async {
+    final url = Uri.parse('https://your-vercel-project-url.vercel.app/api/send-sms'); // Update with your actual Vercel URL
 
     try {
       final response = await http.post(
         url,
         headers: {
-          'Authorization': 'Basic ${base64Encode(utf8.encode('$clientId:$clientSecret'))}',
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          "From": sender,
-          "To": phoneNumber,
-          "Content": message,
-          "RegisteredDelivery": true,
+          'phoneNumber': phoneNumber,
+          'message': message,
         }),
       );
 
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('SMS sent successfully!')),
-        );
+        print('SMS sent successfully!');
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to send SMS: ${response.body}')),
-        );
+        print('Failed to send SMS: ${response.statusCode}');
+        print('Response body: ${response.body}');
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
-    } finally {
-      setState(() {
-        _isSending = false;
-      });
+    } catch (error) {
+      print('Error sending SMS: $error');
     }
   }
 }
