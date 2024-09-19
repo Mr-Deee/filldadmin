@@ -561,11 +561,11 @@ class _HomepageState extends State<Homepage> {
  Future<void> fetchOngoingRequests() async {
     final databaseReference = FirebaseDatabase.instance.ref('GasRequests').orderByChild('status').equalTo('onride');
     final snapshot = await databaseReference.get();
-print('geeer:$snapshot');
+// print('geeer:$snapshot');
 
     databaseReference.onValue.listen((event) {
     if (snapshot.exists) {
-      print('geeer2:$snapshot');
+      // print('geeer2:$snapshot');
        final List<Map<String, dynamic>> requests = [];
       (snapshot.value as Map<dynamic, dynamic>).forEach((key, value) {
         requests.add({
@@ -632,7 +632,7 @@ print('geeer:$snapshot');
   getCurrentArtisanInfo() async {
     currentfirebaseUser = await FirebaseAuth.instance.currentUser;
     admin.child(currentfirebaseUser!.uid).once().then((event) {
-      print("value");
+      // print("value");
       if (event.snapshot.value is Map<Object?, Object?>) {
         riderinformation = Users.fromMap((event.snapshot.value as Map<Object?, Object?>).cast<String, dynamic>());
 
@@ -647,8 +647,6 @@ print('geeer:$snapshot');
     pushNotificationService.initialize(context);
     pushNotificationService.getToken();
 
-    // AssistantMethod.retrieveHistoryInfo(context);
-    // getRatings();
-    // getRideType();
+
   }
 }
