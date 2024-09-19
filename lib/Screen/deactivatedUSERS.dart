@@ -189,31 +189,6 @@ class _DeactivatedUsersState extends State<DeactivatedUsers> {
     Navigator.of(context).pop();
   }
 
-  // Future<void> _sendActivationWebEmail(String email) async {
-  //   try {
-  //     final response = await EmailJS.send(
-  //       'service_o2ij7m8',
-  //       'template_7d6cpt7',
-  //       {
-  //         'to_email': email,
-  //         'subject': 'Your Account Has Been Activated!',
-  //         'message': '
-  //       },
-  //       const Options(
-  //         publicKey: 'N1l73HklBxqzJG95A',
-  //         privateKey: 'JAnCLaI0hA8xbim_HZ8vy',
-  //       ),
-  //     );
-  //
-  //     if (response.status == 200) {
-  //       print('Activation email sent to $email');
-  //     } else {
-  //       print('Failed to send email. Status code: ${response.status}');
-  //     }
-  //   } catch (error) {
-  //     print('Failed to send email: $error');
-  //   }
-  // }
 
   // Future<void> _sendActivationEmail(String userEmail) async {
   //   final Email email = Email(
