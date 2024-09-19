@@ -43,7 +43,7 @@ class _EarningScreenState extends State<EarningScreen> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  Text(rider.Name),
+                  Text(rider.name),
                 ],
               ),
             ),
@@ -99,8 +99,8 @@ class _EarningScreenState extends State<EarningScreen> {
                   color: Colors.grey, // You can set the desired background color
                   image: DecorationImage(
                     fit: BoxFit.cover,
-                    image: rider.ghcardimageUrl != null
-                        ? NetworkImage(rider.ghcardimageUrl)
+                    image: rider.imageUrl != null
+                        ? NetworkImage(rider.imageUrl)
                         : AssetImage("assets/images/useri.png") as ImageProvider<Object>,
                   ),
                 ),
@@ -108,7 +108,7 @@ class _EarningScreenState extends State<EarningScreen> {
 
 
               SizedBox(height: 10.0),
-              Text('Name: ${rider.Name}'),
+              Text('Name: ${rider.name}'),
               Text('Email: ${rider.email}'),
               Text('Plate Number: ${rider.numberPlate}'),
               Text('GhanaCard: ${rider.ghcard??""}'),
@@ -135,47 +135,44 @@ class _EarningScreenState extends State<EarningScreen> {
     );
   }
   void _loadRiders() {
-    _ridersRef.onValue.listen((event) {
-      _riders.clear();
+    _ridersRef.onValue.listen(
+          (event) {
+        _riders.clear();
 
-      if (event.snapshot.value != null) {
-        Map<dynamic, dynamic>? map = event.snapshot.value as Map<
-            dynamic,
-            dynamic>?;
+        if (event.snapshot.value != null) {
+          Map<dynamic, dynamic>? map = event.snapshot.value as Map<dynamic, dynamic>?;
 
-        if (map != null) {
-          map.forEach((key, value) {
-            //   String status = value['earnings'];
-            if (value['earnings'] != null && value['earnings'] > 0) {
-              _riders.add(
-                  Rider(
-                    key,
-                    value['FirstName'],
-                    value['email'],
-                    value['numberPlate'].toString(),
-                    value['earnings'].toString(),
-                    value['phoneNumber'].toString(),
-                    value['riderImageUrl'],
-                    value['car_details']['GhanaCardUrl'],
-                    value['car_details']['GhanaCardNumber'],
-                    value['car_details']['licensePlateNumber'],
+          if (map != null) {
+            map.forEach((key, value) {
+              // Check if earnings exist and are valid
+              if (value['earnings'] != null && value['earnings'] > 0) {
+                // Safely access nested car_details data
+                var carDetails = value['car_details'] as Map<dynamic, dynamic>?;
 
-                    // status,
-                  ));
-            }
+                _riders.add(Rider(
+                  key: key,
+                  name: value['FirstName'] ?? '',
+                  email: value['email'] ?? '',
+                  numberPlate: value['numberPlate']?.toString() ?? '',
+                  earnings: value['earnings'].toString(),
+                  number: value['phoneNumber']?.toString() ?? '',
+                  imageUrl: value['riderImageUrl'] ?? '',
+                  ghcardimageUrl: carDetails?['GhanaCardUrl'],
+                  ghcard: carDetails?['GhanaCardNumber'],
+                  licensePlate: carDetails?['licensePlateNumber']?.toString() ?? '',
+                ));
+              }
+            });
           }
-          );
         }
-      }
 
-      setState(() {});
-    },
-        onError: (Object error, StackTrace? stackTrace) {
-          print('Error loading riders: $error');
-
-
-          //);
-          //}
-        });
+        setState(() {});
+      },
+      onError: (Object error, StackTrace? stackTrace) {
+        print('Error loading riders: $error');
+        // You can add more error-handling logic here if necessary
+      },
+    );
   }
+
 }
