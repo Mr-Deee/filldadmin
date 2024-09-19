@@ -190,63 +190,6 @@ class _DeactivatedUsersState extends State<DeactivatedUsers> {
   }
 
 
-  // Future<void> _sendActivationEmail(String userEmail) async {
-  //   final Email email = Email(
-  //     body: 'Hello, your account has been activated. You can now enjoy the app!',
-  //     subject: "Fill'd Rider Account Has Been Activated!",
-  //     recipients: [userEmail],
-  //     isHTML: false,
-  //   );
-  //
-  //   try {
-  //     await FlutterEmailSender.send(email);
-  //     print('Activation email sent to $userEmail');
-  //   } catch (error) {
-  //     print('Failed to send email: $error');
-  //   }
-  // }
-
-  // Future<void> sendSms(String phoneNumber, String message) async {
-  //   setState(() {
-  //     _isSending = true;
-  //   });
-  //
-  //   final url = Uri.parse('https://sms.hubtel.com/v1/messages/send');
-  //
-  //   try {
-  //     final response = await http.post(
-  //       url,
-  //       headers: {
-  //         'Authorization': 'Basic ${base64Encode(utf8.encode('$clientId:$clientSecret'))}',
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: jsonEncode({
-  //         "From": sender,
-  //         "To": phoneNumber,
-  //         "Content": message,
-  //         "RegisteredDelivery": true,
-  //       }),
-  //     );
-  //
-  //     if (response.statusCode == 200) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(content: Text('SMS sent successfully!')),
-  //       );
-  //     } else {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('Failed to send SMS: ${response.body}')),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Error: $e')),
-  //     );
-  //   } finally {
-  //     setState(() {
-  //       _isSending = false;
-  //     });
-  //   }
-  // }
   Future<void> sendSms(String phoneNumber, String message) async {
     final url = Uri.parse('https://sms.hubtel.com/v1/messages/send');
 
