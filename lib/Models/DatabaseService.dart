@@ -8,7 +8,7 @@ Future<int?> fetchNumberOfGasRequests() async {
     DatabaseEvent event = await _database.child('GasRequests').once();
     dynamic value = event.snapshot.value;
 
-    print('Value from Firebase: $value');
+    // print('Value from Firebase: $value');
 
     if (value != null) {
       if (value is Map) {
@@ -29,7 +29,7 @@ Future<int?> fetchNumberOfGasStation() async {
     DatabaseEvent event = await _database.child('GasStation').once();
     dynamic value = event.snapshot.value;
 
-    print('Value from Firebase: $value');
+    // print('Value from Firebase: $value');
 
     if (value != null) {
       if (value is Map) {
@@ -50,7 +50,7 @@ Future<int?> fetchNumberOfDeactivated() async {
     DatabaseEvent event = await _database.child('Riders').orderByChild("status").equalTo("deactivated").once();
     dynamic value = event.snapshot.value;
 
-    print('Value from Firebase: $value');
+    // print('Value from Firebase: $value');
 
     if (value != null) {
       if (value is Map) {
