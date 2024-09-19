@@ -33,45 +33,7 @@ class _DeactivatedUsersState extends State<DeactivatedUsers> {
   }
 
 
-  Future<void> websendSms(String phoneNumber, String message) async {
-    // String clientId = "your-client-id";
-    // String clientSecret = "your-client-secret";
-    // String sender = "your-sender";
 
-    // JavaScript code for sending an SMS via Hubtel API
-    String jsCode = '''
-      async function sendSms() {
-        const url = "https://sms.hubtel.com/v1/messages/send";
-        const auth = btoa("$clientId:$clientSecret");
-
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Basic ' + auth,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            "From": "$sender",
-            "To": "$phoneNumber",
-            "Content": "$message",
-            "RegisteredDelivery": true
-          })
-        });
-
-        return response.ok ? "SMS sent successfully!" : "Failed to send SMS: " + await response.text();
-      }
-
-      sendSms();
-    ''';
-
-    // Execute the JavaScript code in the browser environment
-    JsEvalResult? result = await jsRuntime?.evaluateAsync(jsCode);
-
-    // Display the result in the Flutter app
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(result?.stringResult ?? 'Error sending SMS')),
-    );
-  }
 
   void _loadRiders() {
     _ridersRef.onValue.listen((event) {
@@ -223,10 +185,7 @@ class _DeactivatedUsersState extends State<DeactivatedUsers> {
         ' Welcome to a world of convenience, accept requests and earn as much you like. '
         "Thank you for delivering with Fill'D.";
     if (phoneNumber.isNotEmpty && message.isNotEmpty) {
-      websendSms(phoneNumber, message);
-
       sendSms(phoneNumber, message);
-
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in all fields')),
@@ -273,29 +232,5 @@ class _DeactivatedUsersState extends State<DeactivatedUsers> {
   }
 
 
-  // Future<void> sendSms(String phoneNumber, String message) async {
-  //   final url = Uri.parse('https://your-vercel-project-url.vercel.app/api/send-sms'); // Update with your actual Vercel URL
-  //
-  //   try {
-  //     final response = await http.post(
-  //       url,
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: jsonEncode({
-  //         'phoneNumber': phoneNumber,
-  //         'message': message,
-  //       }),
-  //     );
-  //
-  //     if (response.statusCode == 200) {
-  //       print('SMS sent successfully!');
-  //     } else {
-  //       print('Failed to send SMS: ${response.statusCode}');
-  //       print('Response body: ${response.body}');
-  //     }
-  //   } catch (error) {
-  //     print('Error sending SMS: $error');
-  //   }
-  // }
+
 }
