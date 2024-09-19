@@ -1,57 +1,59 @@
 class Rider {
   final String key;
-  final String Name;
+  final String name;
   final String number;
   final String email;
   final String earnings;
   final String numberPlate;
   final String imageUrl;
-  final String ghcard;
-  final String ghcardimageUrl;
-  final String licenseplate;
+  final String? ghcard;
+  final String? ghcardimageUrl;
+  final String licensePlate;
 
-  // final String status;
-  // bool isActive;
-
-  Rider(
-    this.key,
-    this.Name,
-    this.email,
-    this.numberPlate,
-    this.earnings,
-    this.imageUrl,
-    this.ghcardimageUrl,
+  Rider({
+    required this.key,
+    required this.name,
+    required this.number,
+    required this.email,
+    required this.earnings,
+    required this.numberPlate,
+    required this.imageUrl,
     this.ghcard,
-    this.licenseplate,
-    this.number,
-    // this.status,
+    this.ghcardimageUrl,
+    required this.licensePlate,
+  });
 
-    // this.isActive
-  );
-
-  // static Rider fromMap(Map<String, dynamic> data)
-  //
-  // {
   // Create a method to convert a Rider object to a Map for Firebase
   Map<String, dynamic> toJson() {
     return {
       'id': key,
-      'FirstName': Name,
+      'firstName': name,
       'phoneNumber': number,
       'email': email,
       'numberPlate': numberPlate,
       'earnings': earnings,
-      // 'riderImageUrl': imageUrl,
       'car_details': {
-        'GhanaCardUrl': ghcardimageUrl,
+        'ghanaCardUrl': ghcardimageUrl,
         'riderImageUrl': imageUrl,
         'ghanaCardNumber': ghcard,
-        'licensePlateNumber': licenseplate,
-
-        // Add other properties within 'car_details' if needed
+        'licensePlateNumber': licensePlate,
       },
-      // 'status': status,
-      // 'isActive': isActive,
     };
+  }
+
+  // Create a method to convert a Map into a Rider object (useful for Firebase snapshots)
+  static Rider fromMap(String key, Map<String, dynamic> data) {
+    return Rider(
+      key: key,
+      name: data['firstName'] ?? '',
+      number: data['phoneNumber'] ?? '',
+      email: data['email'] ?? '',
+      earnings: data['earnings'] ?? '',
+      numberPlate: data['numberPlate'] ?? '',
+      imageUrl: data['car_details']?['riderImageUrl'] ?? '',
+      ghcardimageUrl: data['car_details']?['ghanaCardUrl'],
+      ghcard: data['car_details']?['ghanaCardNumber'],
+      licensePlate: data['car_details']?['licensePlateNumber'] ?? '',
+    );
   }
 }

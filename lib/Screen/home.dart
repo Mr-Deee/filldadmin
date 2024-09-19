@@ -599,20 +599,24 @@ print('geeer:$snapshot');
       _riders.clear();
 
       if (event.snapshot.value != null) {
-        Map<dynamic, dynamic>? map = event.snapshot.value as Map?;
+        Map<dynamic, dynamic>? map = event.snapshot.value as Map<dynamic, dynamic>?;
+
         map?.forEach((key, value) {
+          // Safely handle car_details and its nested fields
+          var carDetails = value['car_details'] as Map<dynamic, dynamic>?;
+
           _riders.add(
             Rider(
-              key,
-              value['FirstName'],
-              value['email'],
-              value['numberPlate'].toString(),
-              value['earnings'].toString(),
-              value['phoneNumber'].toString(),
-              value['riderImageUrl'],
-              value['car_details']['GhanaCardUrl'],
-              value['car_details']['GhanaCardNumber'],
-              value['car_details']['licensePlateNumber'],
+              key: key,
+              name: value['FirstName'] ?? '',
+              email: value['email'] ?? '',
+              numberPlate: value['numberPlate']?.toString() ?? '',
+              earnings: value['earnings']?.toString() ?? '',
+              number: value['phoneNumber']?.toString() ?? '',
+              imageUrl: value['riderImageUrl'] ?? '',
+              ghcardimageUrl: carDetails?['GhanaCardUrl'],
+              ghcard: carDetails?['GhanaCardNumber'],
+              licensePlate: carDetails?['licensePlateNumber']?.toString() ?? '',
             ),
           );
         });
