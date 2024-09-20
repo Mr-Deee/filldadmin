@@ -368,9 +368,9 @@ class _HomepageState extends State<Homepage> {
                                         shape: BoxShape.circle,
                                       ),
                                     ),
-                                    SizedBox(width: 5),
+                                    SizedBox(width: 2),
                                     Padding(
-                                      padding: const EdgeInsets.all(18.0),
+                                      padding: const EdgeInsets.all(13.0),
                                       child: GestureDetector(
                                           onTap: () {
                                             Navigator.push(
