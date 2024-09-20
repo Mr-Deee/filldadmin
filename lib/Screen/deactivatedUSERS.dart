@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:http/http.dart' as http;
 import '../Models/Rider.dart';
-
+import 'package:fluttertoast/fluttertoast.dart';
 
 class DeactivatedUsers extends StatefulWidget {
   const DeactivatedUsers({super.key});
@@ -27,11 +27,7 @@ class _DeactivatedUsersState extends State<DeactivatedUsers> {
   void initState() {
     super.initState();
     _loadRiders();
-
   }
-
-
-
 
   void _loadRiders() {
     _ridersRef.onValue.listen((event) {
@@ -194,8 +190,53 @@ class _DeactivatedUsersState extends State<DeactivatedUsers> {
     Navigator.of(context).pop();
   }
 
+  // Future<void> _sendActivationWebEmail(String email) async {
+  //   try {
+  //     final response = await EmailJS.send(
+  //       'service_o2ij7m8',
+  //       'template_7d6cpt7',
+  //       {
+  //         'to_email': email,
+  //         'subject': 'Your Account Has Been Activated!',
+  //         'message': '
+  //       },
+  //       const Options(
+  //         publicKey: 'N1l73HklBxqzJG95A',
+  //         privateKey: 'JAnCLaI0hA8xbim_HZ8vy',
+  //       ),
+  //     );
+  //
+  //     if (response.status == 200) {
+  //       print('Activation email sent to $email');
+  //     } else {
+  //       print('Failed to send email. Status code: ${response.status}');
+  //     }
+  //   } catch (error) {
+  //     print('Failed to send email: $error');
+  //   }
+  // }
+
+  // Future<void> _sendActivationEmail(String userEmail) async {
+  //   final Email email = Email(
+  //     body: 'Hello, your account has been activated. You can now enjoy the app!',
+  //     subject: "Fill'd Rider Account Has Been Activated!",
+  //     recipients: [userEmail],
+  //     isHTML: false,
+  //   );
+  //
+  //   try {
+  //     await FlutterEmailSender.send(email);
+  //     print('Activation email sent to $userEmail');
+  //   } catch (error) {
+  //     print('Failed to send email: $error');
+  //   }
+  // }
 
   Future<void> sendSms(String phoneNumber, String message) async {
+    setState(() {
+      _isSending = true;
+    });
+
     final url = Uri.parse('https://sms.hubtel.com/v1/messages/send');
 
     try {
@@ -214,21 +255,64 @@ class _DeactivatedUsersState extends State<DeactivatedUsers> {
       );
 
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('SMS sent successfully!')),
+        Fluttertoast.showToast(
+          msg: "SMS sent successfully!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to send SMS: ${response.body}')),
+        Fluttertoast.showToast(
+          msg: "SMS sent successfully!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
         );
+        // Fluttertoast.showToast(
+        //   msg: "Failed to send SMS: ${response.body}",
+        //   toastLength: Toast.LENGTH_SHORT,
+        //   gravity: ToastGravity.BOTTOM,
+        // );
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+
+    }
+    // catch (e) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text('Error: $e')),
+    //   );
+    // }
+    finally {
+      setState(() {
+        _isSending = false;
+      });
     }
   }
 
 
-
+  // Future<void> sendSms(String phoneNumber, String message) async {
+  //   final url = Uri.parse('https://sms.hubtel.com/v1/messages/send'); // Update with your actual Vercel URL
+  //
+  //   try {
+  //     final response = await http.post(
+  //       url,
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //             body: jsonEncode({
+  //               "From": sender,
+  //               "To": phoneNumber,
+  //               "Content": message,
+  //               "RegisteredDelivery": true,
+  //             }),
+  //
+  //     );
+  //
+  //     if (response.statusCode == 200) {
+  //       print('SMS sent successfully!');
+  //     } else {
+  //       print('Failed to send SMS: ${response.statusCode}');
+  //       print('Response body: ${response.body}');
+  //     }
+  //   } catch (error) {
+  //     print('Error sending SMS: $error');
+  //   }
+  // }
 }
