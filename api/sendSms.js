@@ -1,6 +1,16 @@
 const fetch = require('node-fetch');
 
 export default async function handler(req, res) {
+  // Add CORS headers to allow requests from your Flutter app
+  res.setHeader('Access-Control-Allow-Origin', '*'); // Allow all origins, or specify your domain instead of '*'
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  // Handle preflight (OPTIONS) request
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method === 'POST') {
     const { phoneNumber, message } = req.body;
 
