@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
 export default async function handler(req, res) {
   // Add CORS headers to allow requests from your Flutter app
@@ -43,6 +43,7 @@ export default async function handler(req, res) {
         res.status(response.status).json({ success: false, message: 'Failed to send SMS', data });
       }
     } catch (error) {
+      console.error('Error in Hubtel request:', error);  // Log the error details
       res.status(500).json({ success: false, message: 'Server error', error });
     }
   } else {
