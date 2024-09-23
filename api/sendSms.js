@@ -14,6 +14,11 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { phoneNumber, message } = req.body;
 
+    // Validate request body
+    if (!phoneNumber || !message) {
+      return res.status(400).json({ success: false, message: 'phoneNumber and message are required' });
+    }
+
     const hubtelUrl = 'https://sms.hubtel.com/v1/messages/send';
 
     const headers = {
@@ -36,6 +41,10 @@ export default async function handler(req, res) {
       });
 
       const data = await response.json();
+
+      // Log the full response from Hubtel for debugging
+      console.log('Response Status:', response.status);
+      console.log('Response Body:', data);
 
       if (response.ok) {
         res.status(200).json({ success: true, message: 'SMS sent successfully', data });
