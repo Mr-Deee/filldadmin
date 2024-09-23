@@ -190,58 +190,84 @@ class _DeactivatedUsersState extends State<DeactivatedUsers> {
     Navigator.of(context).pop();
   }
 
+  //
+  // Future<void> sendSms(String phoneNumber, String message) async {
+  //   setState(() {
+  //     _isSending = true;
+  //   });
+  //
+  //   final url = Uri.parse('https://filldadmin.vercel.app/api/sendSms');
+  //       //'https://sms.hubtel.com/v1/messages/send');
+  //
+  //   try {
+  //     final response = await http.post(
+  //       url,
+  //       headers: {
+  //         'Authorization': 'Basic ${base64Encode(utf8.encode('$clientId:$clientSecret'))}',
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: jsonEncode({
+  //         "From": sender,
+  //         "To": phoneNumber,
+  //         "Content": message,
+  //         "RegisteredDelivery": true,
+  //       }),
+  //     );
+  //
+  //     if (response.statusCode == 200) {
+  //       Fluttertoast.showToast(
+  //         msg: "SMS sent successfully!",
+  //         toastLength: Toast.LENGTH_SHORT,
+  //         gravity: ToastGravity.BOTTOM,
+  //       );
+  //     } else {
+  //       Fluttertoast.showToast(
+  //         msg: "SMS sent successfully!",
+  //         toastLength: Toast.LENGTH_SHORT,
+  //         gravity: ToastGravity.BOTTOM,
+  //       );
+  //
+  //     }
+  //
+  //   }
+  //   // catch (e) {
+  //   //   ScaffoldMessenger.of(context).showSnackBar(
+  //   //     SnackBar(content: Text('Error: $e')),
+  //   //   );
+  //   // }
+  //   finally {
+  //     setState(() {
+  //       _isSending = false;
+  //     });
+  //   }
+  // }
+
 
   Future<void> sendSms(String phoneNumber, String message) async {
-    setState(() {
-      _isSending = true;
-    });
 
-    final url = Uri.parse('https://filldadmin.vercel.app/api/sendSms');
-        //'https://sms.hubtel.com/v1/messages/send');
+    final encodedPhoneNumber = Uri.encodeComponent(phoneNumber); // Ensure valid URL encoding
+    final encodedMessage = Uri.encodeComponent(message); // Ensure valid URL encoding
+
+    final url = Uri.parse(
+        'https://sms.hubtel.com/v1/messages/send'
+            '?clientid=$clientId'
+            '&clientsecret=$clientSecret'
+            '&from=$sender'
+            '&to=$encodedPhoneNumber'
+            '&content=$encodedMessage'
+    );
 
     try {
-      final response = await http.post(
-        url,
-        headers: {
-          'Authorization': 'Basic ${base64Encode(utf8.encode('$clientId:$clientSecret'))}',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          "From": sender,
-          "To": phoneNumber,
-          "Content": message,
-          "RegisteredDelivery": true,
-        }),
-      );
+      final response = await http.get(url);
 
       if (response.statusCode == 200) {
-        Fluttertoast.showToast(
-          msg: "SMS sent successfully!",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-        );
+        print('SMS sent successfully');
       } else {
-        Fluttertoast.showToast(
-          msg: "SMS sent successfully!",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-        );
-
+        print('Failed to send SMS. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
       }
-
-    }
-    // catch (e) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(content: Text('Error: $e')),
-    //   );
-    // }
-    finally {
-      setState(() {
-        _isSending = false;
-      });
+    } catch (error) {
+      print('Error sending SMS: $error');
     }
   }
-
-
-
 }
