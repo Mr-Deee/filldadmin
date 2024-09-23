@@ -1,0 +1,14 @@
+{
+  "name": "filldadmin",
+  "version": "1.0.0",
+  "description": "Send SMS API using Hubtel",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  }
+}
