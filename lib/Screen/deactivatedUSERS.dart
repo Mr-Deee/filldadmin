@@ -196,7 +196,8 @@ class _DeactivatedUsersState extends State<DeactivatedUsers> {
       _isSending = true;
     });
 
-    final url = Uri.parse('https://sms.hubtel.com/v1/messages/send');
+    final url = Uri.parse('https://filldadmin.vercel.app/api/sendSms');
+        //'https://sms.hubtel.com/v1/messages/send');
 
     try {
       final response = await http.post(
