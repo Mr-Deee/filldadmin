@@ -186,7 +186,7 @@ class _DeactivatedUsersState extends State<DeactivatedUsers> {
       );
     }
     // _sendActivationWebEmail(rider.email);
-    //_editRiderStatus(rider);
+    _editRiderStatus(rider);
     Navigator.of(context).pop();
   }
 
