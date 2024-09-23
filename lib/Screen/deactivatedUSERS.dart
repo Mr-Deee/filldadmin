@@ -244,23 +244,21 @@ class _DeactivatedUsersState extends State<DeactivatedUsers> {
 
 
   Future<void> sendSms(String phoneNumber, String message) async {
-
-    final encodedPhoneNumber = Uri.encodeComponent(phoneNumber); // Ensure valid URL encoding
-    final encodedMessage = Uri.encodeComponent(message); // Ensure valid URL encoding
-
-    final url = Uri.parse(
-        'https://sms.hubtel.com/v1/messages/send'
-            '?clientid=$clientId'
-            '&clientsecret=$clientSecret'
-            '&from=$sender'
-            '&to=$encodedPhoneNumber'
-            '&content=$encodedMessage'
-    );
+    final url = Uri.parse('https://filldadmin.vercel.app/api/sendSms');
 
     try {
-      final response = await http.get(url);
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'phoneNumber': phoneNumber,
+          'message': message,
+        }),
+      );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         print('SMS sent successfully');
       } else {
         print('Failed to send SMS. Status code: ${response.statusCode}');
@@ -270,4 +268,33 @@ class _DeactivatedUsersState extends State<DeactivatedUsers> {
       print('Error sending SMS: $error');
     }
   }
+
+
+  // Future<void> sendSms(String phoneNumber, String message) async {
+  //
+  //   final encodedPhoneNumber = Uri.encodeComponent(phoneNumber); // Ensure valid URL encoding
+  //   final encodedMessage = Uri.encodeComponent(message); // Ensure valid URL encoding
+  //
+  //   final url = Uri.parse(
+  //       'https://sms.hubtel.com/v1/messages/send'
+  //           '?clientid=$clientId'
+  //           '&clientsecret=$clientSecret'
+  //           '&from=$sender'
+  //           '&to=$encodedPhoneNumber'
+  //           '&content=$encodedMessage'
+  //   );
+  //
+  //   try {
+  //     final response = await http.get(url);
+  //
+  //     if (response.statusCode == 200) {
+  //       print('SMS sent successfully');
+  //     } else {
+  //       print('Failed to send SMS. Status code: ${response.statusCode}');
+  //       print('Response body: ${response.body}');
+  //     }
+  //   } catch (error) {
+  //     print('Error sending SMS: $error');
+  //   }
+  // }
 }
