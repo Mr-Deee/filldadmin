@@ -33,18 +33,17 @@ class _DeactivatedUsersState extends State<DeactivatedUsers> {
     _ridersRef.onValue.listen((event) {
       _riders.clear();
 
-      if (event.snapshot.value != null) {
-        Map<dynamic, dynamic>? map = event.snapshot.value as Map<dynamic, dynamic>?;
+      final data = event.snapshot.value;
+      if (data is Map) {
+        data.forEach((key, value) {
+          // Ensure each value is a Map before accessing fields
+          if (value is Map && value['status'] == 'deactivated') {
+            final carDetails = value['car_details'] as Map?;
 
-        map?.forEach((key, value) {
-          if (value['status'] == 'deactivated') {
-            // Safely handle nested 'car_details' and other fields
-            var carDetails = value['car_details'] as Map<dynamic, dynamic>?;
-
-            Rider rider = Rider(
+            final rider = Rider(
               key: key,
-              name: value['FirstName'] ?? '', // Ensure null safety
-              email: value['email'] ?? '',
+              name: value['FirstName']?.toString() ?? '',
+              email: value['email']?.toString() ?? '',
               number: value['phoneNumber']?.toString() ?? '',
               numberPlate: value['numberPlate']?.toString() ?? '',
               earnings: value['earnings']?.toString() ?? '',
@@ -62,6 +61,7 @@ class _DeactivatedUsersState extends State<DeactivatedUsers> {
       setState(() {});
     });
   }
+
 
 
   void _editRiderStatus(Rider rider) {
@@ -189,58 +189,6 @@ class _DeactivatedUsersState extends State<DeactivatedUsers> {
     _editRiderStatus(rider);
     Navigator.of(context).pop();
   }
-
-  //
-  // Future<void> sendSms(String phoneNumber, String message) async {
-  //   setState(() {
-  //     _isSending = true;
-  //   });
-  //
-  //   final url = Uri.parse('https://filldadmin.vercel.app/api/sendSms');
-  //       //'https://sms.hubtel.com/v1/messages/send');
-  //
-  //   try {
-  //     final response = await http.post(
-  //       url,
-  //       headers: {
-  //         'Authorization': 'Basic ${base64Encode(utf8.encode('$clientId:$clientSecret'))}',
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: jsonEncode({
-  //         "From": sender,
-  //         "To": phoneNumber,
-  //         "Content": message,
-  //         "RegisteredDelivery": true,
-  //       }),
-  //     );
-  //
-  //     if (response.statusCode == 200) {
-  //       Fluttertoast.showToast(
-  //         msg: "SMS sent successfully!",
-  //         toastLength: Toast.LENGTH_SHORT,
-  //         gravity: ToastGravity.BOTTOM,
-  //       );
-  //     } else {
-  //       Fluttertoast.showToast(
-  //         msg: "SMS sent successfully!",
-  //         toastLength: Toast.LENGTH_SHORT,
-  //         gravity: ToastGravity.BOTTOM,
-  //       );
-  //
-  //     }
-  //
-  //   }
-  //   // catch (e) {
-  //   //   ScaffoldMessenger.of(context).showSnackBar(
-  //   //     SnackBar(content: Text('Error: $e')),
-  //   //   );
-  //   // }
-  //   finally {
-  //     setState(() {
-  //       _isSending = false;
-  //     });
-  //   }
-  // }
 
 
   Future<void> sendSms(String phoneNumber, String message) async {

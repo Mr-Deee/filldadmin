@@ -1,7 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../Models/Rider.dart';
 
 class EarningScreen extends StatefulWidget {
@@ -12,20 +10,19 @@ class EarningScreen extends StatefulWidget {
 }
 
 class _EarningScreenState extends State<EarningScreen> {
-  final Query  _ridersRef = FirebaseDatabase.instance.ref().child('Riders').orderByChild("earnings");
+  final Query _ridersRef = FirebaseDatabase.instance.ref().child('Riders').orderByChild("earnings");
   List<Rider> _riders = [];
+
   @override
   void initState() {
     super.initState();
     _loadRiders();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        title: Text("Earnings"),
-      ),
+      appBar: AppBar(title: Text("Earnings")),
       body: _riders.isEmpty
           ? Center(child: CircularProgressIndicator())
           : ListView.builder(
@@ -34,31 +31,13 @@ class _EarningScreenState extends State<EarningScreen> {
           Rider rider = _riders[index];
           return ListTile(
             leading: CircleAvatar(
-              radius: 30,
-              backgroundImage:rider.imageUrl != null
-                  ? NetworkImage(rider.imageUrl,scale: 1.0)
+              backgroundImage: rider.imageUrl != null
+                  ? NetworkImage(rider.imageUrl)
                   : AssetImage("assets/images/useri.png") as ImageProvider<Object>,
             ),
-            title: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  Text(rider.name),
-                ],
-              ),
-            ),
-            subtitle: Column(
-              children: [
-                Text(rider.email),
-                Text(rider.earnings),
-              ],
-            ),
-            // trailing: IconButton(
-            //   icon: Icon(Icons.switch_account),
-            //   onPressed: () => _editRiderStatus(rider),
-            // ),
-
-            onTap:  () => _showRiderDetails(rider),
+            title: Text(rider.name ?? "Unknown"), // Handling null
+            subtitle: Text(rider.earnings ?? "No earnings"), // Handling null
+            onTap: () => _showRiderDetails(rider),
           );
         },
       ),
@@ -66,113 +45,76 @@ class _EarningScreenState extends State<EarningScreen> {
   }
 
   void _showRiderDetails(Rider rider) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
+    try {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
           title: Text('Rider Details'),
           content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
             children: [
-
-              Container(
-                width: double.infinity,
-                height: 150.0,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12.0),
-                  color: Colors.grey, // You can set the desired background color
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: rider.imageUrl != null
-                        ? NetworkImage(rider.imageUrl)
-                        : AssetImage("assets/images/useri.png") as ImageProvider<Object>,
-                  ),
-                ),
-              ),
-              SizedBox(height: 10.0),
-              Container(
-                width: double.infinity,
-                height: 150.0,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12.0),
-                  color: Colors.grey, // You can set the desired background color
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: rider.imageUrl != null
-                        ? NetworkImage(rider.imageUrl)
-                        : AssetImage("assets/images/useri.png") as ImageProvider<Object>,
-                  ),
-                ),
-              ),
-
-
-              SizedBox(height: 10.0),
-              Text('Name: ${rider.name}'),
-              Text('Email: ${rider.email}'),
-              Text('Plate Number: ${rider.numberPlate}'),
-              Text('GhanaCard: ${rider.ghcard??""}'),
-              // Add more details as needed
+              Text("Name: ${rider.name}"),
+              Text("Email: ${rider.email}"),
+              Text("Earnings: ${rider.earnings}"),
+              rider.imageUrl != null
+                  ? Image.network(rider.imageUrl)
+                  : Image.asset("assets/images/useri.png"),
+              // rider.ghcardimageUrl != null
+              //     ? Image.network(rider.ghcardimageUrl)
+              //     : Container(), // Show empty if null
             ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: Text('Close'),
-            ),
-            TextButton(
-              onPressed: () {
-                // _editRiderStatus(rider);
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: Text('Activate'),
-            ),
-          ],
-        );
-      },
-    );
+        ),
+      );
+    } catch (e) {
+      print("Error showing rider details: $e");
+    }
   }
+
   void _loadRiders() {
     _ridersRef.onValue.listen(
           (event) {
         _riders.clear();
-
         if (event.snapshot.value != null) {
-          Map<dynamic, dynamic>? map = event.snapshot.value as Map<dynamic, dynamic>?;
+          try {
+            Map<dynamic, dynamic>? map = event.snapshot.value as Map<dynamic, dynamic>?;
+            if (map != null) {
+              map.forEach((key, value) {
+                try {
+                  var earningsRaw = value['earnings'];
+                  int earnings = 0;
+                  if (earningsRaw != null) {
+                    earnings = int.tryParse(earningsRaw.toString()) ?? 0;
+                  }
 
-          if (map != null) {
-            map.forEach((key, value) {
-              // Check if earnings exist and are valid
-              if (value['earnings'] != null && value['earnings'] > 0) {
-                // Safely access nested car_details data
-                var carDetails = value['car_details'] as Map<dynamic, dynamic>?;
-
-                _riders.add(Rider(
-                  key: key,
-                  name: value['FirstName'] ?? '',
-                  email: value['email'] ?? '',
-                  numberPlate: value['numberPlate']?.toString() ?? '',
-                  earnings: value['earnings'].toString(),
-                  number: value['phoneNumber']?.toString() ?? '',
-                  imageUrl: value['riderImageUrl'] ?? '',
-                  ghcardimageUrl: carDetails?['GhanaCardUrl'],
-                  ghcard: carDetails?['GhanaCardNumber'],
-                  licensePlate: carDetails?['licensePlateNumber']?.toString() ?? '',
-                ));
-              }
-            });
+                  if (earnings > 0) {
+                    var carDetails = value['car_details'] as Map<dynamic, dynamic>?;
+                    _riders.add(Rider(
+                      key: key,
+                      name: value['FirstName'] ?? 'Unknown',
+                      email: value['email'] ?? 'Unknown',
+                      numberPlate: value['numberPlate']?.toString() ?? 'Unknown',
+                      earnings: earnings.toString(),
+                      number: value['phoneNumber']?.toString() ?? 'Unknown',
+                      imageUrl: value['riderImageUrl'] ?? '',
+                      ghcardimageUrl: carDetails?['GhanaCardUrl'],
+                      ghcard: carDetails?['GhanaCardNumber'],
+                      licensePlate: carDetails?['licensePlateNumber']?.toString() ?? 'Unknown',
+                    ));
+                  }
+                } catch (e) {
+                  print("Error parsing rider data: $e");
+                }
+              });
+            }
+          } catch (e) {
+            print("Error parsing snapshot value: $e");
           }
         }
-
         setState(() {});
       },
-      onError: (Object error, StackTrace? stackTrace) {
-        print('Error loading riders: $error');
-        // You can add more error-handling logic here if necessary
+      onError: (error) {
+        print("Error loading riders from Firebase: $error");
       },
     );
   }
-
 }
