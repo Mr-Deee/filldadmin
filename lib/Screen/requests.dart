@@ -761,35 +761,213 @@ class OngoingRequestsScreen extends StatelessWidget {
   const OngoingRequestsScreen({
     required this.filter,
     required this.requests,
-  });
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Completed Requests'),
+        title: Text('$filter Requests'),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.white,
       ),
+      backgroundColor: Colors.grey[50],
       body: requests.isEmpty
-          ? const Center(child: Text('No completed requests found'))
+          ? Center(
+        child: Text(
+          'No $filter requests found',
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.grey,
+          ),
+        ),
+      )
           : ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 8),
         itemCount: requests.length,
         itemBuilder: (context, index) {
           final request = requests[index];
-          return Card(
-            margin: const EdgeInsets.all(8.0),
-            child: ListTile(
-              title: Text("Client: ${request['client_name']}"),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Phone: ${request['clientphone']}"),
-                  Text("Fare: GHS ${request['fare']}"),
-                ],
-              ),
-            ),
-          );
+          return _buildRequestCard(request);
         },
       ),
     );
+  }
+
+  Widget _buildRequestCard(Map<String, dynamic> request) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header with client info
+            Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.blue[50],
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.person,
+                    color: Colors.blue,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        request['client_name'] ?? 'Unknown Client',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        request['clientphone'] ?? 'No phone provided',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // Details section
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildDetailItem(
+                  icon: Icons.local_gas_station,
+                  label: 'Fuel Type',
+                  value: request['fuel_type'] ?? 'N/A',
+                ),
+                _buildDetailItem(
+                  icon: Icons.attach_money,
+                  label: 'Fare',
+                  value: 'GHS ${request['fare']?.toStringAsFixed(2) ?? '0.00'}',
+                ),
+                _buildDetailItem(
+                  icon: Icons.schedule,
+                  label: 'Duration',
+                  value: request['duration'] ?? 'N/A',
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+
+            // Status and action button
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _getStatusColor(request['status']),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    (request['status'] ?? 'ongoing').toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    // Add action for completing/cancelling request
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.blue[50],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: Text(
+                    filter == 'Ongoing' ? 'Complete' : 'View Details',
+                    style: const TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailItem({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Column(
+      children: [
+        Icon(
+          icon,
+          size: 20,
+          color: Colors.blue,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey[600],
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Color _getStatusColor(String? status) {
+    switch (status?.toLowerCase()) {
+      case 'completed':
+        return Colors.green;
+      case 'cancelled':
+        return Colors.red;
+      case 'pending':
+        return Colors.orange;
+      default: // ongoing
+        return Colors.blue;
+    }
   }
 }
