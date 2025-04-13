@@ -139,80 +139,205 @@ class _RequestsState extends State<Requests> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Requests"),
+        title: const Text(
+          "Requests Dashboard",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.white,
       ),
+      backgroundColor: Colors.grey[50],
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
         children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    showGasRequests(context);
-                  },
-                  child: Card(
-                    child: Container(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                          const Text(
-                            "Gas Requests",
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          const Icon(Icons.local_gas_station, size: 50),
-                          Text("${gasRequests.length} requests"),
-                        ],
-                      ),
-                    ),
+          // Stats Cards Row
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _buildStatCard(
+                    context: context,
+                    title: "Completed",
+                    count: gasRequests.length,
+                    icon: Icons.local_gas_station,
+                    color: Colors.green,
+                    onTap: () => showGasRequests(context),
                   ),
-                ),
-
-                GestureDetector(
-                  onTap: () {
-                    showOngoingRequests(context);
-                  },
-                  child: Card(
-                    child: Container(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                          const Text(
-                            "Completed",
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          const Icon(Icons.check_circle, size: 50),
-                          Text("${ongoingRequests.length} completed"),
-                        ],
-                      ),
-                    ),
+                  const SizedBox(width: 16),
+                  _buildStatCard(
+                    context: context,
+                    title: "Ongoing",
+                    count: ongoingRequests.length,
+                    icon: Icons.timer,
+                    color: Colors.orange,
+                    onTap: () => showOngoingRequests(context),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-          const SizedBox(height: 20),
+
+          // Divider
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Divider(
+              height: 1,
+              color: Colors.grey[300],
+            ),
+          ),
+
+          // Requests List
           Expanded(
             child: ListView.builder(
+              padding: const EdgeInsets.only(top: 8),
               itemCount: ongoingRequests.length,
               itemBuilder: (context, index) {
                 final request = ongoingRequests[index];
-                return ListTile(
-                  title: Text(
-                      "Client Name: ${request['client_name']}"),
-                  subtitle: Text("Fare: ${request['fare']}"),
-                );
+                return _buildRequestItem(request);
               },
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildStatCard({
+    required BuildContext context,
+    required String title,
+    required int count,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 180,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    icon,
+                    color: color,
+                    size: 20,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "$count requests",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[800],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRequestItem(Map<String, dynamic> request) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        leading: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: Colors.blue[50],
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            Icons.person,
+            color: Colors.blue[700],
+          ),
+        ),
+        title: Text(
+          request['client_name'] ?? 'Unknown Client',
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            Text(
+              "Fare: GHS ${request['fare']?.toStringAsFixed(2) ?? '0.00'}",
+              style: TextStyle(
+                color: Colors.grey[600],
+              ),
+            ),
+            if (request['date'] != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  DateFormat('MMM dd, yyyy').format(DateTime.parse(request['date'])),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[500],
+                  ),
+                ),
+              ),
+          ],
+        ),
+        trailing: Icon(
+          Icons.chevron_right,
+          color: Colors.grey[400],
+        ),
       ),
     );
   }
@@ -251,7 +376,7 @@ class _RequestsState extends State<Requests> {
 class GasRequestsScreen extends StatefulWidget {
   final String filter;
 
-  const GasRequestsScreen({required this.filter});
+  const GasRequestsScreen({required this.filter, Key? key}) : super(key: key);
 
   @override
   _GasRequestsScreenState createState() => _GasRequestsScreenState();
@@ -302,7 +427,7 @@ class _GasRequestsScreenState extends State<GasRequestsScreen> {
 
         setState(() {
           gasRequests = requests;
-          filteredRequests = requests;
+          filteredRequests = requests.where((req) => req['status'] == 'completed').toList();
           isLoading = false;
           errorMessage = null;
         });
@@ -338,6 +463,8 @@ class _GasRequestsScreenState extends State<GasRequestsScreen> {
       if (selectedDate != null) {
         filteredRequests = gasRequests.where((request) {
           try {
+            if (request['status'] != 'completed') return false;
+
             final dateString = request['date'];
             if (dateString == null) return false;
 
@@ -358,7 +485,7 @@ class _GasRequestsScreenState extends State<GasRequestsScreen> {
           return false;
         }).toList();
       } else {
-        filteredRequests = gasRequests;
+        filteredRequests = gasRequests.where((req) => req['status'] == 'completed').toList();
       }
     });
   }
@@ -384,7 +511,8 @@ class _GasRequestsScreenState extends State<GasRequestsScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text('Client Requests'),
+        title: const Text('Completed Requests'),
+        elevation: 0,
         actions: [
           DropdownButton<String>(
             value: selectedFilter,
@@ -435,8 +563,8 @@ class _GasRequestsScreenState extends State<GasRequestsScreen> {
     if (filteredRequests.isEmpty) {
       return const Center(
         child: Text(
-          'No requests found for selected filter',
-          style: TextStyle(fontSize: 16),
+          'No completed requests found',
+          style: TextStyle(fontSize: 16, color: Colors.grey),
         ),
       );
     }
@@ -444,6 +572,7 @@ class _GasRequestsScreenState extends State<GasRequestsScreen> {
     return RefreshIndicator(
       onRefresh: fetchGasRequests,
       child: ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 16),
         itemCount: filteredRequests.length,
         itemBuilder: (context, index) {
           final request = filteredRequests[index];
@@ -469,7 +598,7 @@ class _GasRequestsScreenState extends State<GasRequestsScreen> {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -754,7 +883,7 @@ class _RidersDeliveriesScreenState extends State<RidersDeliveriesScreen> {
   }
 }
 
-class OngoingRequestsScreen extends StatelessWidget {
+class OngoingRequestsScreen extends StatefulWidget {
   final String filter;
   final List<Map<String, dynamic>> requests;
 
@@ -765,19 +894,100 @@ class OngoingRequestsScreen extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<OngoingRequestsScreen> createState() => _OngoingRequestsScreenState();
+}
+
+class _OngoingRequestsScreenState extends State<OngoingRequestsScreen> {
+  late List<Map<String, dynamic>> _requests;
+  final DatabaseReference _databaseRef = FirebaseDatabase.instance.ref('GasRequests');
+  bool _isDeleting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _requests = List.from(widget.requests);
+  }
+
+  Future<void> _deleteRequest(String requestId, int index) async {
+    try {
+      setState(() => _isDeleting = true);
+
+      await _databaseRef.child(requestId).remove();
+
+      setState(() {
+        _requests.removeAt(index);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Request deleted successfully')),
+        );
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete request: ${e.toString()}')),
+      );
+    } finally {
+      setState(() => _isDeleting = false);
+    }
+  }
+
+  Widget _buildDetailItem({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Column(
+      children: [
+        Icon(
+          icon,
+          size: 20,
+          color: Colors.blue,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey[600],
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Color _getStatusColor(String? status) {
+    switch (status?.toLowerCase()) {
+      case 'completed':
+        return Colors.green;
+      case 'cancelled':
+        return Colors.red;
+      case 'pending':
+        return Colors.orange;
+      default: // ongoing
+        return Colors.blue;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('$filter Requests'),
+        title: Text('${widget.filter} Requests'),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,
       ),
       backgroundColor: Colors.grey[50],
-      body: requests.isEmpty
+      body: _requests.isEmpty
           ? Center(
         child: Text(
-          'No $filter requests found',
+          'No ${widget.filter} requests found',
           style: const TextStyle(
             fontSize: 16,
             color: Colors.grey,
@@ -786,16 +996,59 @@ class OngoingRequestsScreen extends StatelessWidget {
       )
           : ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        itemCount: requests.length,
+        itemCount: _requests.length,
         itemBuilder: (context, index) {
-          final request = requests[index];
-          return _buildRequestCard(request);
+          final request = _requests[index];
+          return Dismissible(
+            key: Key(request['id'] ?? UniqueKey().toString()),
+            direction: DismissDirection.endToStart,
+            background: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.red[400],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 20),
+              child: const Icon(
+                Icons.delete,
+                color: Colors.white,
+                size: 30,
+              ),
+            ),
+            confirmDismiss: (direction) async {
+              return await showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Confirm Delete'),
+                  content: const Text('Are you sure you want to delete this request?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: const Text(
+                        'Delete',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+            onDismissed: (direction) {
+              _deleteRequest(request['id'], index);
+            },
+            child: _buildRequestCard(request, index),
+          );
         },
       ),
     );
   }
 
-  Widget _buildRequestCard(Map<String, dynamic> request) {
+  Widget _buildRequestCard(Map<String, dynamic> request, int index) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
@@ -854,6 +1107,15 @@ class OngoingRequestsScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (_isDeleting && request['isDeleting'] == true)
+                  const CircularProgressIndicator()
+                else
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () async {
+                      await _deleteRequest(request['id'], index);
+                    },
+                  ),
               ],
             ),
             const SizedBox(height: 16),
@@ -911,7 +1173,7 @@ class OngoingRequestsScreen extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    filter == 'Ongoing' ? 'Complete' : 'View Details',
+                    widget.filter == 'Ongoing' ? 'Complete' : 'View Details',
                     style: const TextStyle(
                       color: Colors.blue,
                       fontWeight: FontWeight.w500,
@@ -924,50 +1186,5 @@ class OngoingRequestsScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Widget _buildDetailItem({
-    required IconData icon,
-    required String label,
-    required String value,
-  }) {
-    return Column(
-      children: [
-        Icon(
-          icon,
-          size: 20,
-          color: Colors.blue,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Color _getStatusColor(String? status) {
-    switch (status?.toLowerCase()) {
-      case 'completed':
-        return Colors.green;
-      case 'cancelled':
-        return Colors.red;
-      case 'pending':
-        return Colors.orange;
-      default: // ongoing
-        return Colors.blue;
-    }
   }
 }
