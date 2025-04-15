@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -14,6 +15,7 @@ import 'addfacts.dart';
 import 'deactivatedUSERS.dart';
 import 'earningsScreen.dart';
 import 'requests.dart';
+import 'package:http/http.dart' as http; // Add this import
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
@@ -343,48 +345,236 @@ class _HomepageState extends State<Homepage> {
       },
     );
   }
-
   Widget _buildDeliveryAvatar(String? imageUrl) {
-    return CircleAvatar(
-      radius: 24,
-      backgroundColor: Colors.grey[200],
-      child: ClipOval(
-        child: _isValidImageUrl(imageUrl)
-            ? CachedNetworkImage(
-          imageUrl: imageUrl!,
-          width: 40,
-          height: 40,
-          fit: BoxFit.cover,
-          placeholder: (context, url) => Container(
-            color: Colors.grey[200],
-            child: const Center(
-              child: CircularProgressIndicator(strokeWidth: 2),
+    return FutureBuilder<String?>(
+      future: _getFirebaseImageUrl(imageUrl),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildAvatarPlaceholder();
+        }
+
+        if (snapshot.hasError || !snapshot.hasData) {
+          debugPrint('Image load error: ${snapshot.error}');
+          return _buildAvatarPlaceholder();
+        }
+
+        return CircleAvatar(
+          radius: 24,
+          backgroundColor: Colors.grey[200],
+          child: ClipOval(
+            child: Image.network(
+              snapshot.data!,
+              width: 40,
+              height: 40,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                debugPrint('Image load failed: $error');
+                return _buildAvatarPlaceholder();
+              },
             ),
           ),
-          errorWidget: (context, url, error) {
-            debugPrint('Image load error: $error\nURL: $url');
-            return const Icon(Icons.person, color: Colors.white);
-          },
-          httpHeaders: const {
-            'Cache-Control': 'max-age=3600',
-          },
-          cacheKey: _generateCacheKey(imageUrl),
-        )
-            : const Icon(Icons.person, color: Colors.white),
-      ),
+        );
+      },
     );
   }
 
-  bool _isValidImageUrl(String? url) {
-    if (url == null || url.isEmpty) return false;
+  Future<String?> _getFirebaseImageUrl(String? url) async {
+    if (url == null || url.isEmpty) return null;
+
+    try {
+      // Handle direct download URLs
+      if (url.startsWith('http')) {
+        return url;
+      }
+
+      // Handle Firebase Storage paths
+      if (url.startsWith('gs://')) {
+        final ref = FirebaseStorage.instance.refFromURL(url);
+        return await ref.getDownloadURL();
+      }
+
+      // Handle relative paths
+      if (url.startsWith('/')) {
+        final ref = FirebaseStorage.instance.ref(url);
+        return await ref.getDownloadURL();
+      }
+
+      // Handle encoded Firebase Storage URLs
+      if (url.contains('firebasestorage.googleapis.com')) {
+        try {
+          // Try using the URL directly first
+          return url;
+        } catch (e) {
+          // If direct access fails, get fresh URL
+          final uri = Uri.parse(url);
+          final path = uri.path.split('/o/').last;
+          final decodedPath = Uri.decodeFull(path);
+          final ref = FirebaseStorage.instance.ref(decodedPath);
+          return await ref.getDownloadURL();
+        }
+      }
+
+      return null;
+    } catch (e) {
+      debugPrint('Error getting Firebase image URL: $e');
+      return null;
+    }
+  }
+
+  Widget _buildAvatarPlaceholder() {
+    return const CircleAvatar(
+      radius: 24,
+      backgroundColor: Colors.grey,
+      child: Icon(Icons.person, color: Colors.white),
+    );
+  }
+
+
+  Future<String> _getImageUrl(String path) async {
+    if (kIsWeb) {
+      // For web, always get fresh URL
+      final ref = FirebaseStorage.instance.refFromURL(path);
+      final url = await ref.getDownloadURL();
+      return '$url&t=${DateTime.now().millisecondsSinceEpoch}';
+    }
+    // For mobile
+    return await FirebaseStorage.instance.refFromURL(path).getDownloadURL();
+  }
+  Future<String?> _getValidImageUrl(String? url) async {
+    if (url == null || url.isEmpty) return null;
+
+    try {
+      // If it's already a valid URL, use it directly
+      if (_isValidHttpUrl(url)) {
+        return url;
+      }
+
+      // Handle Firebase Storage paths
+      if (url.startsWith('gs://')) {
+        final ref = FirebaseStorage.instance.refFromURL(url);
+        return await ref.getDownloadURL();
+      }
+
+      // Handle path references
+      if (url.startsWith('/')) {
+        final ref = FirebaseStorage.instance.ref(url);
+        return await ref.getDownloadURL();
+      }
+
+      // If we have a malformed Firebase URL, try to reconstruct it
+      if (url.contains('appspot.com')) {
+        final uri = Uri.parse(url);
+        if (uri.queryParameters['token'] == null) {
+          // If token is missing, get fresh URL
+          final path = uri.path.split('/o/').last;
+          final ref = FirebaseStorage.instance.ref(path);
+          return await ref.getDownloadURL();
+        }
+        return url;
+      }
+
+      return null;
+    } catch (e) {
+      debugPrint('Error getting valid image URL: $e');
+      return null;
+    }
+  }
+  Future<String?> _verifyAndRefreshImageUrl(String? url) async {
+    if (url == null || url.isEmpty) return null;
+
+    try {
+      // If it's a direct download URL with token
+      if (url.contains('firebasestorage.googleapis.com')) {
+        // Check if URL is accessible
+        final response = await http.head(Uri.parse(url));
+        if (response.statusCode == 200) {
+          return url; // URL is still valid
+        }
+
+        // If not valid, try to get fresh URL
+        return await _getFreshDownloadUrl(url);
+      }
+
+      // Handle other URL types (gs://, paths, etc.)
+      return await _getFreshDownloadUrl(url);
+    } catch (e) {
+      debugPrint('URL verification failed: $e');
+      return null;
+    }
+  }
+
+  Future<String?> _getFreshDownloadUrl(String url) async {
+    try {
+      // Extract path from Firebase Storage URL
+      final uri = Uri.parse(url);
+      if (uri.path.contains('/o/')) {
+        final path = uri.path.split('/o/').last;
+        final decodedPath = Uri.decodeFull(path);
+        final ref = FirebaseStorage.instance.ref(decodedPath);
+        return await ref.getDownloadURL();
+      }
+
+      // Handle gs:// URLs
+      if (url.startsWith('gs://')) {
+        final ref = FirebaseStorage.instance.refFromURL(url);
+        return await ref.getDownloadURL();
+      }
+
+      // Handle relative paths
+      if (url.startsWith('/')) {
+        final ref = FirebaseStorage.instance.ref(url);
+        return await ref.getDownloadURL();
+      }
+
+      return null;
+    } catch (e) {
+      debugPrint('Failed to get fresh download URL: $e');
+      return null;
+    }
+  }
+
+  bool _isValidHttpUrl(String url) {
     try {
       final uri = Uri.parse(url);
-      return uri.isAbsolute;
+      return uri.isAbsolute &&
+          (uri.scheme == 'http' || uri.scheme == 'https') &&
+          uri.host.isNotEmpty;
+    } catch (e) {
+      return false;
+    }
+  }
+
+
+
+
+  bool _isValidImageUrl(String? url) {
+    if (url == null || url.isEmpty) return false;
+
+    // Check if it's a Firebase Storage path
+    if (url.startsWith('gs://') || url.startsWith('/') || url.contains('firebasestorage')) {
+      return true;
+    }
+
+    // Check if it's a valid HTTP URL
+    try {
+      final uri = Uri.parse(url);
+      return uri.isAbsolute && (uri.scheme == 'http' || uri.scheme == 'https');
     } catch (e) {
       debugPrint('Invalid image URL: $url\nError: $e');
       return false;
     }
   }
+
+  // bool _isValidImageUrl(String? url) {
+  //   if (url == null || url.isEmpty) return false;
+  //   try {
+  //     final uri = Uri.parse(url);
+  //     return uri.isAbsolute;
+  //   } catch (e) {
+  //     debugPrint('Invalid image URL: $url\nError: $e');
+  //     return false;
+  //   }
+  // }
 
   String _generateCacheKey(String url) {
     try {
@@ -395,16 +585,16 @@ class _HomepageState extends State<Homepage> {
     }
   }
 
-  Future<String?> _getFreshDownloadUrl(String? path) async {
-    if (path == null || path.isEmpty) return null;
-    try {
-      final ref = FirebaseStorage.instance.refFromURL(path);
-      return await ref.getDownloadURL();
-    } catch (e) {
-      debugPrint('Failed to refresh download URL: $e');
-      return null;
-    }
-  }
+  // Future<String?> _getFreshDownloadUrl(String? path) async {
+  //   if (path == null || path.isEmpty) return null;
+  //   try {
+  //     final ref = FirebaseStorage.instance.refFromURL(path);
+  //     return await ref.getDownloadURL();
+  //   } catch (e) {
+  //     debugPrint('Failed to refresh download URL: $e');
+  //     return null;
+  //   }
+  // }
 
   void _showLogoutDialog() {
     showDialog(

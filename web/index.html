@@ -19,13 +19,23 @@
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="A new Flutter project.">
-
+  <script>
+    window.addEventListener('load', function(ev) {
+      // Download main.dart.js
+      _flutter.loader.load({
+        serviceWorker: {
+          serviceWorkerVersion: '{{flutter_service_worker_version}}'
+        }
+      });
+    });
+  </script>
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="filldadmin">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' firebasestorage.googleapis.com;">
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
