@@ -16,6 +16,7 @@ import 'deactivatedUSERS.dart';
 import 'earningsScreen.dart';
 import 'requests.dart';
 import 'package:http/http.dart' as http; // Add this import
+import 'package:universal_html/html.dart' as html;
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
@@ -313,76 +314,175 @@ class _HomepageState extends State<Homepage> {
       ],
     );
   }
-
   Widget _buildDeliveryItem(Map<String, dynamic> delivery) {
-    return FutureBuilder<String?>(
-      future: _getFreshDownloadUrl(delivery['profilepicture']),
-      builder: (context, snapshot) {
-        final imageUrl = snapshot.data;
-        return ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          leading: _buildDeliveryAvatar(imageUrl),
-          title: Text(
-            delivery['driver_name'] ?? 'Unknown Driver',
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 4),
-              Text('Client: ${delivery['client_name'] ?? 'Unknown'}'),
-              Text('Amount: GHS${delivery['fare']?.toStringAsFixed(2) ?? '0.00'}'),
-            ],
-          ),
-          trailing: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.gas_meter, size: 20),
-              Text('${delivery['Gas Amount'] ?? '0'} units'),
-            ],
-          ),
-        );
-      },
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      leading: _buildUniversalAvatar(delivery['profilepicture']),
+      title: Text(
+        delivery['driver_name'] ?? 'Unknown Driver',
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 4),
+          Text('Client: ${delivery['client_name'] ?? 'Unknown'}'),
+          Text('Amount: GHS${delivery['fare']?.toStringAsFixed(2) ?? '0.00'}'),
+        ],
+      ),
+      trailing: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.gas_meter, size: 20),
+          Text('${delivery['Gas Amount'] ?? '0'} units'),
+        ],
+      ),
     );
   }
-  Widget _buildDeliveryAvatar(String? imageUrl) {
+
+  Widget _buildUniversalAvatar(String? imageUrl) {
     return FutureBuilder<String?>(
-      future: _getFirebaseImageUrl(imageUrl),
+      future: _getOptimizedImageUrl(imageUrl),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return _buildAvatarPlaceholder();
         }
 
-        if (snapshot.hasError || !snapshot.hasData) {
-          debugPrint('Image load error: ${snapshot.error}');
+        final url = snapshot.data;
+        if (url == null) {
           return _buildAvatarPlaceholder();
         }
 
-        return CircleAvatar(
-          radius: 24,
-          backgroundColor: Colors.grey[200],
-          child: ClipOval(
-            child: Image.network(
-              snapshot.data!,
-              width: 40,
-              height: 40,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                debugPrint('Image load failed: $error');
-                return _buildAvatarPlaceholder();
-              },
+        if (kIsWeb) {
+          return _buildWebImage(url);
+        } else {
+          return CachedNetworkImage(
+            imageUrl: url,
+            imageBuilder: (context, imageProvider) => CircleAvatar(
+              radius: 24,
+              backgroundImage: imageProvider,
             ),
-          ),
-        );
+            placeholder: (context, url) => _buildAvatarPlaceholder(),
+            errorWidget: (context, url, error) => _buildAvatarPlaceholder(),
+          );
+        }
       },
     );
   }
 
-  Future<String?> _getFirebaseImageUrl(String? url) async {
+  Widget _buildWebImage(String url) {
+    return Image.network(
+      url,
+      width: 48,
+      height: 48,
+      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+        if (wasSynchronouslyLoaded || frame != null) {
+          return CircleAvatar(
+            radius: 24,
+            backgroundImage: NetworkImage(url),
+          );
+        }
+        return _buildAvatarPlaceholder();
+      },
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return _buildAvatarPlaceholder();
+      },
+      errorBuilder: (context, error, stackTrace) {
+        debugPrint('Image load error: $error');
+        return _buildAvatarPlaceholder();
+      },
+    );
+  }
+
+  Future<String?> _getOptimizedImageUrl(String? url) async {
     if (url == null || url.isEmpty) return null;
 
     try {
-      // Handle direct download URLs
+      // Handle Firebase Storage references
+      if (url.startsWith('gs://') || url.startsWith('/')) {
+        final ref = FirebaseStorage.instance.refFromURL(url);
+        return await ref.getDownloadURL();
+      }
+
+      // Handle existing Firebase Storage URLs
+      if (url.contains('firebasestorage.googleapis.com')) {
+        final uri = Uri.parse(url);
+        final params = Map<String, String>.from(uri.queryParameters);
+
+        // Ensure required parameters
+        params['alt'] = 'media';
+
+        // Add cache buster for web
+        if (kIsWeb) {
+          params['t'] = DateTime.now().millisecondsSinceEpoch.toString();
+        }
+
+        return uri.replace(queryParameters: params).toString();
+      }
+
+      return url;
+    } catch (e) {
+      debugPrint('URL processing error: $e');
+      return null;
+    }
+  }
+
+  Widget _buildAvatarPlaceholder() {
+    return const CircleAvatar(
+      radius: 24,
+      backgroundColor: Colors.grey,
+      child: Icon(Icons.person, color: Colors.white),
+    );
+  }
+
+  Future<String?> _getWebCompatibleImageUrl(String? url) async {
+    if (url == null || url.isEmpty) return null;
+
+    try {
+      // Handle Firebase Storage references
+      if (url.startsWith('gs://') || url.startsWith('/')) {
+        final ref = FirebaseStorage.instance.refFromURL(url);
+        return await ref.getDownloadURL();
+      }
+
+      // Handle existing Firebase Storage URLs
+      if (url.contains('firebasestorage.googleapis.com')) {
+        final uri = Uri.parse(url);
+        final params = Map<String, String>.from(uri.queryParameters);
+
+        // Ensure required parameters
+        params['alt'] = 'media';
+        params['token'] ??= _generateCacheBuster();
+
+        return uri.replace(queryParameters: params).toString();
+      }
+
+      return url;
+    } catch (e) {
+      debugPrint('URL processing error: $e');
+      return null;
+    }
+  }
+
+  String _generateCacheBuster() {
+    return DateTime.now().millisecondsSinceEpoch.toString();
+  }
+
+  // Widget _buildAvatarPlaceholder() {
+  //   return const CircleAvatar(
+  //     radius: 24,
+  //     backgroundColor: Colors.grey,
+  //     child: Icon(Icons.person, color: Colors.white),
+  //   );
+  // }
+
+// Replace your _getImageUrl method with this more robust version:
+  Future<String?> _getValidImageUrl(String? url) async {
+    if (url == null || url.isEmpty) return null;
+
+    try {
+      // Handle direct HTTP URLs
       if (url.startsWith('http')) {
         return url;
       }
@@ -399,35 +499,33 @@ class _HomepageState extends State<Homepage> {
         return await ref.getDownloadURL();
       }
 
-      // Handle encoded Firebase Storage URLs
+      // Handle Firebase Storage URLs that might need refresh
       if (url.contains('firebasestorage.googleapis.com')) {
+        // Try to use the URL directly first
         try {
-          // Try using the URL directly first
-          return url;
+          final response = await http.head(Uri.parse(url));
+          if (response.statusCode == 200) {
+            return url;
+          }
         } catch (e) {
-          // If direct access fails, get fresh URL
-          final uri = Uri.parse(url);
-          final path = uri.path.split('/o/').last;
-          final decodedPath = Uri.decodeFull(path);
-          final ref = FirebaseStorage.instance.ref(decodedPath);
-          return await ref.getDownloadURL();
+          debugPrint('URL verification failed: $e');
         }
+
+        // If direct access fails, get fresh URL
+        final uri = Uri.parse(url);
+        final path = uri.path.split('/o/').last;
+        final decodedPath = Uri.decodeFull(path.split('?').first);
+        final ref = FirebaseStorage.instance.ref(decodedPath);
+        return await ref.getDownloadURL();
       }
 
       return null;
     } catch (e) {
-      debugPrint('Error getting Firebase image URL: $e');
+      debugPrint('Error getting valid image URL: $e');
       return null;
     }
   }
 
-  Widget _buildAvatarPlaceholder() {
-    return const CircleAvatar(
-      radius: 24,
-      backgroundColor: Colors.grey,
-      child: Icon(Icons.person, color: Colors.white),
-    );
-  }
 
 
   Future<String> _getImageUrl(String path) async {
@@ -439,45 +537,6 @@ class _HomepageState extends State<Homepage> {
     }
     // For mobile
     return await FirebaseStorage.instance.refFromURL(path).getDownloadURL();
-  }
-  Future<String?> _getValidImageUrl(String? url) async {
-    if (url == null || url.isEmpty) return null;
-
-    try {
-      // If it's already a valid URL, use it directly
-      if (_isValidHttpUrl(url)) {
-        return url;
-      }
-
-      // Handle Firebase Storage paths
-      if (url.startsWith('gs://')) {
-        final ref = FirebaseStorage.instance.refFromURL(url);
-        return await ref.getDownloadURL();
-      }
-
-      // Handle path references
-      if (url.startsWith('/')) {
-        final ref = FirebaseStorage.instance.ref(url);
-        return await ref.getDownloadURL();
-      }
-
-      // If we have a malformed Firebase URL, try to reconstruct it
-      if (url.contains('appspot.com')) {
-        final uri = Uri.parse(url);
-        if (uri.queryParameters['token'] == null) {
-          // If token is missing, get fresh URL
-          final path = uri.path.split('/o/').last;
-          final ref = FirebaseStorage.instance.ref(path);
-          return await ref.getDownloadURL();
-        }
-        return url;
-      }
-
-      return null;
-    } catch (e) {
-      debugPrint('Error getting valid image URL: $e');
-      return null;
-    }
   }
   Future<String?> _verifyAndRefreshImageUrl(String? url) async {
     if (url == null || url.isEmpty) return null;
@@ -547,54 +606,8 @@ class _HomepageState extends State<Homepage> {
 
 
 
-  bool _isValidImageUrl(String? url) {
-    if (url == null || url.isEmpty) return false;
 
-    // Check if it's a Firebase Storage path
-    if (url.startsWith('gs://') || url.startsWith('/') || url.contains('firebasestorage')) {
-      return true;
-    }
 
-    // Check if it's a valid HTTP URL
-    try {
-      final uri = Uri.parse(url);
-      return uri.isAbsolute && (uri.scheme == 'http' || uri.scheme == 'https');
-    } catch (e) {
-      debugPrint('Invalid image URL: $url\nError: $e');
-      return false;
-    }
-  }
-
-  // bool _isValidImageUrl(String? url) {
-  //   if (url == null || url.isEmpty) return false;
-  //   try {
-  //     final uri = Uri.parse(url);
-  //     return uri.isAbsolute;
-  //   } catch (e) {
-  //     debugPrint('Invalid image URL: $url\nError: $e');
-  //     return false;
-  //   }
-  // }
-
-  String _generateCacheKey(String url) {
-    try {
-      final uri = Uri.parse(url);
-      return '${uri.host}${uri.path}'; // Use host + path as cache key
-    } catch (e) {
-      return url;
-    }
-  }
-
-  // Future<String?> _getFreshDownloadUrl(String? path) async {
-  //   if (path == null || path.isEmpty) return null;
-  //   try {
-  //     final ref = FirebaseStorage.instance.refFromURL(path);
-  //     return await ref.getDownloadURL();
-  //   } catch (e) {
-  //     debugPrint('Failed to refresh download URL: $e');
-  //     return null;
-  //   }
-  // }
 
   void _showLogoutDialog() {
     showDialog(
